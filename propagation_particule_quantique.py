@@ -10,6 +10,7 @@ import numpy as np
 N = 192            # points de grille par direction (doit valoir N dans onde.html)
 L = 60.0           # le domaine est [-L/2, L/2]²
 DT = 0.025         # pas de temps (garder V0·DT ≲ 1 : sinon le split-step déforme le mur)
+T_tot = 25.0       # Durée totale
 X0 = -18.0         # position initiale du paquet
 SIGMA_X = 1.5      # largeur longitudinale du paquet
 XW = -4.0          # position du mur
@@ -72,7 +73,8 @@ def setup(mode, a, d, k0, sy):
     S.clear()
     S.update(
         V=V, psi=psi, t=0.0,
-        T=1.3 * (XS - X0 + 4 * SIGMA_X) / k0,       # durée totale
+#        T=1.3 * (XS - X0 + 4 * SIGMA_X) / k0,       # durée totale
+        T=T_tot,                                    # durée totale
         half=np.exp((-1j * V - W) * DT / 2),
         wall=(V > 0).T[::-1],                       # masque d'affichage du mur
         profil=np.zeros(N),                         # flux cumulé sur l'écran
