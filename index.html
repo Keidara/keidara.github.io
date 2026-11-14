@@ -1,1 +1,39 @@
-Bonjour
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outils</title>
+<style>
+  :root{--bg:#f6f7f9;--fg:#15181d;--mut:#5b6472;--line:#d9dde3;--acc:#2563eb;color-scheme:light dark}
+  @media(prefers-color-scheme:dark){:root{--bg:#101318;--fg:#e8eaee;--mut:#9aa3b0;--line:#2a303a;--acc:#7aa2ff}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:42rem;margin:0 auto;padding:4rem 1.25rem}
+  h1{font-size:2.4rem;line-height:1.15;margin:0 0 .5rem;letter-spacing:-.02em}
+  .intro{color:var(--mut);margin:0 0 3rem}
+  ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  li{border-bottom:1px solid var(--line)}
+  a.tool{display:block;padding:1.1rem 0;text-decoration:none;color:inherit}
+  a.tool:hover strong,a.tool:focus-visible strong{color:var(--acc);text-decoration:underline}
+  a.tool:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  strong{display:block;font-size:1.15rem}
+  span{color:var(--mut);font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+  <h1>Outils</h1>
+  <p class="intro">Des petits outils interactifs de calcul et de visualisation, qui tournent directement dans le navigateur.</p>
+  <ul>
+    <li>
+      <a class="tool" href="./chaleur.html">
+        <strong>Équation de la chaleur 2D</strong>
+        <span>Simule la diffusion de la chaleur sur une plaque. Dessine à la souris, change les conditions aux limites.</span>
+      </a>
+    </li>
+    <!-- Pour ajouter un outil, copie un bloc <li> ci-dessus et change le lien et le texte. -->
+  </ul>
+</main>
+</body>
+</html>
