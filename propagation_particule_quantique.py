@@ -7,9 +7,9 @@ Doit rester cohérent avec la constante N de onde.html.
 import numpy as np
 
 # ---------------------------------------------------------------- paramètres
-N = 192            # points de grille par direction (doit valoir N dans propagation_particule_quantique.html)
+N = 192            # points de grille par direction (doit valoir N dans onde.html)
 L = 60.0           # le domaine est [-L/2, L/2]²
-DT = 0.05          # pas de temps
+DT = 0.025         # pas de temps (garder V0·DT ≲ 1 : sinon le split-step déforme le mur)
 X0 = -18.0         # position initiale du paquet
 SIGMA_X = 1.5      # largeur longitudinale du paquet
 XW = -4.0          # position du mur

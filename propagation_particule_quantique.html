@@ -74,7 +74,7 @@
       <label><span class="row">Largeur du paquet σy <output id="syO"></output></span>
         <input id="sy" type="range" min="2" max="8" step="0.5" value="6"></label>
       <label><span class="row">Vitesse <output id="sO"></output></span>
-        <input id="s" type="range" min="1" max="20" step="1" value="2"></label>
+        <input id="s" type="range" min="1" max="20" step="1" value="4"></label>
       <label class="check"><input id="auto" type="checkbox" checked> Échelle de couleur automatique</label>
 
       <label><span class="row">Nombre d’impacts <output id="nO"></output></span>
@@ -94,10 +94,10 @@
   </div>
 </main>
 
-<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans propagation_particule_quantique.py ============ -->
+<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans onde.py ============ -->
 <script>
 const $ = id => document.getElementById(id);
-const N = 192;                                   // doit correspondre à N dans propagation_particule_quantique.py
+const N = 192;                                   // doit correspondre à N dans onde.py
 const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
 const cs = $("cs"), gs = cs.getContext("2d");
 let running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -130,8 +130,8 @@ function rebuild() {
 async function start() {
   const pyodide = await loadPyodide();
   await pyodide.loadPackage("numpy");
-  const rep = await fetch("./propagation_particule_quantique.py");
-  if (!rep.ok) throw new Error("propagation_particule_quantique.py introuvable");
+  const rep = await fetch("./onde.py");
+  if (!rep.ok) throw new Error("onde.py introuvable");
   pyodide.runPython(await rep.text());
   const G = n => pyodide.globals.get(n);
   py = { setup: G("setup"), frame: G("frame"), stats: G("stats"), geometry: G("geometry"),
@@ -256,7 +256,7 @@ $("fire").addEventListener("click", () => { pending += +$("n").value; });
 $("clear").addEventListener("click", () => { py.clear(); pending = 0; lastKey = ""; });
 
 start().catch(err => {
-  $("stats").textContent = "Impossible de charger Python ou propagation_particule_quantique.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  $("stats").textContent = "Impossible de charger Python ou onde.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
   console.error(err);
 });
 </script>
