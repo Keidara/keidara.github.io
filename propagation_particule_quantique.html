@@ -94,10 +94,10 @@
   </div>
 </main>
 
-<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans propagation_particule_quantique ============ -->
+<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans propagation_particule_quantique.py ============ -->
 <script>
 const $ = id => document.getElementById(id);
-const N = 192;                                   // doit correspondre à N dans propagation_particule_quantique
+const N = 192;                                   // doit correspondre à N dans propagation_particule_quantique.py
 const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
 const cs = $("cs"), gs = cs.getContext("2d");
 let running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -130,8 +130,8 @@ function rebuild() {
 async function start() {
   const pyodide = await loadPyodide();
   await pyodide.loadPackage("numpy");
-  const rep = await fetch("./propagation_particule_quantique");
-  if (!rep.ok) throw new Error("propagation_particule_quantique introuvable");
+  const rep = await fetch("./propagation_particule_quantique.py");
+  if (!rep.ok) throw new Error("propagation_particule_quantique.py introuvable");
   pyodide.runPython(await rep.text());
   const G = n => pyodide.globals.get(n);
   py = { setup: G("setup"), frame: G("frame"), stats: G("stats"), geometry: G("geometry"),
@@ -256,7 +256,7 @@ $("fire").addEventListener("click", () => { pending += +$("n").value; });
 $("clear").addEventListener("click", () => { py.clear(); pending = 0; lastKey = ""; });
 
 start().catch(err => {
-  $("stats").textContent = "Impossible de charger Python ou propagation_particule_quantique. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  $("stats").textContent = "Impossible de charger Python ou propagation_particule_quantique.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
   console.error(err);
 });
 </script>
