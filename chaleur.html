@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Équation de la chaleur 2D</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 <style>
   :root{--bg:#f6f7f9;--fg:#15181d;--mut:#5b6472;--line:#d9dde3;--acc:#2563eb;--onacc:#fff;color-scheme:light dark}
   @media(prefers-color-scheme:dark){:root{--bg:#101318;--fg:#e8eaee;--mut:#9aa3b0;--line:#2a303a;--acc:#7aa2ff;--onacc:#101318}}
@@ -28,6 +29,7 @@
   .btns{display:flex;gap:.5rem}
   button{flex:1;padding:.55rem .8rem;font:inherit;border-radius:4px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
   button.main{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+  button:disabled{opacity:.5;cursor:wait}
   :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
   .note{margin-top:2rem;max-width:42rem;color:var(--mut);font-size:.92rem}
   .note code{color:var(--fg)}
@@ -42,13 +44,13 @@
     <div>
       <canvas id="c" width="96" height="96" aria-label="Carte de température"></canvas>
       <div class="bar"><span>0</span><canvas id="cb" width="256" height="1"></canvas><span id="vmax">1</span></div>
-      <div id="stats"></div>
+      <div id="stats" role="status">Chargement de Python…</div>
     </div>
 
     <div class="ctl">
       <div class="btns">
-        <button id="play" class="main">Pause</button>
-        <button id="reset">Réinitialiser</button>
+        <button id="play" class="main" disabled>Pause</button>
+        <button id="reset" disabled>Réinitialiser</button>
       </div>
       <label>Condition initiale
         <select id="init">
@@ -79,129 +81,78 @@
   </div>
 
   <div class="note">
-    <p>Clique ou glisse sur la plaque pour la chauffer. Le modèle résout
-    <code>∂u/∂t = α (∂²u/∂x² + ∂²u/∂y²)</code> par différences finies explicites (schéma FTCS) sur une grille de 96 × 96.
-    Le curseur de diffusivité règle <code>α·Δt/Δx²</code>, qui doit rester inférieur ou égal à 0,25 pour que le schéma soit stable ; au-delà, la simulation diverge.</p>
+    <p>Clique ou glisse sur la plaque pour la chauffer. Le calcul est fait en Python (NumPy), exécuté dans ton navigateur grâce à Pyodide : le premier chargement télécharge l’interpréteur, ce qui peut prendre quelques secondes.
+    Le modèle résout <code>∂u/∂t = α (∂²u/∂x² + ∂²u/∂y²)</code> par différences finies explicites sur une grille de 96 × 96.
+    Le curseur de diffusivité règle <code>α·Δt/Δx²</code>, qui doit rester inférieur ou égal à 0,25 pour que le schéma soit stable.</p>
   </div>
 </main>
 
+<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans chaleur.py ============ -->
 <script>
-const N = 96, M = N + 2;
-let u = new Float32Array(M * M), v = new Float32Array(M * M);
-let steps = 0, running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 const $ = id => document.getElementById(id);
-const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N), px = new Uint32Array(img.data.buffer);
+const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(96, 96);
+let running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+let py = null;
 
-// Palette (du noir au jaune pâle) -> table de 256 couleurs
-const stops = [[0,0,4],[40,11,84],[101,21,110],[159,42,99],[212,72,66],[245,125,21],[250,193,39],[252,255,164]];
-const LUT = new Uint32Array(256);
-for (let k = 0; k < 256; k++) {
-  const t = k / 255 * (stops.length - 1), i = Math.min(Math.floor(t), stops.length - 2), f = t - i;
-  const c = [0, 1, 2].map(j => Math.round(stops[i][j] + (stops[i + 1][j] - stops[i][j]) * f));
-  LUT[k] = (255 << 24) | (c[2] << 16) | (c[1] << 8) | c[0];
+function labels() {
+  $("rO").textContent = (+$("r").value).toFixed(3);
+  $("sO").textContent = $("s").value + " pas/image";
+  $("bO").textContent = $("b").value;
 }
-(function () {
-  const g = $("cb").getContext("2d"), d = g.createImageData(256, 1), p = new Uint32Array(d.data.buffer);
-  for (let k = 0; k < 256; k++) p[k] = LUT[k];
-  g.putImageData(d, 0, 0);
-})();
+["r", "s", "b"].forEach(id => $(id).addEventListener("input", labels));
+labels();
 
-function initField(kind) {
-  u.fill(0); v.fill(0); steps = 0;
-  for (let j = 1; j <= N; j++) for (let i = 1; i <= N; i++) {
-    const x = (i - 1) / (N - 1), y = (j - 1) / (N - 1);
-    const g = (cx, cy, s) => Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / s);
-    let val = 0;
-    switch (kind) {
-      case "spot": val = g(.5, .5, .004); break;
-      case "two": val = Math.max(g(.3, .35, .003), .7 * g(.7, .65, .005)); break;
-      case "ring": { const d = Math.hypot(x - .5, y - .5); val = Math.exp(-((d - .25) ** 2) / .0015); break; }
-      case "square": val = (Math.abs(x - .5) < .12 && Math.abs(y - .5) < .12) ? 1 : 0; break;
-      case "left": val = x < .06 ? 1 : 0; break;
-      case "noise": val = Math.random() < .5 ? Math.random() : 0; break;
-    }
-    u[j * M + i] = val;
-  }
-}
+async function start() {
+  const pyodide = await loadPyodide();
+  await pyodide.loadPackage("numpy");
+  const rep = await fetch("./chaleur.py");
+  if (!rep.ok) throw new Error("chaleur.py introuvable");
+  pyodide.runPython(await rep.text());
+  const G = n => pyodide.globals.get(n);
+  py = { init: G("init_field"), frame: G("frame"), paint: G("paint"), stats: G("stats") };
 
-function ghosts(a) {
-  const bc = $("bc").value;
-  for (let k = 1; k <= N; k++) {
-    if (bc === "dirichlet") { a[k * M] = a[k * M + N + 1] = a[k] = a[(N + 1) * M + k] = 0; }
-    else if (bc === "neumann") {
-      a[k * M] = a[k * M + 1]; a[k * M + N + 1] = a[k * M + N];
-      a[k] = a[M + k]; a[(N + 1) * M + k] = a[N * M + k];
-    } else {
-      a[k * M] = a[k * M + N]; a[k * M + N + 1] = a[k * M + 1];
-      a[k] = a[N * M + k]; a[(N + 1) * M + k] = a[M + k];
-    }
-  }
-}
+  // Barre de couleur
+  const lut = G("get_lut")(), lb = lut.getBuffer("u8");
+  $("cb").getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(lb.data), 256, 1), 0, 0);
+  lb.release(); lut.destroy();
 
-function step(r) {
-  ghosts(u);
-  for (let j = 1; j <= N; j++) {
-    const row = j * M;
-    for (let i = 1; i <= N; i++) {
-      const p = row + i;
-      v[p] = u[p] + r * (u[p - 1] + u[p + 1] + u[p - M] + u[p + M] - 4 * u[p]);
-    }
-  }
-  const t = u; u = v; v = t;
-  steps++;
-}
-
-function draw() {
-  let max = 0, sum = 0;
-  for (let j = 1; j <= N; j++) for (let i = 1; i <= N; i++) {
-    const w = u[j * M + i]; sum += w; if (w > max) max = w;
-  }
-  const top = $("auto").checked ? Math.max(max, 1e-6) : 1;
-  for (let j = 1; j <= N; j++) for (let i = 1; i <= N; i++) {
-    const k = Math.round(Math.min(Math.max(u[j * M + i] / top, 0), 1) * 255);
-    px[(N - j) * N + (i - 1)] = LUT[k];   // y vers le haut
-  }
-  ctx.putImageData(img, 0, 0);
-  $("vmax").textContent = top.toFixed(2);
-  $("stats").textContent = `Pas : ${steps}   Max : ${max.toFixed(3)}   Moyenne : ${(sum / (N * N)).toFixed(4)}`;
-}
-
-function loop() {
-  if (running) { const r = +$("r").value; for (let k = 0; k < +$("s").value; k++) step(r); }
-  draw();
+  py.init("spot");
+  $("play").disabled = $("reset").disabled = false;
+  $("play").textContent = running ? "Pause" : "Lecture";
   requestAnimationFrame(loop);
 }
 
-// Pinceau
+function loop() {
+  const res = py.frame(+$("r").value, running ? +$("s").value : 0, $("bc").value, $("auto").checked);
+  const buf = res.getBuffer("u8");
+  img.data.set(buf.data);
+  buf.release(); res.destroy();
+  ctx.putImageData(img, 0, 0);
+
+  const st = py.stats(), [n, max, mean, top] = st.toJs();
+  st.destroy();
+  $("vmax").textContent = top.toFixed(2);
+  $("stats").textContent = `Pas : ${n}   Max : ${max.toFixed(3)}   Moyenne : ${mean.toFixed(4)}`;
+  requestAnimationFrame(loop);
+}
+
+// Pinceau : on envoie les coordonnées de grille à Python
 function paint(e) {
+  if (!py) return;
   const rc = cv.getBoundingClientRect();
-  const cx = (e.clientX - rc.left) / rc.width * N + .5, cy = (1 - (e.clientY - rc.top) / rc.height) * N + .5;
-  const rad = +$("b").value, s2 = 2 * (rad / 2) ** 2;
-  for (let j = Math.max(1, Math.floor(cy - rad * 2)); j <= Math.min(N, Math.ceil(cy + rad * 2)); j++)
-    for (let i = Math.max(1, Math.floor(cx - rad * 2)); i <= Math.min(N, Math.ceil(cx + rad * 2)); i++) {
-      const w = Math.exp(-((i - cx) ** 2 + (j - cy) ** 2) / s2);
-      if (w > u[j * M + i]) u[j * M + i] = w;
-    }
+  py.paint((e.clientX - rc.left) / rc.width * 96, (1 - (e.clientY - rc.top) / rc.height) * 96, +$("b").value);
 }
 cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); paint(e); });
 cv.addEventListener("pointermove", e => { if (e.buttons) paint(e); });
 
-// Commandes
-const out = () => {
-  $("rO").textContent = (+$("r").value).toFixed(3);
-  $("sO").textContent = $("s").value + " pas/image";
-  $("bO").textContent = $("b").value;
-};
-["r", "s", "b"].forEach(id => $(id).addEventListener("input", out));
-$("init").addEventListener("change", () => initField($("init").value));
-$("reset").addEventListener("click", () => initField($("init").value));
+$("init").addEventListener("change", () => py && py.init($("init").value));
+$("reset").addEventListener("click", () => py.init($("init").value));
 $("play").addEventListener("click", () => { running = !running; $("play").textContent = running ? "Pause" : "Lecture"; });
 
-out();
-$("play").textContent = running ? "Pause" : "Lecture";
-initField("spot");
-loop();
+start().catch(err => {
+  $("stats").textContent = "Impossible de charger Python ou chaleur.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  console.error(err);
+});
 </script>
 </body>
 </html>
