@@ -97,7 +97,7 @@
 <!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans propagation_particule_quantique.py ============ -->
 <script>
 const $ = id => document.getElementById(id);
-const N = 192;                                   // doit correspondre à N dans propagation_particule_quantique.py
+const N = 192*2;                                   // doit correspondre à N dans propagation_particule_quantique.py
 const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
 const cs = $("cs"), gs = cs.getContext("2d");
 let running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
