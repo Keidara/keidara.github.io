@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde de matière 2D : électron et fentes</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+  :root{--bg:#f6f7f9;--fg:#15181d;--mut:#5b6472;--line:#d9dde3;--acc:#2563eb;--onacc:#fff;color-scheme:light dark}
+  @media(prefers-color-scheme:dark){:root{--bg:#101318;--fg:#e8eaee;--mut:#9aa3b0;--line:#2a303a;--acc:#7aa2ff;--onacc:#101318}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:60rem;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+  a{color:var(--acc)}
+  h1{font-size:1.8rem;margin:.6rem 0 1.2rem;letter-spacing:-.02em}
+  h2{font-size:.95rem;font-weight:600;color:var(--mut);margin:1.4rem 0 .4rem}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 17rem;gap:1.5rem;align-items:start}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}}
+  canvas#c{width:100%;aspect-ratio:1;display:block;border:1px solid var(--line);border-radius:4px;background:#000;touch-action:none}
+  canvas#cs{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+  .bar{display:flex;align-items:center;gap:.6rem;margin-top:.6rem;color:var(--mut);font-size:.85rem}
+  canvas#cb{flex:1;height:10px;border-radius:2px}
+  #stats{margin-top:.4rem;color:var(--mut);font-size:.85rem;font-variant-numeric:tabular-nums}
+  .ctl{display:flex;flex-direction:column;gap:1rem}
+  label{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem}
+  label:has(input:disabled){opacity:.45}
+  label .row{display:flex;justify-content:space-between}
+  label output{color:var(--mut);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--acc)}
+  select{padding:.4rem;font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px}
+  .check{flex-direction:row;align-items:center;gap:.5rem}
+  .btns{display:flex;gap:.5rem}
+  button{flex:1;padding:.55rem .8rem;font:inherit;border-radius:4px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+  button.main{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+  button:disabled{opacity:.5;cursor:wait}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  .note{margin-top:2rem;max-width:42rem;color:var(--mut);font-size:.92rem}
+  .note code{color:var(--fg)}
+</style>
+</head>
+<body>
+<main>
+  <a href="./index.html">← Tous les outils</a>
+  <h1>Onde de matière 2D : électron et fentes</h1>
+
+  <div class="layout">
+    <div>
+      <canvas id="c" width="192" height="192" aria-label="Carte de la densité de probabilité de l’électron"></canvas>
+      <div class="bar"><span>0</span><canvas id="cb" width="256" height="1"></canvas><span id="vmax">1</span></div>
+      <div id="stats" role="status">Chargement de Python…</div>
+
+      <h2>Écran de détection</h2>
+      <canvas id="cs" width="1080" height="460" aria-label="Impacts sur l’écran et histogramme comparé à la prédiction"></canvas>
+    </div>
+
+    <div class="ctl">
+      <div class="btns">
+        <button id="play" class="main" disabled>Pause</button>
+        <button id="reset" disabled>Réinitialiser</button>
+      </div>
+      <label>Configuration
+        <select id="mode">
+          <option value="free">Propagation libre</option>
+          <option value="one">Une fente</option>
+          <option value="two" selected>Deux fentes</option>
+        </select>
+      </label>
+      <label><span class="row">Largeur de fente <output id="aO"></output></span>
+        <input id="a" type="range" min="0.8" max="3.5" step="0.1" value="1.5"></label>
+      <label><span class="row">Écart entre fentes <output id="dO"></output></span>
+        <input id="d" type="range" min="4" max="12" step="0.5" value="6"></label>
+      <label><span class="row">Impulsion k₀ <output id="kO"></output></span>
+        <input id="k" type="range" min="1.5" max="4" step="0.1" value="3"></label>
+      <label><span class="row">Largeur du paquet σy <output id="syO"></output></span>
+        <input id="sy" type="range" min="2" max="8" step="0.5" value="6"></label>
+      <label><span class="row">Vitesse <output id="sO"></output></span>
+        <input id="s" type="range" min="1" max="20" step="1" value="2"></label>
+      <label class="check"><input id="auto" type="checkbox" checked> Échelle de couleur automatique</label>
+
+      <label><span class="row">Nombre d’impacts <output id="nO"></output></span>
+        <input id="n" type="range" min="10" max="5000" step="10" value="500"></label>
+      <div class="btns">
+        <button id="fire" disabled>Tirer les impacts</button>
+        <button id="clear" disabled>Effacer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <p>Le calcul est fait en Python (NumPy), exécuté dans ton navigateur grâce à Pyodide : le premier chargement télécharge l’interpréteur, ce qui peut prendre quelques secondes.
+    Le modèle résout l’équation de Schrödinger <code>i ∂ψ/∂t = −½ ∇²ψ + V ψ</code> (unités ħ = m = 1) par la méthode « split-step » (FFT) sur une grille de 192 × 192. Le mur est un potentiel très haut, percé d’une ou deux fentes ; les bords du domaine sont absorbants.</p>
+    <p>L’écran (pointillés cyan) n’intervient pas dans la dynamique : il enregistre le flux de probabilité qui le traverse, intégré sur toute la durée. Cela donne la loi de probabilité d’impact, tracée en rouge. « Tirer les impacts » lance la simulation si besoin, puis tire des électrons indépendants selon cette loi : le motif d’interférences émerge point par point. Les fentes sont supposées infinies selon <code>z</code>, donc cette coordonnée est tirée uniformément sur la vue de face.</p>
+    <p>La couleur représente <code>√|ψ|²</code> pour garder visibles les zones peu intenses. Modifier un paramètre relance la simulation et efface les impacts.</p>
+  </div>
+</main>
+
+<!-- ============ Interface (JavaScript) : affichage et commandes ; le calcul est dans onde.py ============ -->
+<script>
+const $ = id => document.getElementById(id);
+const N = 192;                                   // doit correspondre à N dans onde.py
+const cv = $("c"), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
+const cs = $("cs"), gs = cs.getContext("2d");
+let running = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+let py = null, geom = null, pending = 0, done = false, lastKey = "", playLabel = "";
+
+function labels() {
+  $("aO").textContent = (+$("a").value).toFixed(1);
+  $("dO").textContent = (+$("d").value).toFixed(1);
+  $("kO").textContent = (+$("k").value).toFixed(1);
+  $("syO").textContent = (+$("sy").value).toFixed(1);
+  $("sO").textContent = $("s").value + " pas/image";
+  $("nO").textContent = $("n").value;
+  $("fire").textContent = "Tirer " + $("n").value + " impacts";
+}
+function enabled() {
+  $("a").disabled = $("mode").value === "free";
+  $("d").disabled = $("mode").value !== "two";
+}
+["a", "d", "k", "sy", "s", "n"].forEach(id => $(id).addEventListener("input", () => {
+  labels();
+  if (py && ["a", "d", "k", "sy"].includes(id)) rebuild();
+}));
+labels(); enabled();
+
+function rebuild() {
+  pending = 0; done = false; lastKey = "";
+  py.setup($("mode").value, +$("a").value, +$("d").value, +$("k").value, +$("sy").value);
+}
+
+async function start() {
+  const pyodide = await loadPyodide();
+  await pyodide.loadPackage("numpy");
+  const rep = await fetch("./onde.py");
+  if (!rep.ok) throw new Error("onde.py introuvable");
+  pyodide.runPython(await rep.text());
+  const G = n => pyodide.globals.get(n);
+  py = { setup: G("setup"), frame: G("frame"), stats: G("stats"), geometry: G("geometry"),
+         profile: G("screen_profile"), fire: G("fire"), impacts: G("impacts"), clear: G("clear_impacts") };
+
+  // Barre de couleur
+  const lut = G("get_lut")(), lb = lut.getBuffer("u8");
+  $("cb").getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(lb.data), 256, 1), 0, 0);
+  lb.release(); lut.destroy();
+
+  const gp = py.geometry(); geom = gp.toJs(); gp.destroy();
+  rebuild();
+  $("play").disabled = $("reset").disabled = $("fire").disabled = $("clear").disabled = false;
+  requestAnimationFrame(loop);
+}
+
+function loop() {
+  // Tirage progressif des impacts une fois l'onde arrivée sur l'écran
+  if (done && pending > 0) {
+    const lot = Math.max(1, Math.ceil(+$("n").value / 60)), m = Math.min(lot, pending);
+    py.fire(m); pending -= m;
+  }
+  const speed = (running || pending > 0) && !done ? +$("s").value : 0;
+  const res = py.frame(speed, $("auto").checked);
+  const buf = res.getBuffer("u8");
+  img.data.set(buf.data);
+  buf.release(); res.destroy();
+  ctx.putImageData(img, 0, 0);
+
+  const st = py.stats(), [t, T, norm, top, n, fin] = st.toJs();
+  st.destroy();
+  done = fin === 1;
+  $("vmax").textContent = top.toPrecision(2);
+  $("stats").textContent = `t = ${t.toFixed(1)} / ${T.toFixed(1)}   Probabilité dans la boîte : ${norm.toFixed(2)}   Impacts : ${n}` +
+    (done ? "   — simulation terminée" : "");
+
+  const lbl = done ? "Rejouer" : running ? "Pause" : "Lecture";
+  if (lbl !== playLabel) { $("play").textContent = lbl; playLabel = lbl; }
+
+  const key = Math.round(t * 100) + "|" + n;
+  if (key !== lastKey) { lastKey = key; drawScreen(n); }
+  requestAnimationFrame(loop);
+}
+
+// Copie un tableau NumPy (float64) vers un Float64Array JS
+function toF64(proxy) {
+  const b = proxy.getBuffer("f64"), a = Float64Array.from(b.data);
+  b.release(); proxy.destroy();
+  return a;
+}
+
+function drawScreen(n) {
+  const P = toF64(py.profile());
+  const I = n > 0 ? toF64(py.impacts()) : new Float64Array(0);
+  const css = getComputedStyle(document.documentElement);
+  const fg = css.getPropertyValue("--fg").trim(), mut = css.getPropertyValue("--mut").trim(),
+        line = css.getPropertyValue("--line").trim(), acc = css.getPropertyValue("--acc").trim();
+  const W = cs.width, H = cs.height, x0 = 36, x1 = W - 36;
+  const ymin = geom[0] - geom[1] / 2, ymax = ymin + geom[2] * geom[1];
+  const X = y => x0 + (y - ymin) / (ymax - ymin) * (x1 - x0);
+  gs.clearRect(0, 0, W, H);
+  gs.font = "20px system-ui, sans-serif";
+
+  // Vue de face de l'écran : y horizontal, z vertical
+  const s0 = 10, s1 = 150;
+  gs.fillStyle = "#000"; gs.fillRect(x0, s0, x1 - x0, s1 - s0);
+  gs.fillStyle = "rgba(255,255,255,.85)";
+  for (let i = 0; i < n; i++) gs.fillRect(X(I[2 * i]) - 1.5, s0 + 2 + I[2 * i + 1] * (s1 - s0 - 7), 3, 3);
+
+  // Histogramme et prédiction
+  const h0 = 190, h1 = H - 56, nb = 60, bw = (ymax - ymin) / nb;
+  const cnt = new Float64Array(nb);
+  for (let i = 0; i < n; i++) {
+    const b = Math.floor((I[2 * i] - ymin) / bw);
+    if (b >= 0 && b < nb) cnt[b]++;
+  }
+  let top = 0;
+  for (let b = 0; b < nb; b++) top = Math.max(top, cnt[b] / (Math.max(n, 1) * bw));
+  for (const v of P) top = Math.max(top, v);
+  const hasP = top > 0;
+  if (!hasP) top = 1;
+  const Y = v => h1 - v / top * 0.95 * (h1 - h0);
+
+  gs.fillStyle = acc; gs.globalAlpha = 0.55;
+  for (let b = 0; b < nb; b++) {
+    const v = cnt[b] / (Math.max(n, 1) * bw);
+    gs.fillRect(X(ymin + b * bw) + 1, Y(v), (x1 - x0) / nb - 2, h1 - Y(v));
+  }
+  gs.globalAlpha = 1;
+  if (P.some(v => v > 0)) {
+    gs.strokeStyle = "#e5484d"; gs.lineWidth = 3; gs.beginPath();
+    P.forEach((v, i) => { const px = X(geom[0] + i * geom[1]); i ? gs.lineTo(px, Y(v)) : gs.moveTo(px, Y(v)); });
+    gs.stroke();
+  } else {
+    gs.fillStyle = mut; gs.textAlign = "center";
+    gs.fillText("L’onde n’a pas encore atteint l’écran", W / 2, (h0 + h1) / 2);
+  }
+
+  // Axe
+  gs.strokeStyle = line; gs.lineWidth = 2; gs.beginPath(); gs.moveTo(x0, h1); gs.lineTo(x1, h1); gs.stroke();
+  gs.fillStyle = mut; gs.textAlign = "center";
+  for (const v of [-Math.round(ymax), 0, Math.round(ymax)]) {
+    gs.fillText(String(v), X(v), h1 + 28);
+  }
+  gs.fillText("y", x1 - 6, h1 + 52);
+
+  // Légende
+  gs.textAlign = "left";
+  gs.strokeStyle = "#e5484d"; gs.lineWidth = 3; gs.beginPath(); gs.moveTo(x0 + 8, h0 - 6); gs.lineTo(x0 + 40, h0 - 6); gs.stroke();
+  gs.fillStyle = fg; gs.fillText("prédiction (flux intégré)", x0 + 50, h0);
+  gs.fillStyle = acc; gs.globalAlpha = 0.55; gs.fillRect(x0 + 330, h0 - 18, 24, 16); gs.globalAlpha = 1;
+  gs.fillStyle = fg; gs.fillText("impacts", x0 + 364, h0);
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { lastKey = ""; });
+
+$("mode").addEventListener("change", () => { enabled(); py && rebuild(); });
+$("reset").addEventListener("click", () => { rebuild(); });
+$("play").addEventListener("click", () => {
+  if (done) { rebuild(); running = true; } else running = !running;
+});
+$("fire").addEventListener("click", () => { pending += +$("n").value; });
+$("clear").addEventListener("click", () => { py.clear(); pending = 0; lastKey = ""; });
+
+start().catch(err => {
+  $("stats").textContent = "Impossible de charger Python ou onde.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  console.error(err);
+});
+</script>
+</body>
+</html>
