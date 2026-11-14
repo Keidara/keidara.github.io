@@ -7,7 +7,7 @@ Doit rester cohérent avec la constante N de onde.html.
 import numpy as np
 
 # ---------------------------------------------------------------- paramètres
-N = 192*2          # points de grille par direction (doit valoir N dans propagation_particule_quantique.html)
+N = 192            # points de grille par direction (doit valoir N dans propagation_particule_quantique.html)
 L = 60.0           # le domaine est [-L/2, L/2]²
 DT = 0.05          # pas de temps
 X0 = -18.0         # position initiale du paquet
