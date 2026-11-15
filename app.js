@@ -65,9 +65,9 @@ async function start() {
   if (!/^[a-z0-9_]+$/.test(tool)) throw new Error("outil inconnu");
   const py = await loadPyodide();
   await py.loadPackage(["numpy", "matplotlib"]);
-  py.FS.mkdir("/lib");
-  py.FS.writeFile("/lib/kit.py", await (await fetch("./kit.py")).text());
-  py.runPython("import sys; sys.path.insert(0, '/lib')");
+  py.FS.mkdir("/kitlib");           // (pas "/lib" : ce dossier existe déjà dans Pyodide)
+  py.FS.writeFile("/kitlib/kit.py", await (await fetch("./kit.py")).text());
+  py.runPython("import sys; sys.path.insert(0, '/kitlib')");
   kit = py.pyimport("kit");
   const rep = await fetch(`./outils/${tool}.py`);
   if (!rep.ok) throw new Error(`outils/${tool}.py introuvable`);
@@ -83,7 +83,9 @@ async function start() {
 }
 
 start().catch(err => {
-  const detail = String(err && err.message || err).split("\n").slice(-3).join(" ");
+  let detail = err && err.message;
+  if (!detail) { try { detail = JSON.stringify(err); } catch (_) { detail = String(err); } }
+  detail = String(detail).split("\n").slice(-3).join(" ");
   $("stats").textContent = "Impossible de charger l'outil : " + detail +
     " (ouvre la page via un serveur, pas en double-cliquant sur le fichier, et vérifie ta connexion.)";
   console.error(err);
