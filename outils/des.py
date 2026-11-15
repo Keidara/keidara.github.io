@@ -34,8 +34,8 @@ def draw(fig, n_dice, n_rolls):
     obs = np.bincount(sommes - n_dice, minlength=len(s)) / n_rolls * 100
     th = loi_exacte(n_dice) * 100
 
-    ax.bar(s, obs, width=0.9, alpha=0.75, label="simulation")
-    ax.plot(s, th, "o-", ms=4, lw=1.6, label="loi exacte")
+    ax.bar(s, obs, width=0.9, color="C0", alpha=0.75, label="Tirage")
+    ax.plot(s, th, "o-", ms=4, lw=1.6, color="C1", label="Loi de probabilité")
     if len(s) <= 12:                                   # étiquettes si peu de barres
         for x, h in zip(s, obs):
             ax.text(x, h, f"{h:.1f}%", ha="center", va="bottom", fontsize=9)
@@ -43,7 +43,7 @@ def draw(fig, n_dice, n_rolls):
         ax.set_xticks(s)
     ax.set_ylim(0, max(obs.max(), th.max()) * 1.15)
     ax.set_xlabel("Somme des dés")
-    ax.set_ylabel("Probabilité (%)")
+    ax.set_ylabel("Probabilité ou fréquence observée (%)")
     ax.set_title(f"{n_rolls:,} lancers de {n_dice} dé{'s' if n_dice > 1 else ''}".replace(",", " ")
                  + f"\nmoyenne observée {sommes.mean():.3f}, théorique {3.5 * n_dice:.1f}")
     ax.legend()
