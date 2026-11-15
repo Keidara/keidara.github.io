@@ -3,6 +3,9 @@
 // appelle draw() à chaque changement et affiche l'image obtenue.
 const $ = id => document.getElementById(id);
 const tool = new URLSearchParams(location.search).get("t") || "";
+// Mode administrateur : ajoute ?debug à l'adresse (ou tape localStorage.debug = "1" dans la console, une fois)
+// pour voir les détails techniques. Les visiteurs ne voient qu'un message simple.
+const debug = new URLSearchParams(location.search).has("debug") || localStorage.getItem("debug") === "1";
 let kit, params = [], timer;
 
 // Valeur d'un paramètre, lue dans son contrôle
@@ -54,9 +57,10 @@ function draw() {
   const t0 = performance.now();
   try {
     $("fig").src = "data:image/png;base64," + kit.render(JSON.stringify(v), dark());
-    $("stats").textContent = `Calcul et tracé : ${Math.round(performance.now() - t0)} ms`;
+    $("stats").textContent = debug ? `Calcul et tracé : ${Math.round(performance.now() - t0)} ms` : "";
   } catch (e) {
-    $("stats").textContent = "Erreur Python : " + String(e).split("\n").slice(-2).join(" ");
+    $("stats").textContent = debug ? "Erreur Python : " + String(e).split("\n").slice(-2).join(" ")
+                                   : "Impossible de tracer la figure.";
     console.error(e);
   }
 }
@@ -86,7 +90,8 @@ start().catch(err => {
   let detail = err && err.message;
   if (!detail) { try { detail = JSON.stringify(err); } catch (_) { detail = String(err); } }
   detail = String(detail).split("\n").slice(-3).join(" ");
-  $("stats").textContent = "Impossible de charger l'outil : " + detail +
-    " (ouvre la page via un serveur, pas en double-cliquant sur le fichier, et vérifie ta connexion.)";
+  $("stats").textContent = debug
+    ? "Impossible de charger l'outil : " + detail
+    : "Impossible de charger l'outil. Recharge la page ou réessaie plus tard.";
   console.error(err);
 });
