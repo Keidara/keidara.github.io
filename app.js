@@ -83,6 +83,8 @@ async function start() {
 }
 
 start().catch(err => {
-  $("stats").textContent = "Impossible de charger l'outil. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  const detail = String(err && err.message || err).split("\n").slice(-3).join(" ");
+  $("stats").textContent = "Impossible de charger l'outil : " + detail +
+    " (ouvre la page via un serveur, pas en double-cliquant sur le fichier, et vérifie ta connexion.)";
   console.error(err);
 });
