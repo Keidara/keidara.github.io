@@ -44,7 +44,7 @@
     <div>
       <canvas id="c" width="96" height="96" aria-label="Carte de température"></canvas>
       <div class="bar"><span>0</span><canvas id="cb" width="256" height="1"></canvas><span id="vmax">1</span></div>
-      <div id="stats" role="status">Chargement de Python…</div>
+      <div id="stats" role="status">Chargement…</div>
     </div>
 
     <div class="ctl">
@@ -150,7 +150,7 @@ $("reset").addEventListener("click", () => py.init($("init").value));
 $("play").addEventListener("click", () => { running = !running; $("play").textContent = running ? "Pause" : "Lecture"; });
 
 start().catch(err => {
-  $("stats").textContent = "Impossible de charger Python ou chaleur.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  $("stats").textContent = "Impossible de charger l’outil. Vérifier la connexion et recharger.";
   console.error(err);
 });
 </script>
