@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lancers de dés</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="des">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Lancers de dés</h1>
+
+  <p>On lance n dés à six faces et on additionne les résultats. Les barres donnent la <strong>fréquence observée</strong> de chaque somme (nombre d’occurrences divisé par le nombre de lancers) ; la courbe donne la <strong>probabilité théorique</strong>, obtenue en convoluant n fois la loi d’un seul dé.</p>
+  <div class="duo">
+    <div data-figure="distribution" data-alt="Histogramme des sommes de dés et loi théorique"></div>
+    <div class="panneau">
+      <div data-controles="n_dice n_rolls"></div>
+      <button data-action="relancer">Relancer</button>
+    </div>
+  </div>
+  <section>
+    <h2>Ce qu’on observe</h2>
+    <p>Avec peu de lancers, la simulation fluctue beaucoup. Quand leur nombre augmente, les barres se calent sur la courbe : c’est la loi des grands nombres. Dès que n grandit, la forme en cloche apparaît : c’est le théorème central limite.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
