@@ -1,23 +1,124 @@
-"""Monty Hall : garder sa porte ou en changer, sur un grand nombre de parties."""
+"""Monty Hall : à jouer (clique sur les portes) ou à simuler sur un grand nombre de parties."""
 import numpy as np
+from matplotlib.colors import to_rgba
+from matplotlib.patches import Rectangle
 from kit import *
 
 TITLE = "Problème de Monty Hall"
 INTRO = ("Derrière une porte se trouve un prix, derrière les autres des chèvres. Tu choisis une porte ; "
          "l’animateur, qui sait où est le prix, ouvre alors toutes les autres portes sauf une, en ne "
          "montrant que des chèvres. Tu peux garder ta porte ou prendre celle qui reste.\n\n"
-         "Chaque partie est simulée une par une. Garder gagne avec une fréquence proche de 1/n, changer "
-         "avec une fréquence proche de (n−1)/n. À droite, on voit les fréquences cumulées se stabiliser "
-         "quand le nombre de parties augmente.")
+         "Mode Jouer : clique sur une porte, puis sur Garder ou Changer. Le score cumulé de chaque stratégie "
+         "s’affiche en bas. Mode Simuler : chaque partie est jouée par l’ordinateur. Garder gagne avec une "
+         "fréquence proche de 1/n, changer avec une fréquence proche de (n−1)/n.")
 RANDOM = True
 PARAMS = [
-    Slider("n_doors", "Nombre de portes", 3, 100, 3),
-    Slider("n_games", "Nombre de parties", 10, 100_000, 1000, log=True),
+    Select("mode", "Mode", ["Jouer", "Simuler"], "Jouer"),
+    Slider("n_doors", "Nombre de portes", 3, 15, 3),
+    Slider("n_games", "Nombre de parties (mode Simuler)", 10, 100_000, 1000, log=True),
 ]
 rng = np.random.default_rng()
 
+# ------------------------------------------------------------------ le jeu
+# La zone de dessin mesure 10 × 6 : un clic arrive à la fonction clic() dans ces coordonnées.
+E = {}                                            # partie en cours
+SCORE = {"garder": [0, 0], "changer": [0, 0]}     # [victoires, parties jouées]
+BTN_G, BTN_C, BTN_R = (1.0, 0.45, 3.8, 0.8), (5.2, 0.45, 3.8, 0.8), (3.2, 0.45, 3.6, 0.8)   # x, y, largeur, hauteur
+Y0, HP = 2.3, 2.5                                 # bas et hauteur des portes
 
-def draw(fig, n_doors, n_games):
+
+def reset():
+    E.clear()
+
+
+def nouvelle(n):
+    E.clear()
+    E.update(n=n, prix=int(rng.integers(n)), choix=None, reste=None, phase=0, final=None, win=False)
+
+
+def portes(n):
+    pas = 9.0 / n
+    return [(0.5 + (i + 0.5) * pas, pas * 0.72) for i in range(n)]      # (centre, largeur)
+
+
+def dans(b, x, y):
+    return b[0] <= x <= b[0] + b[2] and b[1] <= y <= b[1] + b[3]
+
+
+def clic(x, y, mode, n_doors, **_):
+    if mode != "Jouer":
+        return
+    if E.get("n") != n_doors:
+        nouvelle(n_doors)
+    if E["phase"] == 0:
+        for i, (c, w) in enumerate(portes(n_doors)):
+            if abs(x - c) <= w / 2 and Y0 <= y <= Y0 + HP:
+                E["choix"] = i
+                # porte laissée fermée : celle du prix, ou une chèvre au hasard si on a déjà le prix
+                E["reste"] = E["prix"] if i != E["prix"] else (E["prix"] + int(rng.integers(1, n_doors))) % n_doors
+                E["phase"] = 1
+    elif E["phase"] == 1:
+        for strat, bouton in (("garder", BTN_G), ("changer", BTN_C)):
+            if dans(bouton, x, y):
+                E["final"] = E["choix"] if strat == "garder" else E["reste"]
+                E["win"] = E["final"] == E["prix"]
+                SCORE[strat][1] += 1
+                SCORE[strat][0] += int(E["win"])
+                E["phase"] = 2
+    elif dans(BTN_R, x, y):
+        nouvelle(n_doors)
+
+
+def jouer(fig, n):
+    if E.get("n") != n:
+        nouvelle(n)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 6)
+    ax.axis("off")
+    ph, ch, re, pr = E["phase"], E["choix"], E["reste"], E["prix"]
+    msg = ["Un prix est caché derrière une des portes. Clique sur la porte de ton choix.",
+           f"Tu as choisi la porte {(ch or 0) + 1}. L’animateur ouvre les autres portes, sauf la porte {(re or 0) + 1}, "
+           "et ne montre que des chèvres.",
+           ("Gagné !" if E["win"] else "Perdu.") + f"  Le prix était derrière la porte {pr + 1}."][ph]
+    ax.text(5, 5.5, msg, ha="center", va="center", fontsize=12)
+    fs = max(6, min(11, 70 / n))
+    for i, (c, w) in enumerate(portes(n)):
+        ouverte = ph == 2 or (ph == 1 and i not in (ch, re))
+        if ouverte:
+            face = to_rgba("#f5a524", 0.9) if i == pr else to_rgba("#8b93a1", 0.35)
+        else:
+            face = to_rgba("#a0703c")
+        bord, lw = "0.5", 1
+        if ph >= 1 and i == ch:
+            bord, lw = "#2563eb", 4
+        if ph == 2 and i == E["final"]:
+            bord, lw = ("#30a46c" if E["win"] else "#e5484d"), 4
+        ax.add_patch(Rectangle((c - w / 2, Y0), w, HP, facecolor=face, edgecolor=bord, lw=lw))
+        if ouverte:
+            ax.text(c, Y0 + HP / 2, "★" if i == pr else "chèvre", ha="center", va="center",
+                    fontsize=26 if i == pr else fs, color="white" if i == pr else None)
+        ax.text(c, Y0 - 0.3, str(i + 1) + (" (ta porte)" if ph >= 1 and i == ch and n <= 8 else ""),
+                ha="center", va="center", fontsize=fs + 1)
+
+    def bouton(b, texte, couleur):
+        ax.add_patch(Rectangle(b[:2], b[2], b[3], facecolor=couleur, edgecolor="none"))
+        ax.text(b[0] + b[2] / 2, b[1] + b[3] / 2, texte, ha="center", va="center",
+                fontsize=12, color="white", weight="bold")
+
+    if ph == 1:
+        bouton(BTN_G, f"Garder la porte {ch + 1}", "#2563eb")
+        bouton(BTN_C, f"Changer pour la porte {re + 1}", "#e5484d")
+    elif ph == 2:
+        bouton(BTN_R, "Rejouer", "#2563eb")
+    g, s = SCORE["garder"], SCORE["changer"]
+    if g[1] + s[1]:
+        ax.text(5, 0.12, f"Garder : {g[0]} gagnée(s) sur {g[1]}      Changer : {s[0]} gagnée(s) sur {s[1]}",
+                ha="center", va="center", fontsize=10)
+
+
+# ------------------------------------------------------------- la simulation
+def simuler(fig, n_doors, n_games):
     prix = rng.integers(0, n_doors, n_games)            # porte du prix
     choix = rng.integers(0, n_doors, n_games)           # première porte choisie
     # Porte laissée fermée par l'animateur : celle du prix si le joueur s'est trompé,
@@ -51,3 +152,10 @@ def draw(fig, n_doors, n_games):
     ax2.set_ylabel("Fréquence cumulée de victoires (%)")
     ax2.legend(loc="center right")
     fig.suptitle(f"{n_games:,} parties avec {n_doors} portes".replace(",", " "))
+
+
+def draw(fig, mode, n_doors, n_games):
+    if mode == "Simuler":
+        simuler(fig, n_doors, n_games)
+    else:
+        jouer(fig, n_doors)
