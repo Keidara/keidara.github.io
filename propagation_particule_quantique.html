@@ -47,7 +47,7 @@
     <div>
       <canvas id="c" width="192" height="192" aria-label="Carte de la densité de probabilité de l’électron"></canvas>
       <div class="bar"><span>0</span><canvas id="cb" width="256" height="1"></canvas><span id="vmax">1</span></div>
-      <div id="stats" role="status">Chargement de Python…</div>
+      <div id="stats" role="status">Chargement…</div>
 
       <h2>Écran de détection</h2>
       <canvas id="cs" width="1080" height="460" aria-label="Impacts sur l’écran et histogramme comparé à la prédiction"></canvas>
@@ -256,7 +256,7 @@ $("fire").addEventListener("click", () => { pending += +$("n").value; });
 $("clear").addEventListener("click", () => { py.clear(); pending = 0; lastKey = ""; });
 
 start().catch(err => {
-  $("stats").textContent = "Impossible de charger Python ou propagation_particule_quantique.py. Vérifie ta connexion, ouvre la page via un serveur (pas en double-cliquant sur le fichier) et recharge.";
+  $("stats").textContent = "Impossible de charger l’outil. Vérifier la connexion et recharger.";
   console.error(err);
 });
 </script>
