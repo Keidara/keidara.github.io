@@ -7,12 +7,12 @@ INTRO = ("Une onde progressive y = sin(kx − ωt) se déplace sans se déformer
          "Deux ondes progressives identiques qui vont en sens opposés s’additionnent en une onde "
          "stationnaire y = sin(kx) cos(ωt) : la forme ne se déplace plus, elle oscille sur place.\n\n"
          "Dans l’onde stationnaire, les nœuds (points qui ne bougent jamais) sont espacés de λ/2, et les ventres "
-         "(amplitude maximale) tombent au milieu. Le curseur de temps est exprimé en périodes T. "
+         "(amplitude maximale) tombent au milieu. Le temps est exprimé en périodes T : le bouton Lecture anime l’onde. "
          "La courbe pointillée gris-bleu montre l’onde à t = 0, pour repérer le déplacement.")
 PARAMS = [
     Select("type", "Type d’onde", ["Progressive", "Stationnaire"]),
     Slider("lam", "Longueur d’onde λ", 0.5, 3.0, 1.0, step=0.1),
-    Slider("t", "Temps t / T", 0.0, 2.0, 0.0, step=0.02),
+    Slider("t", "Temps t / T", 0.0, 2.0, 0.0, step=0.02, anim=8),
     Check("compo", "Montrer les deux ondes qui s’additionnent (stationnaire)", True),
 ]
 
