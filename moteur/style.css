@@ -29,3 +29,17 @@ button{padding:.55rem .8rem;font:inherit;border-radius:4px;border:1px solid var(
 .pills span{display:block;width:100%;padding:.35rem .8rem;border-radius:999px;text-align:center;white-space:nowrap}
 .pills input:checked+span{background:var(--acc);color:var(--onacc)}
 .pills input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ---- Mise en page libre des pages d'outils ---- */
+section{margin:2.2rem 0}
+h2{font-size:1.3rem;margin:0 0 .6rem}
+p,li{max-width:62rem}
+.duo{display:grid;grid-template-columns:minmax(0,1fr) 20rem;gap:2rem;align-items:start}
+.cote{display:grid;grid-template-columns:repeat(auto-fit,minmax(22rem,1fr));gap:1.5rem}
+@media(max-width:760px){.duo{grid-template-columns:1fr}}
+.panneau{position:sticky;top:1rem;display:flex;flex-direction:column;gap:1rem}
+[data-controles]{display:flex;flex-direction:column;gap:1rem}
+[data-figure] img{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:4px}
+[data-figure]:empty{min-height:12rem;border:1px dashed var(--line);border-radius:4px}
+.formule{padding:.5rem 1rem;border-left:4px solid var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.etat{color:var(--mut);font-size:.85rem;min-height:1.3em}

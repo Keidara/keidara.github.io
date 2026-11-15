@@ -2,14 +2,6 @@
 import numpy as np
 from kit import *
 
-TITLE = "Diffraction et fentes d’Young"
-INTRO = ("Une onde plane de longueur d’onde λ traverse une fente de largeur a (ou deux fentes séparées de d) "
-         "et forme sur un écran, à la distance D, une figure d’intensité. Pour une direction θ telle que "
-         "sin θ = x / √(x² + D²) :\n\n"
-         "une fente : I ∝ sinc²(a sin θ / λ) ;  deux fentes : I ∝ sinc²(a sin θ / λ) · cos²(π d sin θ / λ). "
-         "Les franges sont modulées par l’enveloppe de diffraction de chaque fente.\n\n"
-         "C’est la version optique de l’expérience de l’outil « Équation de Schrödinger 2D », où des électrons "
-         "forment le même type de figure.")
 PARAMS = [
     Select("mode", "Configuration", ["Fente unique", "Deux fentes"], "Deux fentes"),
     Slider("lam", "Longueur d’onde", 380, 750, 550, unit="nm"),
@@ -60,7 +52,11 @@ def schema(ax, mode, lam, a, d, D):
     ax.axis("off")
 
 
-def draw(fig, mode, lam, a, d, D, demi, env):
+def fig_schema(fig, mode, lam, a, d, D):
+    schema(fig.subplots(), mode, lam, a, d, D)
+
+
+def fig_intensite(fig, mode, lam, a, d, D, demi, env):
     lam_m, a_m, d_m = lam * 1e-9, a * 1e-6, d * 1e-6
     x = np.linspace(-demi, demi, 2000) * 1e-2            # position sur l'écran, en mètres
     sin_t = x / np.hypot(x, D)
@@ -68,8 +64,7 @@ def draw(fig, mode, lam, a, d, D, demi, env):
     diffr = np.sinc(a_m * sin_t / lam_m) ** 2            # np.sinc(u) = sin(πu)/(πu)
     I = diffr * np.cos(np.pi * d_m * sin_t / lam_m) ** 2 if mode == "Deux fentes" else diffr
 
-    ax_s, ax, ax_f = fig.subplots(3, 1, gridspec_kw={"height_ratios": [2.2, 3, 1]})
-    schema(ax_s, mode, lam, a, d, D)
+    ax, ax_f = fig.subplots(2, 1, gridspec_kw={"height_ratios": [3, 1]})
     ax.plot(x * 100, I, color="C0", label="intensité")
     if env and mode == "Deux fentes":
         ax.plot(x * 100, diffr, "--", color="C1", label="enveloppe de diffraction")

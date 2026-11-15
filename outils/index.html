@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outils</title>
+<style>
+  :root{--bg:#f6f7f9;--fg:#15181d;--mut:#5b6472;--line:#d9dde3;--acc:#2563eb;color-scheme:light dark}
+  @media(prefers-color-scheme:dark){:root{--bg:#101318;--fg:#e8eaee;--mut:#9aa3b0;--line:#2a303a;--acc:#7aa2ff}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:64rem;margin:0 auto;padding:3rem 1.25rem}
+  h1{font-size:2.4rem;line-height:1.15;margin:0 0 .5rem;letter-spacing:-.02em;border-left:6px solid var(--acc);padding-left:.8rem}
+  .intro{color:var(--mut);margin:0 0 1.5rem}
+  /* chaque section a sa couleur, définie par --c sur la balise <details> */
+  details{margin:1rem 0;border:1px solid color-mix(in srgb,var(--c) 35%,var(--line));border-radius:8px;
+          background:color-mix(in srgb,var(--c) 7%,transparent)}
+  summary{display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;cursor:pointer;font-size:1.15rem;font-weight:650;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸";color:var(--c);transition:transform .15s}
+  details[open] summary::before{transform:rotate(90deg)}
+  summary small{margin-left:auto;color:var(--mut);font-weight:400;font-size:.85rem}
+  summary:focus-visible,a.tool:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  .grid{display:flex;flex-direction:column;gap:.6rem;padding:0 1rem 1rem 2.2rem}
+  a.tool{display:block;padding:.8rem 1rem;background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--c);
+         border-radius:6px;text-decoration:none;color:inherit}
+  a.tool:hover{border-color:var(--c)}
+  a.tool:hover strong{color:var(--c)}
+  strong{display:block;font-size:1.05rem}
+  span.d{color:var(--mut);font-size:.9rem;line-height:1.4;display:block;margin-top:.2rem}
+</style>
+</head>
+<body>
+<main>
+  <h1>Outils</h1>
+  <p class="intro">Des petits outils interactifs de calcul et de visualisation, qui tournent directement dans le navigateur.</p>
+
+  <details open style="--c:#30a46c"><summary>Probabilités <small>2 outils</small></summary><div class="grid">
+    <a class="tool" href="./outils/des/des.html"><strong>Lancers de dés</strong>
+      <span class="d">Somme de n dés : fréquences observées contre probabilités théoriques.</span></a>
+    <a class="tool" href="./outils/monty_hall/monty_hall.html"><strong>Problème de Monty Hall</strong>
+      <span class="d">Garder ou changer de porte : la simulation confirme 1/n contre (n−1)/n.</span></a>
+  </div></details>
+
+  <details open style="--c:#e5702a"><summary>Thermodynamique <small>1 outil</small></summary><div class="grid">
+    <a class="tool" href="./outils/chaleur/chaleur.html"><strong>Équation de la chaleur 2D</strong>
+      <span class="d">Diffusion de la chaleur sur une plaque. Dessine à la souris, change les conditions aux limites.</span></a>
+  </div></details>
+
+  <details open style="--c:#8e4ec6"><summary>Optique <small>1 outil</small></summary><div class="grid">
+    <a class="tool" href="./outils/diffraction/diffraction.html"><strong>Diffraction et fentes d’Young</strong>
+      <span class="d">Une ou deux fentes : figure d’intensité et couleur sur l’écran.</span></a>
+  </div></details>
+
+  <details open style="--c:#0f9fb0"><summary>Ondes et signal <small>1 outil</small></summary><div class="grid">
+    <a class="tool" href="./outils/ondes/ondes.html"><strong>Ondes progressive et stationnaire</strong>
+      <span class="d">Animation, nœuds, ventres et superposition de deux ondes.</span></a>
+  </div></details>
+
+  <details open style="--c:#3e63dd"><summary>Physique quantique <small>1 outil</small></summary><div class="grid">
+    <a class="tool" href="./outils/schrodinger/schrodinger.html"><strong>Équation de Schrödinger 2D</strong>
+      <span class="d">Paquet d’onde d’un électron face à une ou deux fentes : l’interférence émerge impact par impact.</span></a>
+  </div></details>
+  <!-- Pour ajouter un outil : copie un bloc <a class="tool"> dans la bonne section. Lien : ./outils/NOM/NOM.html -->
+</main>
+</body>
+</html>

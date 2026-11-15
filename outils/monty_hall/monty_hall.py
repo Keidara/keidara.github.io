@@ -4,18 +4,10 @@ from matplotlib.colors import to_rgba
 from matplotlib.patches import Rectangle
 from kit import *
 
-TITLE = "Problème de Monty Hall"
-INTRO = ("Derrière une porte se trouve un prix, derrière les autres des chèvres. Tu choisis une porte ; "
-         "l’animateur, qui sait où est le prix, ouvre alors toutes les autres portes sauf une, en ne "
-         "montrant que des chèvres. Tu peux garder ta porte ou prendre celle qui reste.\n\n"
-         "Mode Jouer : clique sur une porte, puis sur Garder ou Changer. Le score cumulé de chaque stratégie "
-         "s’affiche en bas. Mode Simuler : chaque partie est jouée par l’ordinateur. Garder gagne avec une "
-         "fréquence proche de 1/n, changer avec une fréquence proche de (n−1)/n.")
-RANDOM = True
 PARAMS = [
-    Select("mode", "Mode", ["Jouer", "Simuler"], "Jouer"),
     Slider("n_doors", "Nombre de portes", 3, 15, 3),
-    Slider("n_games", "Nombre de parties (mode Simuler)", 10, 100_000, 1000, log=True),
+    Slider("n_doors_sim", "Nombre de portes", 3, 100, 3),
+    Slider("n_games", "Nombre de parties", 10, 100_000, 1000, log=True),
 ]
 rng = np.random.default_rng()
 
@@ -45,9 +37,7 @@ def dans(b, x, y):
     return b[0] <= x <= b[0] + b[2] and b[1] <= y <= b[1] + b[3]
 
 
-def clic(x, y, mode, n_doors, **_):
-    if mode != "Jouer":
-        return
+def clic_jeu(x, y, n_doors):
     if E.get("n") != n_doors:
         nouvelle(n_doors)
     if E["phase"] == 0:
@@ -69,7 +59,8 @@ def clic(x, y, mode, n_doors, **_):
         nouvelle(n_doors)
 
 
-def jouer(fig, n):
+def fig_jeu(fig, n_doors):
+    n = n_doors
     if E.get("n") != n:
         nouvelle(n)
     ax = fig.add_axes([0, 0, 1, 1])
@@ -118,7 +109,8 @@ def jouer(fig, n):
 
 
 # ------------------------------------------------------------- la simulation
-def simuler(fig, n_doors, n_games):
+def fig_simulation(fig, n_doors_sim, n_games):
+    n_doors = n_doors_sim
     prix = rng.integers(0, n_doors, n_games)            # porte du prix
     choix = rng.integers(0, n_doors, n_games)           # première porte choisie
     # Porte laissée fermée par l'animateur : celle du prix si le joueur s'est trompé,
@@ -153,9 +145,3 @@ def simuler(fig, n_doors, n_games):
     ax2.legend(loc="center right")
     fig.suptitle(f"{n_games:,} parties avec {n_doors} portes".replace(",", " "))
 
-
-def draw(fig, mode, n_doors, n_games):
-    if mode == "Simuler":
-        simuler(fig, n_doors, n_games)
-    else:
-        jouer(fig, n_doors)
