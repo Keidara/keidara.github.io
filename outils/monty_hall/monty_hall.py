@@ -123,8 +123,8 @@ def fig_simulation(fig, n_doors_sim, n_games):
     freq = np.array([garde.mean(), change.mean()]) * 100
 
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [1, 1.6]})
-    ax1.bar([0, 1], freq, width=0.6, color=["C0", "C1"], alpha=0.75, label="fréquence observée")
-    ax1.plot([0, 1], th, "D", color="C3", label="probabilité théorique")
+    ax1.bar([0, 1], freq, width=0.6, color=["C0", "C1"], alpha=0.75, label="Fréquence du tirage")
+    ax1.plot([0, 1], th, "D", color="C3", label="Probabilité théorique")
     for x, f in enumerate(freq):
         ax1.text(x, f + 2, f"{f:.1f}%", ha="center", fontsize=10)
     ax1.set_xticks([0, 1])
