@@ -4,8 +4,9 @@ from kit import *
 
 TITLE = "Lancers de dés"
 INTRO = ("On lance n dés à six faces et on additionne les résultats. Les barres montrent la "
-         "fréquence observée de chaque somme ; la courbe rouge est la loi exacte, obtenue en "
-         "convoluant n fois la loi d’un dé.\n\n"
+         "fréquence observée de chaque somme.\n"
+         "La courbe rouge est la loi de probabilité exacte, obtenue en "
+         "convoluant n fois la loi d’un seul dé.\n\n"
          "Avec peu de lancers, la simulation fluctue beaucoup. Quand leur nombre augmente, les barres "
          "se calent sur la courbe (loi des grands nombres), et la forme en cloche apparaît dès "
          "que n grandit (théorème central limite).")
