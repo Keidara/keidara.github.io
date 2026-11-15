@@ -1,0 +1,22 @@
+/* Style commun des outils (même charte que chaleur.html et propagation_particule_quantique.html) */
+:root{--bg:#f6f7f9;--fg:#15181d;--mut:#5b6472;--line:#d9dde3;--acc:#2563eb;--onacc:#fff;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#101318;--fg:#e8eaee;--mut:#9aa3b0;--line:#2a303a;--acc:#7aa2ff;--onacc:#101318}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:60rem;margin:0 auto;padding:1.5rem 1.25rem 3rem}
+a{color:var(--acc)}
+h1{font-size:1.8rem;margin:.6rem 0 1.2rem;letter-spacing:-.02em}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 17rem;gap:1.5rem;align-items:start}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+#fig{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:4px;min-height:12rem}
+#stats{margin-top:.4rem;color:var(--mut);font-size:.85rem;font-variant-numeric:tabular-nums}
+.ctl,#controls{display:flex;flex-direction:column;gap:1rem}
+label{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem}
+label .row{display:flex;justify-content:space-between}
+label output{color:var(--mut);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--acc)}
+select{padding:.4rem;font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:4px}
+.check{flex-direction:row;align-items:center;gap:.5rem}
+button{padding:.55rem .8rem;font:inherit;border-radius:4px;border:1px solid var(--acc);background:var(--acc);color:var(--onacc);cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.note{margin-top:2rem;max-width:42rem;color:var(--mut);font-size:.92rem}
