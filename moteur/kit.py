@@ -5,7 +5,13 @@ Un outil (outils/xxx/xxx.py) définit :
     fig_nom(fig, a, b): dessine la figure « nom » ; ses arguments (après fig) sont des paramètres de PARAMS.
                         Elle n'est redessinée que si l'un d'eux change.
     clic_nom(x, y, a) : (facultatif) appelée quand on clique sur la figure « nom » (x dans [0, largeur], y vers le haut)
-    fonction()        : (facultatif) appelable par un bouton <button data-action="fonction"> de la page
+    fonction(a)       : (facultatif) appelable par un bouton <button data-action="fonction"> de la page
+Simulations animées (canvas) « nom » :
+    init_nom(a, b)    : (ré)initialise la simulation ; rappelée si a ou b change. Peut renvoyer la liste des figures à redessiner.
+    frame_nom(lecture, a) : avance la simulation (si lecture) et renvoie (image RGBA N×N×4, infos) avec
+                        infos = dict(taille=N, fini=bool, texte="…", figures=[…à redessiner])
+    souris_nom(x, y, a)   : (facultatif) clic ou glissé sur le canvas, x et y dans [0, 1] (y vers le haut)
+    barre_nom()       : (facultatif) table de couleurs (1, 256, 4) affichée sous le canvas
 La page HTML (outils/xxx/xxx.html) décide de l'emplacement des figures et des contrôles.
 """
 import base64, inspect, io, json
@@ -18,11 +24,12 @@ __all__ = ["Slider", "Select", "Check"]
 _tool = {}
 
 
-def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0):
-    """anim : durée (en secondes) d'un balayage complet si le curseur doit pouvoir s'animer."""
+def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0, actif=None):
+    """anim : durée (en secondes) d'un balayage complet si le curseur doit pouvoir s'animer.
+    actif : (nom_d_un_autre_parametre, [valeurs]) : le curseur n'est actif que pour ces valeurs."""
     est_entier = all(isinstance(x, int) for x in (lo, hi, step))
     return dict(kind="slider", name=name, label=label, lo=lo, hi=hi, val=val,
-                step=step, log=log, unit=unit, anim=anim, int=est_entier)
+                step=step, log=log, unit=unit, anim=anim, actif=actif, int=est_entier)
 
 
 def Select(name, label, options, val=None):
@@ -53,7 +60,9 @@ def _args(f, saut):
 def describe():
     ns = _tool["ns"]
     figs = {nom: dict(uses=_args(f, 1), click=callable(ns.get("clic_" + nom))) for nom, f in _figures().items()}
-    return json.dumps(dict(params=ns.get("PARAMS", []), figures=figs))
+    sims = {n[5:]: dict(init=_args(f, 0), souris=callable(ns.get("souris_" + n[5:])), barre=callable(ns.get("barre_" + n[5:])))
+            for n, f in ns.items() if n.startswith("init_") and callable(f)}
+    return json.dumps(dict(params=ns.get("PARAMS", []), figures=figs, simulations=sims))
 
 
 def _valeurs(values_json):
@@ -90,8 +99,40 @@ def click(nom, fx, fy, values_json, w=10, h=6):
         f(fx * w, (1 - fy) * h, **{k: v[k] for k in _args(f, 2)})
 
 
-def action(nom):
+def action(nom, values_json="{}"):
     """Bouton <button data-action="nom"> : appelle la fonction nom() de l'outil si elle existe."""
     f = _tool["ns"].get(nom)
     if callable(f) and not nom.startswith("_"):
-        f()
+        v = _valeurs(values_json)
+        f(**{k: v[k] for k in _args(f, 0)})
+
+
+# ---- simulations animées
+_infos = {}
+
+
+def _appel(f, v, saut=0, **plus):
+    return f(**{k: plus[k] if k in plus else v[k] for k in _args(f, saut)})
+
+
+def init(nom, values_json):
+    r = _appel(_tool["ns"]["init_" + nom], _valeurs(values_json))
+    return json.dumps(r or [])
+
+
+def frame(nom, values_json, lecture):
+    img, _infos[nom] = _appel(_tool["ns"]["frame_" + nom], _valeurs(values_json), lecture=lecture)
+    return img
+
+
+def infos(nom):
+    return json.dumps(_infos[nom])
+
+
+def souris(nom, x, y, values_json):
+    f = _tool["ns"]["souris_" + nom]
+    f(x, y, **{k: _valeurs(values_json)[k] for k in _args(f, 2)})
+
+
+def barre(nom):
+    return _tool["ns"]["barre_" + nom]()
