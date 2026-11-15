@@ -1,23 +1,24 @@
 // Colle JavaScript commune à tous les outils : tu n'as pas besoin de l'ouvrir.
-// Elle charge Python, lit PARAMS dans outils/<nom>.py, crée les curseurs,
+// Elle charge Python, lit PARAMS dans outils/<nom>.py, crée les contrôles,
 // appelle draw() à chaque changement et affiche l'image obtenue.
 const $ = id => document.getElementById(id);
 const tool = new URLSearchParams(location.search).get("t") || "";
-// Mode administrateur : ajoute ?debug à l'adresse (ou tape localStorage.debug = "1" dans la console, une fois)
-// pour voir les détails techniques. Les visiteurs ne voient qu'un message simple.
+// Mode administrateur : ajoute ?debug à l'adresse (ou localStorage.debug = "1" dans la console)
 const debug = new URLSearchParams(location.search).has("debug") || localStorage.getItem("debug") === "1";
-let kit, params = [], timer;
+let kit, params = [], timer, playing = false, last = 0;
 
 // Valeur d'un paramètre, lue dans son contrôle
 function value(p) {
-  const el = $("p_" + p.name);
-  if (p.kind === "check") return el.checked;
-  if (p.kind === "select") return el.value;
-  const s = +el.value;                                   // curseur : position -> valeur
+  if (p.kind === "check") return $("p_" + p.name).checked;
+  if (p.kind === "select") {                                // pastilles (radio) ou menu
+    const r = document.querySelector(`input[name="p_${p.name}"]:checked`);
+    return r ? r.value : $("p_" + p.name).value;
+  }
+  const s = +$("p_" + p.name).value;                        // curseur : position -> valeur
   return p.log ? p.lo * Math.pow(p.hi / p.lo, s / 1000) : s;
 }
 
-function show(p) {                                       // texte à côté du curseur
+function show(p) {                                          // texte à côté du curseur
   if (p.kind !== "slider") return;
   let v = value(p);
   v = p.int ? Math.round(v) : v;
@@ -27,36 +28,67 @@ function show(p) {                                       // texte à côté du c
 function build() {
   const box = $("controls");
   for (const p of params) {
-    const l = document.createElement("label");
-    if (p.kind === "slider") {
-      const min = p.log ? 0 : p.lo, max = p.log ? 1000 : p.hi, step = p.log ? 1 : p.step;
-      const v0 = p.log ? 1000 * Math.log(p.val / p.lo) / Math.log(p.hi / p.lo) : p.val;
-      l.innerHTML = `<span class="row">${p.label} <output id="o_${p.name}"></output></span>
-        <input id="p_${p.name}" type="range" min="${min}" max="${max}" step="${step}" value="${v0}">`;
-    } else if (p.kind === "select") {
-      l.innerHTML = `${p.label}<select id="p_${p.name}">` +
-        p.options.map(o => `<option${o === p.val ? " selected" : ""}>${o}</option>`).join("") + "</select>";
+    let l;
+    if (p.kind === "select" && p.options.length <= 4) {     // peu de choix : pastilles exclusives
+      l = document.createElement("div");
+      l.className = "grp";
+      l.innerHTML = `<span>${p.label}</span><div class="pills" role="radiogroup" aria-label="${p.label}">` +
+        p.options.map(o => `<label><input type="radio" name="p_${p.name}" value="${o}"${o === p.val ? " checked" : ""}><span>${o}</span></label>`).join("") + "</div>";
     } else {
-      l.className = "check";
-      l.innerHTML = `<input id="p_${p.name}" type="checkbox"${p.val ? " checked" : ""}> ${p.label}`;
+      l = document.createElement("label");
+      if (p.kind === "slider") {
+        const min = p.log ? 0 : p.lo, max = p.log ? 1000 : p.hi;
+        const step = p.log ? 1 : p.anim > 0 ? "any" : p.step;
+        const v0 = p.log ? 1000 * Math.log(p.val / p.lo) / Math.log(p.hi / p.lo) : p.val;
+        l.innerHTML = `<span class="row">${p.label} <output id="o_${p.name}"></output></span>
+          <input id="p_${p.name}" type="range" min="${min}" max="${max}" step="${step}" value="${v0}">`;
+      } else if (p.kind === "select") {
+        l.innerHTML = `${p.label}<select id="p_${p.name}">` +
+          p.options.map(o => `<option${o === p.val ? " selected" : ""}>${o}</option>`).join("") + "</select>";
+      } else {
+        l.className = "check";
+        l.innerHTML = `<input id="p_${p.name}" type="checkbox"${p.val ? " checked" : ""}> ${p.label}`;
+      }
     }
     box.append(l);
     l.addEventListener("input", () => { show(p); schedule(); });
     show(p);
   }
+  if (params.some(p => p.anim > 0)) {                       // bouton Lecture/Pause si un curseur est animable
+    const b = document.createElement("button");
+    b.id = "play"; b.textContent = "▶ Lecture"; b.onclick = toggle;
+    box.prepend(b);
+  }
+}
+
+// Animation : fait avancer le curseur animable, en boucle, et redessine en basse définition
+function tick(now) {
+  if (!playing) return;
+  const p = params.find(q => q.anim > 0), el = $("p_" + p.name);
+  const dt = last ? Math.min((now - last) / 1000, 0.25) : 0;
+  last = now;
+  let v = +el.value + dt * (p.hi - p.lo) / p.anim;
+  if (v > p.hi) v = p.lo + (v - p.hi) % (p.hi - p.lo);
+  el.value = v; show(p); draw(true);
+  requestAnimationFrame(tick);
+}
+function toggle() {
+  playing = !playing; last = 0;
+  $("play").textContent = playing ? "⏸ Pause" : "▶ Lecture";
+  if (playing) requestAnimationFrame(tick); else draw();    // à l'arrêt : image nette
 }
 
 const dark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => kit && draw());
 
-function schedule() { clearTimeout(timer); timer = setTimeout(draw, 40); }   // évite de recalculer à chaque pixel
+function schedule() { clearTimeout(timer); timer = setTimeout(() => draw(), 40); }   // évite de recalculer à chaque pixel
 
-function draw() {
+function draw(rapide = false) {
   const v = {};
   for (const p of params) v[p.name] = value(p);
   const t0 = performance.now();
   try {
-    $("fig").src = "data:image/png;base64," + kit.render(JSON.stringify(v), dark());
+    $("fig").src = "data:image/png;base64," + kit.render(JSON.stringify(v), dark(), rapide);
     $("stats").textContent = debug ? `Calcul et tracé : ${Math.round(performance.now() - t0)} ms` : "";
   } catch (e) {
     $("stats").textContent = debug ? "Erreur Python : " + String(e).split("\n").slice(-2).join(" ")
@@ -82,7 +114,7 @@ async function start() {
   $("titre").textContent = info.title;
   $("note").innerHTML = info.intro.split("\n\n").map(t => `<p>${t}</p>`).join("");
   build();
-  if (info.random) { $("again").hidden = false; $("again").onclick = draw; }
+  if (info.random) { $("again").hidden = false; $("again").onclick = () => draw(); }
   draw();
 }
 
