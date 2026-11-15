@@ -43,16 +43,37 @@ def load(code):
 def describe():
     ns = _tool["ns"]
     return json.dumps(dict(title=ns["TITLE"], intro=ns.get("INTRO", ""),
-                           random=ns.get("RANDOM", False), params=ns["PARAMS"]))
+                           random=ns.get("RANDOM", False), click="clic" in ns,
+                           params=ns["PARAMS"]))
+
+
+def _valeurs(values_json):
+    v = json.loads(values_json)
+    for p in _tool["ns"]["PARAMS"]:
+        if p["kind"] == "slider" and p["int"]:
+            v[p["name"]] = int(round(v[p["name"]]))
+    return v
+
+
+def click(fx, fy, values_json):
+    """Clic sur la figure (fx, fy : fractions de l'image, fy compté depuis le haut).
+    Transmis à clic(x, y, **paramètres) de l'outil, avec x dans [0, 10] et y dans [0, 6] (y vers le haut)."""
+    f = _tool["ns"].get("clic")
+    if f:
+        f(fx * 10, (1 - fy) * 6, **_valeurs(values_json))
+
+
+def reset():
+    """Bouton « Relancer » : appelle reset() de l'outil s'il existe."""
+    f = _tool["ns"].get("reset")
+    if f:
+        f()
 
 
 def render(values_json, dark, rapide=False):
     """Appelle draw() et renvoie la figure en PNG encodé en base64."""
     ns = _tool["ns"]
-    v = json.loads(values_json)
-    for p in ns["PARAMS"]:
-        if p["kind"] == "slider" and p["int"]:
-            v[p["name"]] = int(round(v[p["name"]]))
+    v = _valeurs(values_json)
     fg, grid = ("#e8eaee", "#3a4150") if dark else ("#15181d", "#d9dde3")
     couleurs = ["#7aa2ff" if dark else "#2563eb", "#e5484d", "#30a46c", "#f5a524"]
     rc = {"text.color": fg, "axes.labelcolor": fg, "axes.edgecolor": grid,

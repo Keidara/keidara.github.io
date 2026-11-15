@@ -6,6 +6,7 @@ const tool = new URLSearchParams(location.search).get("t") || "";
 // Mode administrateur : ajoute ?debug à l'adresse (ou localStorage.debug = "1" dans la console)
 const debug = new URLSearchParams(location.search).has("debug") || localStorage.getItem("debug") === "1";
 let kit, params = [], timer, playing = false, last = 0;
+if (debug) $("stats").textContent = "Chargement de Python et de matplotlib…";   // info réservée au mode debug
 
 // Valeur d'un paramètre, lue dans son contrôle
 function value(p) {
@@ -69,7 +70,7 @@ function tick(now) {
   last = now;
   let v = +el.value + dt * (p.hi - p.lo) / p.anim;
   if (v > p.hi) v = p.lo + (v - p.hi) % (p.hi - p.lo);
-  el.value = v; show(p); draw(true);
+  el.value = v; show(p); draw();          // draw(true) = basse définition, plus rapide
   requestAnimationFrame(tick);
 }
 function toggle() {
@@ -114,7 +115,17 @@ async function start() {
   $("titre").textContent = info.title;
   $("note").innerHTML = info.intro.split("\n\n").map(t => `<p>${t}</p>`).join("");
   build();
-  if (info.random) { $("again").hidden = false; $("again").onclick = () => draw(); }
+  $("fig").alt = info.title;
+  if (info.random) { $("again").hidden = false; $("again").onclick = () => { kit.reset(); draw(); }; }
+  if (info.click) {                                         // outil cliquable (ex. portes de Monty Hall)
+    $("fig").style.cursor = "pointer";
+    $("fig").addEventListener("click", e => {
+      const r = $("fig").getBoundingClientRect(), v = {};
+      for (const p of params) v[p.name] = value(p);
+      kit.click((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height, JSON.stringify(v));
+      draw();
+    });
+  }
   draw();
 }
 
