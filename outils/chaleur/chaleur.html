@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Équation de la chaleur 2D</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="chaleur">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Équation de la chaleur 2D</h1>
+
+  <p>Clique ou glisse sur la plaque pour la chauffer, puis regarde la chaleur se diffuser.</p>
+  <div class="duo">
+    <div>
+      <canvas data-simulation="chaleur" width="96" height="96" aria-label="Carte de température de la plaque"></canvas>
+      <canvas data-barre="chaleur"></canvas>
+      <div class="stats" data-stats="chaleur" role="status"></div>
+    </div>
+    <div class="panneau">
+      <div class="btns">
+        <button data-lecture="chaleur">Pause</button>
+        <button class="sec" data-reinit="chaleur">Réinitialiser</button>
+      </div>
+      <div data-controles="*"></div>
+    </div>
+  </div>
+  <section>
+    <h2>Le modèle</h2>
+    <p>La température u(x, y, t) obéit à l’équation de la chaleur, où α est la diffusivité :</p>
+    <p class="formule">∂u/∂t = α (∂²u/∂x² + ∂²u/∂y²)</p>
+    <p>Elle est résolue par différences finies explicites sur une grille de 96 × 96. Le curseur de diffusivité règle le nombre α·Δt/Δx², qui doit rester inférieur ou égal à 0,25 pour que le schéma soit stable : au-delà, les valeurs divergent.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde de matière 2D : électron et fentes</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="schrodinger">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Onde de matière 2D : électron et fentes</h1>
+
+  <p>Un paquet d’onde d’électron arrive sur un mur percé d’une ou deux fentes. L’interférence émerge impact par impact sur l’écran de détection.</p>
+  <div class="duo">
+    <div>
+      <canvas data-simulation="onde" width="192" height="192" aria-label="Carte de la densité de probabilité de l’électron"></canvas>
+      <canvas data-barre="onde"></canvas>
+      <div class="stats" data-stats="onde" role="status"></div>
+      <section>
+        <h2>Écran de détection</h2>
+        <div data-figure="ecran" data-taille="10x6" data-alt="Impacts sur l’écran et histogramme comparé à la prédiction"></div>
+      </section>
+    </div>
+    <div class="panneau">
+      <div class="btns">
+        <button data-lecture="onde">Pause</button>
+        <button class="sec" data-reinit="onde">Réinitialiser</button>
+      </div>
+      <div data-controles="mode a d k0 sy vitesse auto"></div>
+      <div data-controles="n_impacts"></div>
+      <div class="btns">
+        <button data-action="tirer">Tirer les impacts</button>
+        <button class="sec" data-action="effacer" data-cible="ecran">Effacer</button>
+      </div>
+    </div>
+  </div>
+  <section>
+    <h2>Le modèle</h2>
+    <p>On résout l’équation de Schrödinger (unités ħ = m = 1) par la méthode « split-step » (FFT) sur une grille de 192 × 192 :</p>
+    <p class="formule">i ∂ψ/∂t = −½ ∇²ψ + V ψ</p>
+    <p>Le mur est un potentiel très haut, percé d’une ou deux fentes ; les bords du domaine sont absorbants. Modifier un paramètre relance la simulation et efface les impacts.</p>
+    <p>L’écran (pointillés cyan) n’intervient pas dans la dynamique : il enregistre le flux de probabilité qui le traverse, intégré sur toute la durée. Cela donne la loi de probabilité d’impact, tracée en rouge. « Tirer les impacts » lance la simulation si besoin, puis tire des électrons indépendants selon cette loi. Les fentes sont supposées infinies selon z, donc cette coordonnée est tirée uniformément sur la vue de face.</p>
+    <p>La couleur représente √|ψ|² pour garder visibles les zones peu intenses.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
