@@ -5,6 +5,8 @@ Un outil (outils/xxx/xxx.py) définit :
     fig_nom(fig, a, b): dessine la figure « nom » ; ses arguments (après fig) sont des paramètres de PARAMS.
                         Elle n'est redessinée que si l'un d'eux change.
     clic_nom(x, y, a) : (facultatif) appelée quand on clique sur la figure « nom » (x dans [0, largeur], y vers le haut)
+    fichier_nom(octets): (facultatif) reçoit le fichier choisi dans <input type="file" data-fichier="nom"> ; peut renvoyer
+                        la liste des figures à redessiner
     fonction(a)       : (facultatif) appelable par un bouton <button data-action="fonction"> de la page
 Simulations animées (canvas) « nom » :
     init_nom(a, b)    : (ré)initialise la simulation ; rappelée si a ou b change. Peut renvoyer la liste des figures à redessiner.
@@ -136,3 +138,9 @@ def souris(nom, x, y, values_json):
 
 def barre(nom):
     return _tool["ns"]["barre_" + nom]()
+
+
+def fichier(nom, octets):
+    """Fichier choisi par le visiteur : transmis à fichier_<nom>(octets) de l'outil."""
+    data = octets.to_py() if hasattr(octets, "to_py") else octets
+    return json.dumps(_tool["ns"]["fichier_" + nom](bytes(data)) or [])

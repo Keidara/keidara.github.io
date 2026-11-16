@@ -50,3 +50,4 @@ label:has(input:disabled){opacity:.45}
 .btns{display:flex;gap:.5rem}
 .btns button{flex:1}
 button.sec{background:var(--bg);color:var(--fg);border-color:var(--line)}
+input[type=file]{font:inherit;max-width:100%}

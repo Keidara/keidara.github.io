@@ -2,7 +2,7 @@
 // Il charge Python, lit PARAMS et les fonctions fig_xxx() du fichier .py de l'outil, puis remplit les
 // emplacements marqués dans la page HTML : data-controles="a b" (contrôles), data-figure="xxx" (figure),
 // data-simulation="xxx" (canvas animé) avec data-lecture / data-reinit / data-barre / data-stats,
-// data-action="nom" (bouton), data-etat (zone de message).
+// data-action="nom" (bouton), data-fichier="nom" (choix d'un fichier), data-etat (zone de message).
 const MOTEUR = document.currentScript.src;
 const $$ = s => [...document.querySelectorAll(s)];
 const outil = document.body.dataset.outil || "";
@@ -207,6 +207,17 @@ async function demarrer() {
     kit.action(b.dataset.action, JSON.stringify(valeurs()));
     const cibles = b.dataset.cible ? b.dataset.cible.split(/\s+/) : null;   // figures à redessiner (par défaut toutes)
     figs.filter(f => !cibles || cibles.includes(f.nom)).forEach(f => dessiner(f));
+  }));
+  $$("[data-fichier]").forEach(inp => inp.addEventListener("change", async () => {   // fichier choisi par le visiteur
+    const fic = inp.files[0];
+    if (!fic) return;
+    try {
+      const octets = new Uint8Array(await fic.arrayBuffer());
+      JSON.parse(kit.fichier(inp.dataset.fichier, octets)).forEach(n => figs.filter(g => g.nom === n).forEach(g => dessiner(g)));
+    } catch (e) {
+      etat(debug ? "Erreur : " + String(e).split("\n").slice(-2).join(" ") : "Impossible de lire ce fichier.");
+      console.error(e);
+    }
   }));
   figs.forEach(f => dessiner(f));
   if (sims.length) requestAnimationFrame(boucle);
