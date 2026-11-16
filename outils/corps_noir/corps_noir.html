@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rayonnement du corps noir</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="corps_noir">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Rayonnement du corps noir</h1>
+
+  <p>Tout objet chaud émet de la lumière. Un « corps noir » idéal absorbe tout ce qu’il reçoit et ne rayonne que par sa température : son spectre ne dépend de rien d’autre. C’est une bonne approximation des étoiles, d’un métal chauffé au rouge ou du filament d’une ampoule.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Le spectre</h2>
+        <div data-figure="spectre" data-taille="10x5" data-alt="Spectre de corps noir à la température choisie"></div>
+      </section>
+      <section>
+        <h2>La couleur perçue</h2>
+        <div data-figure="couleur" data-taille="10x3.2" data-alt="Couleur d’un corps noir et échelle de températures"></div>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Les trois lois</h2>
+    <p>La loi de Planck donne la luminance spectrale en fonction de la longueur d’onde λ et de la température T :</p>
+    <p class="formule">B(λ, T) = 2hc² / λ⁵ · 1 / (exp(hc / λkT) − 1)</p>
+    <p>La loi de Wien situe le pic du spectre : plus un corps est chaud, plus ce pic est vers les courtes longueurs d’onde.</p>
+    <p class="formule">λmax · T = 2,898 · 10⁻³ m·K</p>
+    <p>La loi de Stefan-Boltzmann donne la puissance totale rayonnée par mètre carré de surface :</p>
+    <p class="formule">P / S = σ T⁴</p>
+    <p>Le Soleil (5 772 K) a son pic dans le vert, à 502 nm ; l’ampoule à incandescence (2 700 K) a le sien dans l’infrarouge, vers 1 070 nm, ce qui explique son faible rendement lumineux : l’essentiel de la puissance part en chaleur.</p>
+  </section>
+  <section>
+    <h2>Sur la couleur affichée</h2>
+    <p>La couleur est obtenue en pondérant le spectre par les fonctions colorimétriques CIE 1931 (approchées par des gaussiennes), puis en convertissant en sRGB. Seule la <strong>teinte</strong> est représentée : la luminosité est normalisée, alors qu’un corps à 800 K émet bien moins de lumière visible qu’un corps à 6 000 K. Les teintes très bleues ou très rouges sont aussi limitées par le gamut de l’écran.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

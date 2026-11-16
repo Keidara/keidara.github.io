@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaînes de désintégration radioactive</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="desintegration">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Chaînes de désintégration radioactive</h1>
+
+  <p>Un noyau radioactif se désintègre au hasard, à un instant imprévisible. Mais sur un grand nombre de noyaux, la population suit une loi précise. Quand le noyau fils est lui aussi radioactif, on obtient une chaîne : chaque espèce naît de la désintégration de la précédente.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Nombre de noyaux de chaque espèce</h2>
+        <div data-figure="courbes" data-alt="Populations de chaque espèce au cours du temps"></div>
+      </section>
+      <section>
+        <h2>Activités</h2>
+        <div data-figure="activites" data-taille="10x5" data-alt="Activité de chaque noyau radioactif"></div>
+      </section>
+    </div>
+    <div class="panneau">
+      <div data-controles="*"></div>
+      <button data-action="relancer" data-cible="courbes">Relancer la simulation</button>
+    </div>
+  </div>
+  <section>
+    <h2>Les équations</h2>
+    <p>Chaque espèce i a une constante de désintégration λᵢ = ln 2 / T½. Le parent ne fait que disparaître ; chaque descendant gagne ce que perd l’espèce précédente et perd à son tour :</p>
+    <p class="formule">dN₁/dt = −λ₁N₁ &nbsp;&nbsp;&nbsp; dNᵢ/dt = λᵢ₋₁Nᵢ₋₁ − λᵢNᵢ</p>
+    <p>Les courbes pleines sont la solution exacte de ce système (équations de Bateman). Les points proviennent d’une simulation : pour chaque noyau, on tire au hasard l’instant de sa désintégration, puis celui de la suivante, et ainsi de suite. Avec peu de noyaux, les fluctuations sont visibles ; avec beaucoup, les points se confondent avec les courbes.</p>
+  </section>
+  <section>
+    <h2>Équilibres</h2>
+    <p>Quand le parent vit bien plus longtemps que ses descendants (uranium 238), les activités finissent par s’égaler : c’est l’<strong>équilibre séculaire</strong>, visible comme des courbes qui se rejoignent sur le graphique des activités. Quand le parent vit seulement un peu plus longtemps que le fils (molybdène 99 et technétium 99m, utilisés en imagerie médicale), on parle d’<strong>équilibre transitoire</strong> : le fils passe par un maximum, puis décroît avec la période du parent.</p>
+    <p>Simplifications : on suppose que chaque désintégration mène à l’espèce suivante de la liste, sans branchements secondaires. La chaîne de l’uranium 238 est abrégée : après l’U-234, tous les descendants jusqu’au plomb 206 sont regroupés dans une seule espèce. Avec l’uranium 238, la simulation ne montre presque rien des descendants, car leur population attendue est inférieure à un noyau : c’est l’équilibre séculaire qui exige un nombre énorme de noyaux.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
