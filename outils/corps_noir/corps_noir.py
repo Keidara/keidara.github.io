@@ -77,6 +77,7 @@ def fig_spectre(fig, T, ref):
     ax.set_ylim(0, ymax * 1.12)
     ax.set_xlabel("Longueur d’onde (nm)")
     ax.set_ylabel("Luminance spectrale (kW · m⁻² · sr⁻¹ · nm⁻¹)")
+    ax.set_xscale("log")
     ax.set_title(f"{T:,.0f} K ({T - 273.15:,.0f} °C) : puissance rayonnée {SIGMA * T ** 4:.3g} W/m²".replace(",", " "))
     ax.legend(loc="upper right")
 
