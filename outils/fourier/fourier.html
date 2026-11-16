@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Séries de Fourier et analyse d’images</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="fourier">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Séries de Fourier et analyse d’images</h1>
+
+  <p>Toute fonction périodique raisonnable peut s’écrire comme une somme de sinusoïdes : ses harmoniques. Ajouter des harmoniques, c’est ajouter des détails. La même idée, en deux dimensions, permet d’analyser et de filtrer une image.</p>
+  <section>
+    <h2>Décomposition d’un signal périodique</h2>
+    <div class="duo">
+      <div>
+        <div data-figure="serie" data-taille="10x5" data-alt="Signal et somme de ses premières harmoniques"></div>
+        <div data-figure="harmoniques" data-taille="10x3.5" data-alt="Amplitude de chaque harmonique"></div>
+      </div>
+      <div class="panneau"><div data-controles="signal n_harm"></div></div>
+    </div>
+    <p>Un signal de période T s’écrit comme une somme de sinusoïdes de fréquences multiples de 1/T :</p>
+    <p class="formule">f(t) = a₀ + Σ [ aₙ cos(2π n t/T) + bₙ sin(2π n t/T) ]</p>
+    <p>Lance la lecture pour voir la somme se rapprocher du signal. Le triangle, continu, converge très vite : ses harmoniques décroissent comme 1/n². Le carré et la dent de scie ont des sauts : leurs harmoniques décroissent en 1/n seulement, et la somme déborde toujours d’environ 9 % de part et d’autre du saut, quel que soit le nombre d’harmoniques (phénomène de Gibbs). Les impulsions ont une valeur moyenne non nulle, la composante continue a₀.</p>
+  </section>
+  <section>
+    <h2>Analyse et filtrage d’une image</h2>
+    <div class="duo">
+      <div data-figure="image" data-taille="10x3.8" data-alt="Image, spectre de Fourier filtré et image reconstruite"></div>
+      <div class="panneau">
+        <label>Choisir une image (facultatif)
+          <input type="file" data-fichier="image" accept="image/*"></label>
+        <button class="sec" data-action="image_defaut" data-cible="image">Image d’essai</button>
+        <div data-controles="filtre rayon largeur doux"></div>
+      </div>
+    </div>
+    <p>La transformée de Fourier 2D décompose l’image en ondes planes. Le spectre (au milieu) place les basses fréquences, qui portent les grandes taches, au centre, et les hautes fréquences, qui portent les contours et les détails fins, vers l’extérieur. Un motif périodique, comme les rayures de l’image d’essai, donne des pics bien isolés.</p>
+    <p>Un filtre passe-bas ne garde que le centre : l’image devient floue. Un passe-haut ne garde que les détails : seuls les contours subsistent. Une coupure franche produit des oscillations autour des contours (là encore le phénomène de Gibbs) ; elles diminuent avec le bord adouci. L’image choisie reste dans ton navigateur : elle n’est envoyée nulle part.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
