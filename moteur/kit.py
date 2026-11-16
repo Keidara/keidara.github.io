@@ -77,7 +77,7 @@ def render(nom, values_json, dark, rapide=False, w=10, h=6):
     """Appelle fig_<nom>() et renvoie la figure en PNG encodé en base64."""
     f, v = _figures()[nom], _valeurs(values_json)
     fg, grid = ("#e8eaee", "#3a4150") if dark else ("#15181d", "#d9dde3")
-    couleurs = ["#7aa2ff" if dark else "#2563eb", "#e5484d", "#30a46c", "#f5a524"]
+    couleurs = ["#7aa2ff" if dark else "#2563eb", "#e5484d", "#30a46c", "#f5a524", "#a66bd9", "#2bb3c4"]
     rc = {"text.color": fg, "axes.labelcolor": fg, "axes.edgecolor": grid,
           "xtick.color": fg, "ytick.color": fg, "grid.color": grid,
           "axes.spines.top": False, "axes.spines.right": False,
