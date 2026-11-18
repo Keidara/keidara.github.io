@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaz de billes 2D</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="gaz_billes">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Gaz de billes 2D</h1>
+
+  <p>Des billes rebondissent sur les parois d’une boîte et se heurtent entre elles, sans perdre d’énergie. Rien n’impose la répartition de leurs vitesses ni de leurs positions, et pourtant elles évoluent toujours vers le même état d’équilibre. C’est le point de départ de la physique statistique.</p>
+  <div class="duo">
+    <div>
+      <canvas data-simulation="gaz" width="320" height="320" aria-label="Billes en mouvement dans une boîte"></canvas>
+      <div class="stats" data-stats="gaz" role="status"></div>
+      <section>
+        <h2>Distribution des vitesses</h2>
+        <div data-figure="vitesses" data-taille="10x4.5" data-alt="Histogramme des vitesses des billes et loi de Maxwell"></div>
+        <p>Les barres donnent la répartition des vitesses des billes, la courbe la loi de Maxwell à deux dimensions, calculée à partir de l’énergie totale. Elle ne dépend que de la température du gaz, définie par k<sub>B</sub>T = m⟨v²⟩/2 :</p>
+        <p class="formule">p(v) = (m v / k<sub>B</sub>T) · exp(−m v² / 2k<sub>B</sub>T)</p>
+      </section>
+      <section>
+        <h2>Mélange et équilibre thermique</h2>
+        <div data-figure="evolution" data-taille="10x5" data-alt="Part des billes restées à gauche et énergie cinétique de chaque moitié en fonction du temps"></div>
+        <p>La courbe du haut suit les billes qui étaient dans la moitié gauche au départ : quelle part y est encore ? Elle tend vers 1/2, puisque tout le gaz se répartit uniformément. La courbe du bas compare l’énergie cinétique moyenne de chaque moitié.</p>
+      </section>
+    </div>
+    <div class="panneau">
+      <div class="btns">
+        <button data-lecture="gaz">Pause</button>
+        <button class="sec" data-reinit="gaz">Réinitialiser</button>
+      </div>
+      <div data-controles="*"></div>
+    </div>
+  </div>
+  <section>
+    <h2>Les quatre situations de départ</h2>
+    <p><strong>Vitesses égales :</strong> les billes sont réparties au hasard et toutes vont à la même vitesse, dans des directions différentes. Après quelques collisions, les vitesses se dispersent et l’histogramme se cale sur la loi de Maxwell.</p>
+    <p><strong>Détente :</strong> toutes les billes commencent dans la moitié gauche, comme un gaz qui vient d’être libéré. Il envahit la boîte et ne revient jamais spontanément dans un coin.</p>
+    <p><strong>Chaud / froid :</strong> la moitié gauche est agitée, la droite beaucoup moins (couleurs : bleu pour les billes lentes, rouge pour les rapides). Les collisions égalisent les énergies : c’est la mise à l’équilibre thermique.</p>
+    <p><strong>Mélange :</strong> deux gaz de couleurs différentes, séparés au départ, se mélangent. Ici, la couleur indique l’origine de chaque bille, non plus sa vitesse.</p>
+  </section>
+  <section>
+    <h2>Ce qu’on observe</h2>
+    <p>À chaque instant, le mouvement est parfaitement déterministe, et pourtant les situations de départ ordonnées ne se reforment pas : parmi toutes les configurations possibles, presque toutes ressemblent à l’équilibre. Cette irréversibilité apparente est d’autant plus nette que le nombre de billes est grand. Avec 20 billes, la part restée à gauche fluctue visiblement autour de 1/2 ; avec 300, elle y reste presque collée, car les fluctuations relatives diminuent comme 1/√N.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

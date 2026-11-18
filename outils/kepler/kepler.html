@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbites de Kepler</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="kepler">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Orbites de Kepler</h1>
+
+  <p>Une planète tourne autour du Soleil, qui l’attire avec une force en 1/r². Kepler avait établi trois lois à partir des observations ; Newton les a ensuite retrouvées comme conséquences de la gravitation. Les distances sont en unités astronomiques (1 UA = distance Terre-Soleil) et les durées en années ; le Soleil est supposé beaucoup plus massif que la planète, donc immobile.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>L’orbite</h2>
+        <div data-figure="orbite" data-taille="10x6" data-alt="Orbite elliptique d’une planète autour du Soleil, avec douze secteurs d’aires égales"></div>
+        <p>Choisis une orbite connue ou règle toi-même le demi-grand axe a et l’excentricité e, puis déplace le curseur de temps ou lance la lecture. La flèche indique la direction de la vitesse, et sa longueur varie avec elle.</p>
+      </section>
+      <section>
+        <h2>Première et deuxième lois</h2>
+        <p>Première loi : l’orbite est une ellipse dont le Soleil occupe l’un des foyers. L’excentricité e mesure son aplatissement : e = 0 donne un cercle, e proche de 1 une ellipse très allongée. Le point le plus proche du Soleil est le périhélie, à la distance a(1 − e), le plus éloigné est l’aphélie, à a(1 + e).</p>
+        <p>Deuxième loi : le segment Soleil-planète balaie des aires égales en des temps égaux. Les douze secteurs colorés sont balayés chacun en T/12 : leurs formes sont très différentes, mais leurs aires sont identiques. La planète va donc plus vite près du Soleil que loin de lui.</p>
+        <p class="formule">dA/dt = ½ r² dθ/dt = constante</p>
+        <p>La vitesse en un point de l’orbite se déduit de la conservation de l’énergie :</p>
+        <p class="formule">v² = GM (2/r − 1/a)</p>
+      </section>
+      <section>
+        <h2>Énergie</h2>
+        <div data-figure="energies" data-taille="10x4.5" data-alt="Énergies cinétique, potentielle et totale en fonction du temps"></div>
+        <p>L’énergie totale vaut −GM/2a : elle ne dépend que du demi-grand axe, pas de l’excentricité. Deux orbites de même a, circulaire ou très allongée, ont la même énergie et la même période. Au périhélie, l’énergie potentielle est la plus basse et l’énergie cinétique la plus haute ; c’est l’inverse à l’aphélie.</p>
+      </section>
+      <section>
+        <h2>Troisième loi</h2>
+        <div data-figure="troisieme" data-taille="10x5" data-alt="Période en fonction du demi-grand axe pour les planètes du système solaire"></div>
+        <p>Le carré de la période est proportionnel au cube du demi-grand axe. Avec a en UA et T en années, le coefficient vaut 1 :</p>
+        <p class="formule">T² = 4π² a³ / GM &nbsp;&nbsp;&nbsp; soit &nbsp;&nbsp;&nbsp; T² = a³</p>
+        <p>Tous les points des planètes tombent sur la même droite en échelle logarithmique. L’orbite que tu règles s’y place aussi : la comète de Halley, qui a un demi-grand axe d’environ 18 UA, revient tous les 75 ans environ.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
