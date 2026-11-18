@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Particule chargée dans des champs E et B</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="particule_chargee">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Particule chargée dans des champs E et B</h1>
+
+  <p>Une particule de charge q et de masse m subit la force de Lorentz. Le champ magnétique B, dirigé selon z, courbe sa trajectoire sans jamais la faire accélérer ; le champ électrique E la pousse et lui fournit de l’énergie. Leur combinaison produit des mouvements très variés : cercles, hélices, cycloïdes.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>La trajectoire</h2>
+        <div data-figure="trajectoire" data-taille="10x6" data-alt="Trajectoire de la particule vue de dessus, mouvement selon z et énergie cinétique"></div>
+        <p>La vue de dessus (à gauche) montre le mouvement perpendiculaire à B. Les deux graphiques de droite montrent le mouvement selon B et l’énergie cinétique. Le carré gris est le point de départ, le point orange la particule à l’instant choisi.</p>
+        <p class="formule">m dv/dt = q (E + v × B)</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Ce qu’on peut observer</h2>
+    <p><strong>Champ magnétique seul (E = 0).</strong> La force est toujours perpendiculaire à la vitesse : elle ne travaille pas, donc l’énergie cinétique reste constante. Dans le plan perpendiculaire à B, la particule décrit un cercle de rayon r = m v⊥ / (|q| B), parcouru à la pulsation cyclotron ω<sub>c</sub> = |q| B / m, qui ne dépend pas de la vitesse. Si la particule a aussi une vitesse selon B, rien ne la freine ni ne l’accélère dans cette direction : la trajectoire est une hélice. Les deux charges tournent en sens opposés.</p>
+    <p><strong>Champ électrique perpendiculaire à B.</strong> Le mouvement est la superposition du cercle précédent et d’une dérive à vitesse constante, perpendiculaire à E et à B :</p>
+    <p class="formule">v<sub>d</sub> = E × B / B²</p>
+    <p>Cette vitesse ne dépend ni de la charge, ni de la masse, ni de la vitesse initiale : les particules positives et négatives dérivent ensemble dans le même sens. Si la particule part de l’origine avec une vitesse initiale nulle, la trajectoire est une cycloïde. L’énergie cinétique oscille, car la particule gagne de l’énergie quand elle avance dans le sens de E et en perd quand elle revient.</p>
+    <p><strong>Champ électrique parallèle à B.</strong> Il accélère la particule selon z, comme en l’absence de champ magnétique : la hélice s’étire de plus en plus.</p>
+    <p>Les grandeurs sont données dans des unités sans dimension (m = |q| = 1). Pour B = 0, il ne reste que l’accélération par E.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

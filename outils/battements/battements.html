@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battements entre deux fréquences</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="battements">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Battements entre deux fréquences</h1>
+
+  <p>Quand deux sons de fréquences très proches sont émis ensemble, on n’entend pas deux notes : on entend une seule note dont le volume monte et descend régulièrement. Ce sont les battements, que les accordeurs utilisent pour régler deux cordes à l’unisson.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Les deux ondes et leur somme</h2>
+        <div data-figure="zoom" data-taille="10x5" data-alt="Deux ondes sinusoïdales et leur somme sur quelques millisecondes"></div>
+        <p>Sur quelques millisecondes, les deux ondes sont presque identiques, mais leur écart de fréquence les décale peu à peu : tantôt elles s’additionnent (interférence constructive), tantôt elles s’annulent (interférence destructive).</p>
+      </section>
+      <section>
+        <h2>L’enveloppe des battements</h2>
+        <div data-figure="battements" data-taille="10x4.5" data-alt="Somme des deux ondes sur plusieurs secondes et son enveloppe"></div>
+        <p>Sur une durée plus longue, l’amplitude de la somme oscille lentement entre un maximum et un minimum. Avec deux ondes de même amplitude, on a exactement :</p>
+        <p class="formule">cos(2πf₁t) + cos(2πf₂t) = 2 cos(π(f₂ − f₁)t) · cos(π(f₁ + f₂)t)</p>
+        <p>Le deuxième facteur est une oscillation rapide à la fréquence moyenne (f₁ + f₂)/2, c’est la note entendue. Le premier est l’enveloppe lente. Le volume passe par un maximum chaque fois que l’enveloppe atteint ±1, donc deux fois par période de cette enveloppe : la fréquence de battement est |f₂ − f₁|.</p>
+        <p>Si les amplitudes sont différentes, les battements sont moins marqués : l’amplitude oscille entre la différence et la somme des deux amplitudes, et ne s’annule plus.</p>
+      </section>
+    </div>
+    <div class="panneau">
+      <div data-controles="*"></div>
+      <button id="ecouter" class="sec">Écouter (4 s)</button>
+    </div>
+  </div>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script>
+// Bouton « Écouter » : joue les deux fréquences réglées par les curseurs.
+document.getElementById("ecouter").addEventListener("click", () => {
+  try {
+    const f1 = +document.getElementById("p_f1").value, df = +document.getElementById("p_df").value,
+          a2 = +document.getElementById("p_a2").value;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const maitre = ctx.createGain();
+    maitre.gain.value = 0.15;
+    maitre.connect(ctx.destination);
+    [[f1, 1], [f1 + df, a2]].forEach(([f, a]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = f;
+      g.gain.value = a / 2;
+      o.connect(g);
+      g.connect(maitre);
+      o.start();
+      o.stop(ctx.currentTime + 4);
+    });
+    setTimeout(() => ctx.close(), 4500);
+  } catch (e) { /* son indisponible : on ne fait rien */ }
+});
+</script>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
