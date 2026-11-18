@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marche aléatoire</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="marche_aleatoire">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Marche aléatoire</h1>
+
+  <p>Un marcheur part de l’origine et, à chaque pas, choisit sa direction au hasard : à gauche ou à droite sur une ligne, vers l’un des quatre voisins dans le plan. Chaque trajectoire est imprévisible, mais un grand nombre de marcheurs obéit à des lois précises.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Quelques trajectoires</h2>
+        <div data-figure="trajectoires" data-taille="10x6" data-alt="Trajectoires de marcheurs aléatoires"></div>
+        <p>Chaque couleur est un marcheur. Les trajectoires s’éloignent de l’origine, mais lentement : leur éloignement typique est de l’ordre de √n après n pas, matérialisé par les pointillés.</p>
+      </section>
+      <section>
+        <h2>Où arrivent les marcheurs</h2>
+        <div data-figure="distribution" data-taille="10x5" data-alt="Répartition des positions finales et loi théorique"></div>
+        <p>On lance beaucoup de marcheurs et on regarde où ils se trouvent au bout de n pas. Sur une ligne, la position suit une loi normale centrée en 0, d’écart-type √n (seules les positions de même parité que n sont possibles). Dans le plan, c’est la distance à l’origine qui est tracée : elle suit la loi de Rayleigh.</p>
+        <p class="formule">1D : p(x) ≈ exp(−x²/2n) / √(2πn) &nbsp;&nbsp;&nbsp; 2D : p(r) ≈ (2r/n) exp(−r²/n)</p>
+      </section>
+      <section>
+        <h2>Combien s’éloignent-ils en moyenne</h2>
+        <div data-figure="msd" data-taille="10x5" data-alt="Écart quadratique moyen en fonction du nombre de pas"></div>
+        <p>La moyenne du carré de la distance à l’origine est égale au nombre de pas, quelle que soit la dimension. En échelle logarithmique, c’est une droite de pente 1.</p>
+        <p class="formule">⟨r²⟩ = n</p>
+      </section>
+    </div>
+    <div class="panneau">
+      <div data-controles="*"></div>
+      <button data-action="relancer">Relancer le tirage</button>
+    </div>
+  </div>
+  <section>
+    <h2>Ce qu’on observe</h2>
+    <p>Avec peu de marcheurs, les histogrammes fluctuent beaucoup ; quand leur nombre augmente, ils se calent sur la courbe théorique (loi des grands nombres). Quand le nombre de pas augmente, la répartition tend vers une cloche : c’est le théorème central limite appliqué à une somme de pas indépendants.</p>
+    <p>La croissance de ⟨r²⟩ proportionnelle au temps est la signature de la <strong>diffusion</strong>, la même que celle d’une goutte d’encre dans l’eau. L’équation de la chaleur de l’outil « Équation de la chaleur 2D » en est la description à l’échelle d’un grand nombre de marcheurs.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

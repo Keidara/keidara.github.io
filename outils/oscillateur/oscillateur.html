@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oscillateur amorti et forcé</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="oscillateur">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Oscillateur amorti et forcé</h1>
+
+  <p>Une masse accrochée à un ressort oscille à sa fréquence propre f₀ = ω₀/2π. Les frottements l’amortissent ; une force périodique peut au contraire l’entretenir, et l’entretenir très efficacement si elle a la bonne fréquence : c’est la résonance. Le temps est exprimé en périodes propres T₀.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Le mouvement</h2>
+        <div data-figure="mouvement" data-taille="10x6" data-alt="Masse au bout d’un ressort et position en fonction du temps"></div>
+        <p>Déplace le curseur de temps ou lance la lecture pour voir la masse bouger. En mode forcé, la courbe commence par un régime transitoire, qui s’éteint, puis suit le régime permanent en pointillés.</p>
+        <p class="formule">x″ + 2ζω₀ x′ + ω₀² x = ω₀² F cos(ωt) &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; ζ = c / (2√(km))</p>
+      </section>
+      <section>
+        <h2>Les trois régimes d’amortissement</h2>
+        <p>Si ζ &lt; 1 (sous-amorti), la masse oscille avec une amplitude qui décroît comme e<sup>−ζω₀t</sup>, à la pseudo-période T₀ / √(1 − ζ²). Si ζ = 1 (amortissement critique), elle revient à l’équilibre le plus vite possible sans osciller. Si ζ &gt; 1 (sur-amorti), elle revient sans osciller, et d’autant plus lentement que l’amortissement est fort.</p>
+      </section>
+      <section>
+        <h2>Portrait de phase</h2>
+        <div data-figure="phase" data-taille="10x5" data-alt="Vitesse en fonction de la position"></div>
+        <p>Chaque point représente l’état de la masse (position, vitesse). Sans amortissement, le point décrit une ellipse, un cercle avec ces unités ; avec amortissement, il spirale vers l’origine. En mode forcé, la trajectoire finit par s’enrouler sur une ellipse qui ne dépend plus des conditions initiales.</p>
+      </section>
+      <section>
+        <h2>Résonance</h2>
+        <div data-figure="resonance" data-taille="10x6" data-alt="Amplitude et phase du régime permanent en fonction de la fréquence de la force"></div>
+        <p>En régime permanent, la masse oscille à la fréquence de la force, avec une amplitude X et un retard de phase φ :</p>
+        <p class="formule">X = (F₀/k) / √((1 − r²)² + (2ζr)²) &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; r = ω/ω₀</p>
+        <p>Plus l’amortissement est faible, plus le pic est haut et étroit. Pour ζ &lt; 1/√2, l’amplitude est maximale en r = √(1 − 2ζ²), très proche de 1 si ζ est petit, et le facteur de qualité vaut à peu près Q = 1/(2ζ). Le retard de phase passe de 0 (basses fréquences, la masse suit la force) à π (hautes fréquences, la masse est en opposition de phase), en valant π/2 à r = 1.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
