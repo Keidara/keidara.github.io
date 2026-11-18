@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Effet tunnel</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="tunnel">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Effet tunnel</h1>
+
+  <p>En mécanique classique, une particule dont l’énergie E est inférieure à la hauteur V₀ d’une barrière ne peut pas la franchir. En mécanique quantique, son onde pénètre dans la barrière et une partie de la probabilité ressort de l’autre côté : c’est l’effet tunnel.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Un paquet d’onde rencontre la barrière</h2>
+        <div data-figure="paquet" data-taille="10x5" data-alt="Densité de probabilité d’un paquet d’onde face à une barrière de potentiel"></div>
+        <p>Lance la lecture du temps. Le paquet arrive par la gauche, se scinde en une partie réfléchie et une partie transmise. Devant la barrière, l’onde incidente et l’onde réfléchie interfèrent : ce sont les franges que l’on voit.</p>
+      </section>
+      <section>
+        <h2>Combien traverse ?</h2>
+        <div data-figure="transmission" data-taille="10x5" data-alt="Probabilité de transmission en fonction de l’énergie"></div>
+        <p>La courbe donne la probabilité de transmission d’une onde plane d’énergie E. Pour E &lt; V₀, elle décroît exponentiellement avec la largeur a de la barrière :</p>
+        <p class="formule">T ≈ exp(−2κa) &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; κ = √(2(V₀ − E))</p>
+        <p>Pour E &gt; V₀, on s’attend à une transmission totale, mais elle présente des oscillations : la barrière réfléchit une partie de l’onde, sauf pour certaines énergies où les réflexions sur les deux bords s’annulent (résonances).</p>
+        <p>Le point est la mesure faite sur le paquet simulé. Il s’écarte un peu de la courbe, car un paquet n’a pas une énergie unique : il en regroupe tout un intervalle, et la transmission varie sur cet intervalle. L’écart est surtout visible quand la courbe varie vite.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Le modèle</h2>
+    <p>On résout l’équation de Schrödinger à une dimension (unités ħ = m = 1) par la méthode « split-step » (FFT) sur une grille de 1 024 points :</p>
+    <p class="formule">i ∂ψ/∂t = −½ ∂²ψ/∂x² + V(x) ψ</p>
+    <p>Les bords du domaine sont absorbants. La probabilité transmise est obtenue en intégrant au cours du temps le flux de probabilité à travers un point situé juste après la barrière.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

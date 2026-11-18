@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modèle d’Ising 2D</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="ising">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Modèle d’Ising 2D</h1>
+
+  <p>Chaque case est un petit aimant qui pointe vers le haut ou vers le bas. Deux voisins préfèrent s’aligner, mais l’agitation thermique tend à les désordonner. Selon la température, le système s’ordonne ou non : c’est une transition de phase.</p>
+  <div class="duo">
+    <div>
+      <canvas class="pixel" data-simulation="ising" width="96" height="96" aria-label="Grille de spins : orange vers le haut, bleu foncé vers le bas"></canvas>
+      <div class="stats" data-stats="ising" role="status"></div>
+      <section>
+        <h2>Aimantation et énergie</h2>
+        <div data-figure="historique" data-taille="10x5" data-alt="Évolution de l’aimantation et de l’énergie, et courbe théorique d’Onsager"></div>
+      </section>
+    </div>
+    <div class="panneau">
+      <div class="btns">
+        <button data-lecture="ising">Pause</button>
+        <button class="sec" data-reinit="ising">Réinitialiser</button>
+      </div>
+      <div data-controles="*"></div>
+    </div>
+  </div>
+  <section>
+    <h2>Le modèle</h2>
+    <p>L’énergie d’une configuration est la somme, sur les paires de voisins, de −s·s′ (où chaque spin vaut +1 ou −1), à laquelle s’ajoute un terme de champ −h·s :</p>
+    <p class="formule">E = − Σ sᵢ sⱼ − h Σ sᵢ</p>
+    <p>On l’explore avec l’algorithme de Metropolis : on tire une case, on calcule la variation d’énergie ΔE si on la retourne, puis on la retourne si ΔE ≤ 0, ou avec la probabilité exp(−ΔE/T) sinon. Un balayage met à jour toutes les cases une fois.</p>
+    <h2>Ce qu’on observe</h2>
+    <p>En dessous de la température critique T<sub>c</sub> ≈ 2,269, le système s’aimante spontanément : des domaines de même orientation grossissent jusqu’à envahir la grille. Au-dessus, l’aimantation reste nulle en moyenne. Près de T<sub>c</sub>, les fluctuations sont à toutes les échelles et le système évolue très lentement. Le champ h brise la symétrie et favorise un sens.</p>
+    <p>La courbe verte, due à Onsager (1944), donne l’aimantation exacte pour un réseau infini et h = 0. Le point orange est la valeur mesurée sur la grille, moyennée sur les dernières images. La grille est périodique et finie (96 × 96), d’où de petits écarts autour de T<sub>c</sub>.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

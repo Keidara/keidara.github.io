@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbitales de l’atome d’hydrogène</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="orbitales">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Orbitales de l’atome d’hydrogène</h1>
+
+  <p>L’état d’un électron dans l’atome d’hydrogène est décrit par trois nombres quantiques : n (la couche, qui fixe l’énergie), l (la forme) et m (l’orientation). La fonction d’onde est le produit d’une partie radiale et d’une partie angulaire.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Où se trouve l’électron</h2>
+        <div data-figure="coupe" data-taille="10x6" data-alt="Coupe de la densité de probabilité de l’électron"></div>
+        <p>La figure montre la densité de probabilité dans un plan contenant l’axe z (plus clair = plus probable). La couleur représente la racine de la densité, pour que les zones peu intenses restent visibles. Les distances sont en rayons de Bohr a₀.</p>
+      </section>
+      <section>
+        <h2>À quelle distance du noyau</h2>
+        <div data-figure="radial" data-taille="10x4" data-alt="Densité de probabilité radiale"></div>
+        <p>La densité radiale P(r) = r² R(r)² est la probabilité de trouver l’électron à la distance r, toutes directions confondues. Son maximum n’est pas en r = 0 : le volume disponible croît comme r² alors que l’amplitude décroît avec r. La distance moyenne vaut :</p>
+        <p class="formule">⟨r⟩ = ½ [ 3n² − l(l + 1) ] a₀</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Les nombres quantiques</h2>
+    <p>Le nombre n vaut 1, 2, 3… ; l va de 0 à n − 1 (s, p, d, f, g pour l = 0, 1, 2, 3, 4) ; m va de −l à +l. Si tu choisis des valeurs incompatibles (par exemple l ≥ n), l’outil les ramène à la valeur autorisée la plus proche.</p>
+    <p>Le nombre de nœuds suit une règle simple : n − l − 1 nœuds radiaux (les anneaux sombres) et l surfaces nodales angulaires (les plans ou cônes sombres). La forme de la densité ne dépend que de |m| : m et −m donnent la même figure dans ce plan.</p>
+    <p class="formule">ψₙₗₘ(r, θ, φ) = Rₙₗ(r) · Yₗᵐ(θ, φ)</p>
+    <p>Les orbitales des manuels (px, py, pz, dxy…) sont des combinaisons réelles de ces états de m opposés. Elles ont la même densité radiale, mais leur coupe dans un plan peut différer de celle de m.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
