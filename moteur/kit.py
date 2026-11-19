@@ -89,7 +89,7 @@ def render(nom, values_json, dark, rapide=False, w=10, h=6):
         fig = Figure(figsize=(w, h), dpi=75 if rapide else 110, constrained_layout=True)
         f(fig, **{k: v[k] for k in _args(f, 1)})
         buf = io.BytesIO()
-        fig.savefig(buf, format="png", transparent=True)
+        fig.savefig(buf, format="png", transparent=True, pil_kwargs={"compress_level": 1})
     return base64.b64encode(buf.getvalue()).decode()
 
 
