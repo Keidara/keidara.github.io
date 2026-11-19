@@ -16,8 +16,8 @@ Simulations animées (canvas) « nom » :
     barre_nom()       : (facultatif) table de couleurs (1, 256, 4) affichée sous le canvas
 La page HTML (outils/xxx/xxx.html) décide de l'emplacement des figures et des contrôles.
 """
-import base64, inspect, io, json
-import matplotlib, time
+import base64, inspect, io, json, time
+import matplotlib
 matplotlib.use("agg")
 from cycler import cycler
 from matplotlib.figure import Figure
@@ -25,12 +25,6 @@ from matplotlib.figure import Figure
 __all__ = ["Slider", "Select", "Check"]
 _tool = {}
 
-t0 = time.perf_counter()
-f(fig, **{k: v[k] for k in _args(f, 1)})
-t1 = time.perf_counter()
-buf = io.BytesIO()
-fig.savefig(buf, format="png", transparent=True)
-print(f"{nom} : tracé {1000*(t1-t0):.0f} ms, mise en page + rendu + PNG {1000*(time.perf_counter()-t1):.0f} ms")
 
 def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0, actif=None):
     """anim : durée (en secondes) d'un balayage complet si le curseur doit pouvoir s'animer.
@@ -93,9 +87,13 @@ def render(nom, values_json, dark, rapide=False, w=10, h=6):
           "axes.prop_cycle": cycler(color=couleurs)}
     with matplotlib.rc_context(rc):
         fig = Figure(figsize=(w, h), dpi=75 if rapide else 110, constrained_layout=True)
+        t0 = time.perf_counter()
         f(fig, **{k: v[k] for k in _args(f, 1)})
+        t1 = time.perf_counter()
         buf = io.BytesIO()
         fig.savefig(buf, format="png", transparent=True)
+        t2 = time.perf_counter()
+    print(f"{nom} : tracé {1000 * (t1 - t0):.0f} ms, mise en page + rendu + PNG {1000 * (t2 - t1):.0f} ms")
     return base64.b64encode(buf.getvalue()).decode()
 
 
