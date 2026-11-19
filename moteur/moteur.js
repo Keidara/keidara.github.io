@@ -137,21 +137,36 @@ function boucle(now) {
   }
 }
 
-// ---- animation : fait avancer le curseur animable, en boucle
+// ---- animation : fait avancer le curseur animable, en boucle, sur une grille de N positions
+const nbPas = p => p.int ? p.hi - p.lo : Math.min(400, Math.max(100, Math.round(p.anim * 30)));
+let acc = 0;
+function enCache(p, k, N) {
+  const v = { ...valeurs(), [p.name]: p.lo + k * (p.hi - p.lo) / N };
+  return concernees([p.name]).every(f => cache.has(cle(f, v, true)));
+}
 function tick(now) {
   if (!enCours) return;
-  const p = enCours, el = document.getElementById("p_" + p.name);
+  const p = enCours, el = document.getElementById("p_" + p.name), N = nbPas(p);
   const dt = dernier ? Math.min((now - dernier) / 1000, 0.25) : 0;
   dernier = now;
-  let v = +el.value + dt * (p.hi - p.lo) / p.anim;
-  if (v > p.hi) v = p.lo + (v - p.hi) % (p.hi - p.lo);
-  el.value = v; montrer(p);
-  concernees([p.name]).forEach(f => dessiner(f));           // dessiner(f, true) = basse définition, plus rapide
+  acc += dt * N / p.anim;
+  const n = Math.floor(acc);
+  acc -= n;
+  if (n >= 1) {
+    const k0 = Math.round((+el.value - p.lo) / (p.hi - p.lo) * N);
+    let k = k0 + n;
+    if (!enCache(p, k % N, N)) { k = k0 + 1; acc = 0; }   // image à calculer : on avance d'un pas, régulièrement
+    k = k % N;                                              // boucle
+    el.value = p.lo + k * (p.hi - p.lo) / N; montrer(p);
+    concernees([p.name]).forEach(f => dessiner(f, true, true));   // basse définition + cache
+  }
   requestAnimationFrame(tick);
 }
 function basculer(p, b) {
-  if (enCours === p) { enCours = null; b.textContent = "▶ Lecture"; }
-  else { enCours = p; dernier = 0; b.textContent = "⏸ Pause"; requestAnimationFrame(tick); }
+  if (enCours === p) {
+    enCours = null; b.textContent = "▶ Lecture";
+    concernees([p.name]).forEach(f => dessiner(f));         // retour en pleine définition à l'arrêt
+  } else { enCours = p; dernier = 0; acc = 0; b.textContent = "⏸ Pause"; requestAnimationFrame(tick); }
 }
 
 // ---- démarrage
