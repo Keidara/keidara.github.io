@@ -77,35 +77,13 @@ function creer(p, boite) {
 
 // ---- dessin
 const concernees = noms => figs.filter(f => f.uses.some(u => noms.includes(u)));
-const cache = new Map(), CACHE_MAX = 800;
-const cle = (f, v, rapide) => f.nom + "|" + (dark() ? 1 : 0) + "|" + (rapide ? 1 : 0) + "|" +
-  JSON.stringify(f.uses.map(u => typeof v[u] === "number" ? +v[u].toPrecision(6) : v[u]));
 
-function dessiner(f, rapide = false, memo = false) {
-  const t0 = performance.now();
-  try {
-    const v = valeurs(), k = memo ? cle(f, v, rapide) : null;
-    let png = memo ? cache.get(k) : undefined;
-    const vu = png !== undefined;
-    if (!vu) {
-      png = kit.render(f.nom, JSON.stringify(v), dark(), rapide, f.w, f.h);
-      if (memo) {
-        cache.set(k, png);
-        if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);   // on retire le plus ancien
-      }
-    }
-    f.img.src = "data:image/png;base64," + png;
-    if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms${vu ? " (cache)" : ""}`);
-  } catch (e) {
-    etat(debug ? `Erreur dans fig_${f.nom} : ` + String(e).split("\n").slice(-2).join(" ") : "Impossible de tracer une figure.");
-    console.error(e);
-  }
-}
 function planifier(nom) {                                   // évite de recalculer à chaque pixel
   attente.add(nom); clearTimeout(timer);
   timer = setTimeout(() => { const n = [...attente]; attente.clear(); concernees(n).forEach(f => dessiner(f));
     sims.filter(s => s.init.some(u => n.includes(u))).forEach(initialiser); }, 40);
 }
+veille()
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => kit && figs.forEach(f => dessiner(f)));
 
 // ---- simulations animées (canvas calculé par Python)
@@ -138,36 +116,100 @@ for (const s of sims) {
   }
 }
 
-// ---- animation : fait avancer le curseur animable, en boucle, sur une grille de N positions
-const nbPas = p => p.int ? p.hi - p.lo : Math.min(400, Math.max(100, Math.round(p.anim * 30)));
-let acc = 0;
-function enCache(p, k, N) {
-  const v = { ...valeurs(), [p.name]: p.lo + k * (p.hi - p.lo) / N };
-  return concernees([p.name]).every(f => cache.has(cle(f, v, true)));
+// ---- cache d'images pour les curseurs animés, rempli en avance
+const cache = new Map(), CACHE_MAX = 1500, FPS = 20;
+const cle = (f, v) => f.nom + "|" + (dark() ? 1 : 0) + "|" +
+  JSON.stringify(f.uses.map(u => typeof v[u] === "number" ? +v[u].toPrecision(6) : v[u]));
+
+function png(f, v) {                                       // image en cache, sinon calculée puis mémorisée
+  const k = cle(f, v);
+  let r = cache.get(k);
+  if (r === undefined) {
+    r = kit.render(f.nom, JSON.stringify(v), dark(), false, f.w, f.h);
+    cache.set(k, r);
+    if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);   // on retire la plus ancienne
+  }
+  return r;
 }
+function afficher(f, v) {
+  try { f.img.src = "data:image/png;base64," + png(f, v); }
+  catch (e) {
+    etat(debug ? `Erreur dans fig_${f.nom} : ` + String(e).split("\n").slice(-2).join(" ") : "Impossible de tracer une figure.");
+    console.error(e);
+  }
+}
+
+// grille de positions du curseur animé : une image par entier, ou ~FPS images par seconde d'animation (300 au plus)
+const nbPas = p => p.int ? p.hi - p.lo + 1 : Math.min(300, Math.round(p.anim * FPS));
+const valeurPas = (p, k) => p.int ? p.lo + k : p.lo + k * (p.hi - p.lo) / nbPas(p);
+const pasDe = (p, v, N) => Math.min(N - 1, Math.max(0, p.int ? Math.round(v - p.lo) : Math.floor((v - p.lo) / (p.hi - p.lo) * N)));
+const animables = () => Object.values(params).filter(p => p.kind === "slider" && p.anim > 0);
+
+const ordres = {};                                         // ordre de remplissage : 0, N/2, N/4, 3N/4, ... (du grossier au fin)
+function ordrePas(N) {
+  if (!ordres[N]) {
+    const vu = new Set(), o = [];
+    for (let s = 2 ** Math.ceil(Math.log2(N)); s >= 1; s /= 2)
+      for (let k = 0; k < N; k += s) if (!vu.has(k)) { vu.add(k); o.push(k); }
+    ordres[N] = o;
+  }
+  return ordres[N];
+}
+
+function remplir(p) {                                      // calcule UNE image manquante ; false s'il n'en manque plus
+  try {
+    const base = valeurs(), fs = concernees([p.name]);
+    for (const k of ordrePas(nbPas(p))) {
+      const v = { ...base, [p.name]: valeurPas(p, k) };
+      const f = fs.find(g => !cache.has(cle(g, v)));
+      if (f) {
+        const t0 = performance.now();
+        png(f, v);
+        if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms (préparation en arrière-plan, ${cache.size} images)`);
+        return true;
+      }
+    }
+  } catch (e) { console.error(e); }
+  return false;
+}
+
+// travail en arrière-plan quand l'utilisateur ne fait rien
+let derniereAction = 0, veilleTimer;
+["pointerdown", "keydown", "input"].forEach(e => addEventListener(e, () => derniereAction = performance.now(), true));
+function veille() {
+  clearTimeout(veilleTimer);
+  const pas = () => {
+    const calme = !document.hidden && performance.now() - derniereAction > 600;
+    if (calme && !enCours && !animables().some(p => remplir(p))) return;   // tout est prêt : on s'arrête
+    veilleTimer = setTimeout(pas, calme ? 0 : 400);
+  };
+  veilleTimer = setTimeout(pas, 1000);
+}
+
+// ---- animation : à l'horloge réelle ; on montre l'image prête la plus proche, et on en prépare une de plus à chaque tour
 function tick(now) {
   if (!enCours) return;
   const p = enCours, el = document.getElementById("p_" + p.name), N = nbPas(p);
   const dt = dernier ? Math.min((now - dernier) / 1000, 0.25) : 0;
   dernier = now;
-  acc += dt * N / p.anim;
-  const n = Math.floor(acc);
-  acc -= n;
-  if (n >= 1) {
-    const k0 = Math.round((+el.value - p.lo) / (p.hi - p.lo) * N);
-    let k = k0 + n;
-    if (!enCache(p, k % N, N)) { k = k0 + 1; acc = 0; }   // image à calculer : on avance d'un pas, régulièrement
-    k = k % N;                                              // boucle
-    el.value = p.lo + k * (p.hi - p.lo) / N; montrer(p);
-    concernees([p.name]).forEach(f => dessiner(f, true, true));   // basse définition + cache
+  let v = +el.value + dt * (p.hi - p.lo) / p.anim;
+  if (v > p.hi) v = p.lo + (v - p.hi) % (p.hi - p.lo);
+  el.value = v; montrer(p);
+  const base = valeurs(), k = pasDe(p, v, N);
+  for (const f of concernees([p.name])) {
+    let ok = false;
+    for (let j = 0; j < N && !ok; j++) {                   // en remontant depuis la position actuelle
+      const w = { ...base, [p.name]: valeurPas(p, (k - j + N) % N) };
+      if (cache.has(cle(f, w))) { afficher(f, w); ok = true; }
+    }
+    if (!ok) afficher(f, { ...base, [p.name]: valeurPas(p, k) });   // cache vide : on calcule celle-ci
   }
+  remplir(p);
   requestAnimationFrame(tick);
 }
 function basculer(p, b) {
-  if (enCours === p) {
-    enCours = null; b.textContent = "▶ Lecture";
-    concernees([p.name]).forEach(f => dessiner(f));         // retour en pleine définition à l'arrêt
-  } else { enCours = p; dernier = 0; acc = 0; b.textContent = "⏸ Pause"; requestAnimationFrame(tick); }
+  if (enCours === p) { enCours = null; b.textContent = "▶ Lecture"; veille(); }
+  else { enCours = p; dernier = 0; b.textContent = "⏸ Pause"; requestAnimationFrame(tick); }
 }
 
 // ---- démarrage
@@ -250,6 +292,7 @@ async function demarrer() {
     }
   }));
   figs.forEach(f => dessiner(f));
+  veille();
   if (sims.length) requestAnimationFrame(boucle);
 }
 
