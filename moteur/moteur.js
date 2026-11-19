@@ -9,6 +9,7 @@ const outil = document.body.dataset.outil || "";
 // Mode administrateur : ajoute ?debug à l'adresse (ou localStorage.debug = "1" dans la console)
 const debug = new URLSearchParams(location.search).has("debug") || localStorage.getItem("debug") === "1";
 let kit, params = {}, figs = [], sims = [], demandes = new Set(), derniereFig = 0, timer, attente = new Set(), enCours = null, dernier = 0;
+let derniereAction = 0, veilleTimer;
 const dark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 const etat = t => { const e = document.querySelector("[data-etat]"); if (e) e.textContent = t; };
 if (debug) etat("Chargement de Python et de matplotlib…");
@@ -75,16 +76,32 @@ function creer(p, boite) {
   }
 }
 
-// ---- dessin
+// ---- dessin d'une figure (toujours recalculée : pas de cache, car certaines figures sont aléatoires ou dépendent d'un état)
 const concernees = noms => figs.filter(f => f.uses.some(u => noms.includes(u)));
+
+function dessiner(f) {
+  const t0 = performance.now();
+  try {
+    f.img.src = "data:image/png;base64," + kit.render(f.nom, JSON.stringify(valeurs()), dark(), false, f.w, f.h);
+    if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms`);
+  } catch (e) {
+    etat(debug ? `Erreur dans fig_${f.nom} : ` + String(e).split("\n").slice(-2).join(" ") : "Impossible de tracer une figure.");
+    console.error(e);
+  }
+}
 
 function planifier(nom) {                                   // évite de recalculer à chaque pixel
   attente.add(nom); clearTimeout(timer);
-  timer = setTimeout(() => { const n = [...attente]; attente.clear(); concernees(n).forEach(f => dessiner(f));
-    sims.filter(s => s.init.some(u => n.includes(u))).forEach(initialiser); }, 40);
+  timer = setTimeout(() => {
+    const n = [...attente]; attente.clear();
+    concernees(n).forEach(f => dessiner(f));
+    sims.filter(s => s.init.some(u => n.includes(u))).forEach(initialiser);
+    veille();
+  }, 40);
 }
-veille()
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => kit && figs.forEach(f => dessiner(f)));
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (kit) { figs.forEach(f => dessiner(f)); veille(); }
+});
 
 // ---- simulations animées (canvas calculé par Python)
 function initialiser(s) {
@@ -93,16 +110,16 @@ function initialiser(s) {
 }
 function boucle(now) {
   try {
-for (const s of sims) {
-  const t0 = performance.now();
-  const res = kit.frame(s.nom, JSON.stringify(valeurs()), s.lecture);
-  s.ms = performance.now() - t0;
-  const i = JSON.parse(kit.infos(s.nom));
+    for (const s of sims) {
+      const t0 = performance.now();
+      const res = kit.frame(s.nom, JSON.stringify(valeurs()), s.lecture);
+      s.ms = performance.now() - t0;
+      const i = JSON.parse(kit.infos(s.nom));
       const b = res.getBuffer("u8"); s.image.data.set(b.data); b.release(); res.destroy();
       s.ctx.putImageData(s.image, 0, 0);
       s.fini = i.fini;
-    if (s.stats) s.stats.textContent = i.texte + (debug ? `   [calcul : ${Math.round(s.ms)} ms/image]` : "");
-    if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
+      if (s.stats) s.stats.textContent = i.texte + (debug ? `   [calcul : ${Math.round(s.ms)} ms/image]` : "");
+      if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
       (i.figures || []).forEach(n => demandes.add(n));
     }
     if (demandes.size && now - derniereFig > 250) {         // figures liées (ex. écran) : au plus 4 fois par seconde
@@ -174,13 +191,12 @@ function remplir(p) {                                      // calcule UNE image 
 }
 
 // travail en arrière-plan quand l'utilisateur ne fait rien
-let derniereAction = 0, veilleTimer;
 ["pointerdown", "keydown", "input"].forEach(e => addEventListener(e, () => derniereAction = performance.now(), true));
 function veille() {
   clearTimeout(veilleTimer);
   const pas = () => {
-    const calme = !document.hidden && performance.now() - derniereAction > 600;
-    if (calme && !enCours && !animables().some(p => remplir(p))) return;   // tout est prêt : on s'arrête
+    const calme = !document.hidden && !enCours && performance.now() - derniereAction > 600;
+    if (calme && !animables().some(p => remplir(p))) return;   // tout est prêt : on s'arrête
     veilleTimer = setTimeout(pas, calme ? 0 : 400);
   };
   veilleTimer = setTimeout(pas, 1000);
