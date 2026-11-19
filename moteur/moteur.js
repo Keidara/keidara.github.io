@@ -115,15 +115,16 @@ function initialiser(s) {
 }
 function boucle(now) {
   try {
-    for (const s of sims) {
-      const res = kit.frame(s.nom, JSON.stringify(valeurs()), s.lecture);
-      const i = JSON.parse(kit.infos(s.nom));
-      if (!s.image || s.c.width !== i.taille) { s.c.width = s.c.height = i.taille; s.image = s.ctx.createImageData(i.taille, i.taille); }
+for (const s of sims) {
+  const t0 = performance.now();
+  const res = kit.frame(s.nom, JSON.stringify(valeurs()), s.lecture);
+  s.ms = performance.now() - t0;
+  const i = JSON.parse(kit.infos(s.nom));
       const b = res.getBuffer("u8"); s.image.data.set(b.data); b.release(); res.destroy();
       s.ctx.putImageData(s.image, 0, 0);
       s.fini = i.fini;
-      if (s.stats) s.stats.textContent = i.texte;
-      if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
+    if (s.stats) s.stats.textContent = i.texte + (debug ? `   [calcul : ${Math.round(s.ms)} ms/image]` : "");
+    if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
       (i.figures || []).forEach(n => demandes.add(n));
     }
     if (demandes.size && now - derniereFig > 250) {         // figures liées (ex. écran) : au plus 4 fois par seconde
