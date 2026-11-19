@@ -17,7 +17,7 @@ Simulations animées (canvas) « nom » :
 La page HTML (outils/xxx/xxx.html) décide de l'emplacement des figures et des contrôles.
 """
 import base64, inspect, io, json
-import matplotlib
+import matplotlib, time
 matplotlib.use("agg")
 from cycler import cycler
 from matplotlib.figure import Figure
@@ -25,6 +25,12 @@ from matplotlib.figure import Figure
 __all__ = ["Slider", "Select", "Check"]
 _tool = {}
 
+t0 = time.perf_counter()
+f(fig, **{k: v[k] for k in _args(f, 1)})
+t1 = time.perf_counter()
+buf = io.BytesIO()
+fig.savefig(buf, format="png", transparent=True)
+print(f"{nom} : tracé {1000*(t1-t0):.0f} ms, mise en page + rendu + PNG {1000*(time.perf_counter()-t1):.0f} ms")
 
 def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0, actif=None):
     """anim : durée (en secondes) d'un balayage complet si le curseur doit pouvoir s'animer.
