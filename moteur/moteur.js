@@ -77,11 +77,25 @@ function creer(p, boite) {
 
 // ---- dessin
 const concernees = noms => figs.filter(f => f.uses.some(u => noms.includes(u)));
-function dessiner(f, rapide = false) {
+const cache = new Map(), CACHE_MAX = 800;
+const cle = (f, v, rapide) => f.nom + "|" + (dark() ? 1 : 0) + "|" + (rapide ? 1 : 0) + "|" +
+  JSON.stringify(f.uses.map(u => typeof v[u] === "number" ? +v[u].toPrecision(6) : v[u]));
+
+function dessiner(f, rapide = false, memo = false) {
   const t0 = performance.now();
   try {
-    f.img.src = "data:image/png;base64," + kit.render(f.nom, JSON.stringify(valeurs()), dark(), rapide, f.w, f.h);
-    if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms`);
+    const v = valeurs(), k = memo ? cle(f, v, rapide) : null;
+    let png = memo ? cache.get(k) : undefined;
+    const vu = png !== undefined;
+    if (!vu) {
+      png = kit.render(f.nom, JSON.stringify(v), dark(), rapide, f.w, f.h);
+      if (memo) {
+        cache.set(k, png);
+        if (cache.size > CACHE_MAX) cache.delete(cache.keys().next().value);   // on retire le plus ancien
+      }
+    }
+    f.img.src = "data:image/png;base64," + png;
+    if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms${vu ? " (cache)" : ""}`);
   } catch (e) {
     etat(debug ? `Erreur dans fig_${f.nom} : ` + String(e).split("\n").slice(-2).join(" ") : "Impossible de tracer une figure.");
     console.error(e);
