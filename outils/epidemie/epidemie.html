@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propagation d’une épidémie</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="epidemie">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Propagation d’une épidémie</h1>
+
+  <p>Une maladie contagieuse se propage dans une population. Le modèle SIR range chaque personne dans l’une de trois catégories : sain mais susceptible d’être infecté (S), infectieux (I), guéri et immunisé (R). Une variante, le modèle SEIR, ajoute une période d’incubation (E) pendant laquelle la personne est infectée mais pas encore contagieuse.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>L’évolution de l’épidémie</h2>
+        <div data-figure="courbes" data-taille="10x5" data-alt="Part de la population sainte, infectieuse et guérie en fonction du temps"></div>
+        <p>Au début, chaque infectieux en contamine en moyenne R₀ autres : le nombre d’infectieux croît de façon exponentielle. Puis les personnes sensibles se raréfient, l’épidémie atteint son pic, et décline jusqu’à s’éteindre, souvent alors qu’une partie de la population n’a jamais été touchée.</p>
+        <p class="formule">dS/dt = −β S I &nbsp;&nbsp;&nbsp; dI/dt = β S I − γ I &nbsp;&nbsp;&nbsp; dR/dt = γ I &nbsp;&nbsp;&nbsp; avec &nbsp; R₀ = β / γ</p>
+      </section>
+      <section>
+        <h2>Combien de personnes sont touchées</h2>
+        <div data-figure="reproduction" data-taille="10x4.5" data-alt="Part de la population infectée au total en fonction de R0"></div>
+        <p>Si R₀ est inférieur à 1, l’épidémie s’éteint. Au-dessus de 1, la part de la population touchée augmente vite avec R₀. Pour arrêter la propagation, il faut qu’une personne infectée en contamine en moyenne moins d’une autre : cela revient à immuniser une fraction de la population au moins égale à 1 − 1/R₀. C’est le seuil d’immunité collective (la ligne pointillée marque le R₀ à partir duquel une part donnée d’immunisés ne suffit plus).</p>
+      </section>
+      <section>
+        <h2>Le rôle du hasard</h2>
+        <div data-figure="stochastique" data-taille="10x5" data-alt="Simulations aléatoires de l’épidémie comparées au modèle déterministe"></div>
+        <p>Les courbes précédentes décrivent une population très grande, où le hasard disparaît. Dans une population réelle, il compte, surtout au début : avec un seul infecté, la maladie peut s’éteindre par pur hasard avant de se propager. Chaque courbe bleue est une simulation aléatoire (le départ est un seul cas) ; elles ne démarrent pas toutes en même temps, et certaines n’ont pas de pic. La probabilité d’une grande épidémie est d’environ 1 − 1/R₀ quand R₀ est supérieur à 1.</p>
+        <button data-action="relancer" data-cible="stochastique">Relancer les simulations</button>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Limites du modèle</h2>
+    <p>Ce modèle est volontairement simple : tout le monde a le même nombre de contacts, l’immunité est définitive, la population est fermée et les comportements ne changent pas pendant l’épidémie. Il illustre les mécanismes essentiels, mais ne permet pas de prévoir une épidémie réelle, qui dépend de la structure des contacts, des mesures prises, des variants et de bien d’autres facteurs.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

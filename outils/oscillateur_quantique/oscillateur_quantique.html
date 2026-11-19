@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oscillateur harmonique quantique</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="oscillateur_quantique">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Oscillateur harmonique quantique</h1>
+
+  <p>Une particule dans un potentiel parabolique V = ½ mω²x² : c’est la version quantique du ressort. Ce modèle décrit les vibrations des molécules, des cristaux et du champ électromagnétique. Les positions sont exprimées en unités de x₀ = √(ħ/mω).</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>L’état de la particule</h2>
+        <div data-figure="etat" data-taille="10x6" data-alt="Potentiel parabolique, niveau d’énergie et densité de probabilité"></div>
+        <p>Le graphique du haut montre le potentiel (parabole) et l’énergie de l’état. Celui du bas montre la densité de probabilité de position |ψ|².</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>États propres</h2>
+    <p>Les énergies sont quantifiées et régulièrement espacées :</p>
+    <p class="formule">Eₙ = (n + ½) ħω &nbsp;&nbsp;&nbsp; n = 0, 1, 2, …</p>
+    <p>L’énergie minimale ½ħω n’est pas nulle (énergie de point zéro). L’état n a n nœuds, et la particule peut se trouver un peu au-delà des points de rebroussement classiques, là où la physique classique l’interdit. La courbe pointillée donne la densité d’une particule classique de même énergie : elle est grande près des bords, où la particule ralentit. Quand n augmente, la densité quantique, moyennée sur ses oscillations, se rapproche de la courbe classique : c’est le principe de correspondance.</p>
+  </section>
+  <section>
+    <h2>État cohérent</h2>
+    <p>Un état cohérent est une superposition de tous les états propres, avec des poids bien choisis. Son paquet d’onde garde la forme de l’état fondamental et oscille entre les deux bords du puits, exactement comme une particule classique. Il ne s’étale pas, car les niveaux sont équidistants : tous les termes de la superposition se remettent en phase à chaque période. C’est l’état le plus « classique » possible, et celui d’un faisceau laser.</p>
+    <p class="formule">x(t) = √2 · α · x₀ · cos(ωt) &nbsp;&nbsp;&nbsp; ⟨E⟩ = (α² + ½) ħω</p>
+    <p>Le curseur de temps est exprimé en périodes T = 2π/ω.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

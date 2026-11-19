@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puits de potentiel infini</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="puits_quantique">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Puits de potentiel infini</h1>
+
+  <p>Un électron est enfermé entre deux murs infranchissables, distants de L. C’est le modèle le plus simple de confinement quantique : il suffit à faire apparaître la quantification de l’énergie.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>La fonction d’onde</h2>
+        <div data-figure="fonction" data-taille="10x6" data-alt="Fonction d’onde et densité de probabilité de l’électron dans le puits"></div>
+        <p>La fonction d’onde doit s’annuler sur les murs : elle ne peut donc être qu’une onde stationnaire contenant un nombre entier de demi-longueurs d’onde. Le niveau n a n − 1 nœuds. La densité de probabilité |ψ|² donne la probabilité de trouver l’électron en chaque point.</p>
+        <p class="formule">ψₙ(x) = √(2/L) · sin(nπx/L) &nbsp;&nbsp;&nbsp; Eₙ = n² h² / (8 m L²)</p>
+      </section>
+      <section>
+        <h2>Les niveaux d’énergie</h2>
+        <div data-figure="niveaux" data-taille="10x5" data-alt="Niveaux d’énergie du puits"></div>
+        <p>Les énergies croissent comme n², et comme 1/L² : plus le puits est étroit, plus les niveaux sont hauts et espacés. Pour un électron dans un puits de 1 nm, le premier niveau est à environ 0,38 eV. L’énergie minimale n’est pas nulle : confiner une particule la contraint à avoir de l’énergie.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Superposition de deux états</h2>
+    <p>Choisis « Superposition » pour étudier l’état (ψₙ + ψₙ′)/√2. Chaque état propre tourne dans le temps avec la phase e<sup>−iEt/ħ</sup>, mais à une fréquence différente : leur phase relative évolue, et la densité de probabilité n’est plus constante. Elle oscille avec la période T = h / |Eₙ′ − Eₙ|. Le curseur de temps est exprimé en unités de cette période, et la ligne rouge marque la position moyenne.</p>
+    <p>Quand les deux niveaux sont de parité différente (n et n′ de parité opposée), la position moyenne oscille d’un côté à l’autre du puits : l’électron « va et vient ». C’est un système qui oscille, donc qui peut rayonner : la différence d’énergie ΔE correspond à un photon de longueur d’onde hc/ΔE. C’est ainsi que les niveaux d’énergie se lisent dans les spectres de lumière émise par les atomes et les boîtes quantiques.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diffusion de la lumière : ciel bleu, couchers de soleil, nuages</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="diffusion_lumiere">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Diffusion de la lumière</h1>
+
+  <p>La lumière du Soleil est blanche, et pourtant le ciel est bleu, le Soleil couchant est rouge et les nuages sont blancs. Tout vient de la façon dont les particules de l’atmosphère renvoient la lumière dans toutes les directions, selon leur taille.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Les couleurs obtenues</h2>
+        <div data-figure="couleurs" data-taille="10x2.6" data-alt="Couleur du Soleil, du Soleil après traversée de l’atmosphère et de la lumière diffusée"></div>
+        <p>Les trois couleurs sont celles du Soleil hors atmosphère, du Soleil vu à travers l’épaisseur d’atmosphère choisie, et de la lumière diffusée par des particules du rayon choisi. Seule la teinte est représentée : la luminosité est normalisée.</p>
+      </section>
+      <section>
+        <h2>Le spectre</h2>
+        <div data-figure="spectres" data-taille="10x5" data-alt="Spectre du Soleil, transmis et diffusé"></div>
+        <p>La lumière qui traverse l’atmosphère perd surtout du bleu, car il est davantage diffusé sur le côté. À l’inverse, la lumière diffusée est riche en bleu. Plus la couche traversée est épaisse, plus la lumière directe rougit : au lever et au coucher, le Soleil est vu à travers environ 38 masses d’air (1 masse d’air = l’atmosphère traversée à la verticale).</p>
+      </section>
+      <section>
+        <h2>Selon la taille des particules</h2>
+        <div data-figure="efficacite" data-taille="10x4.5" data-alt="Efficacité de diffusion en fonction de la taille des particules"></div>
+        <p>Pour des particules bien plus petites que la longueur d’onde (des molécules d’air, de rayon environ 0,2 nm), l’efficacité de diffusion est proportionnelle à 1/λ⁴ (diffusion de Rayleigh) : le bleu à 450 nm est diffusé environ 4,4 fois plus que le rouge à 650 nm. Quand les particules grossissent (gouttelettes d’eau d’un nuage, de l’ordre du micromètre), l’efficacité ne dépend presque plus de la longueur d’onde : toutes les couleurs sont diffusées de la même façon, la lumière diffusée est blanche.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>À essayer</h2>
+    <p><strong>Ciel bleu :</strong> rayon 1 nm (ou moins) et une masse d’air. <strong>Coucher de soleil :</strong> garde les molécules et monte l’atmosphère traversée à 30 ou 40 masses d’air : la lumière directe vire à l’orange puis au rouge. <strong>Nuage :</strong> passe à un rayon de quelques milliers de nanomètres : la lumière diffusée devient blanche.</p>
+    <p class="formule">Rayleigh : intensité diffusée ∝ 1 / λ⁴ &nbsp;&nbsp;&nbsp; transmission : exp(−τ), avec τ ∝ 1 / λ⁴</p>
+    <p>Pourquoi pas violet, alors, puisque le violet est encore plus diffusé ? Le Soleil émet moins de violet que de bleu, l’atmosphère en absorbe une partie, et notre œil y est peu sensible.</p>
+    <p>Limites : le passage entre les petites et les grosses particules est décrit par un modèle simplifié (la théorie complète, de Mie, présente des oscillations), et la couleur est calculée à partir d’approximations des fonctions colorimétriques de l’œil.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>

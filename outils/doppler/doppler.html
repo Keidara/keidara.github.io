@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Effet Doppler</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="doppler">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Effet Doppler</h1>
+
+  <p>Le son d’une sirène d’ambulance est plus aigu quand elle s’approche et plus grave quand elle s’éloigne. C’est l’effet Doppler : la fréquence reçue dépend du mouvement relatif de la source et de l’observateur.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Les fronts d’onde</h2>
+        <div data-figure="ondes" data-taille="10x6.5" data-alt="Fronts d’onde émis par une source en mouvement et trois observateurs"></div>
+        <p>La source (orange) émet un front d’onde à chaque période. Chaque front est un cercle centré sur le point où la source se trouvait à l’émission. Devant la source, les cercles se resserrent : la longueur d’onde diminue et la fréquence reçue augmente. Derrière, ils s’écartent. Les carrés verts A, B et C sont trois observateurs immobiles.</p>
+      </section>
+      <section>
+        <h2>Fréquence reçue</h2>
+        <div data-figure="frequence" data-taille="10x4.5" data-alt="Fréquence reçue par les observateurs en fonction de la position de la source"></div>
+        <p>Pour une source de fréquence f₀ qui se déplace à la vitesse v vers l’observateur A, et qui s’éloigne de B :</p>
+        <p class="formule">f<sub>A</sub> = f₀ / (1 − v/c) &nbsp;&nbsp;&nbsp; f<sub>B</sub> = f₀ / (1 + v/c)</p>
+        <p>L’observateur C voit la source passer devant lui : la fréquence reçue décroît progressivement de la valeur « approche » à la valeur « éloignement », en passant par f₀ quand la source est à la hauteur de C. C’est ce qu’on entend quand un véhicule vous dépasse.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <section>
+    <h2>Vitesses proches et supérieures à celle de l’onde</h2>
+    <p>Quand v approche de c, les fronts d’onde s’accumulent devant la source et la fréquence reçue en A devient très grande. Quand v dépasse c (régime supersonique), la source va plus vite que ses propres ondes : elle les dépasse et les fronts s’empilent le long d’un cône, le cône de Mach, dont le demi-angle vérifie :</p>
+    <p class="formule">sin α = c / v</p>
+    <p>Le cône est une onde de choc : c’est le bang d’un avion supersonique, ou le sillage en V d’un bateau qui va plus vite que les vagues.</p>
+    <p>Le même phénomène existe quand c’est l’observateur qui bouge : s’il se rapproche de la source à la vitesse v₀, il reçoit f₀ (1 + v₀/c). Pour la lumière, les mêmes idées s’appliquent, avec la relativité : c’est le décalage vers le rouge des galaxies qui s’éloignent.</p>
+  </section>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
