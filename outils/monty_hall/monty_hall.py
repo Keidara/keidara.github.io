@@ -119,7 +119,7 @@ def fig_simulation(fig, n_doors_sim, n_games):
     garde = choix == prix
     change = reste == prix
 
-    th = np.array([1 / n_doors, (n_doors - 1) / n_doors]) * 100
+    th = np.array([1 / n_doors, 1 - 1 / n_doors]) * 100
     freq = np.array([garde.mean(), change.mean()]) * 100
 
     ax1, ax2 = fig.subplots(1, 2, gridspec_kw={"width_ratios": [1, 1.6]})
@@ -128,20 +128,20 @@ def fig_simulation(fig, n_doors_sim, n_games):
     for x, f in enumerate(freq):
         ax1.text(x, f + 2, f"{f:.1f}%", ha="center", fontsize=10)
     ax1.set_xticks([0, 1])
-    ax1.set_xticklabels(["garder", "changer"])
+    ax1.set_xticklabels(["Garder", "Changer"])
     ax1.set_ylim(0, 110)
     ax1.set_ylabel("Parties gagnées (%)")
     ax1.legend(loc="upper left", fontsize=8)
 
     n = np.arange(1, n_games + 1)
-    ax2.plot(n, np.cumsum(garde) / n * 100, color="C0", label="garder")
-    ax2.plot(n, np.cumsum(change) / n * 100, color="C1", label="changer")
-    ax2.axhline(th[0], color="C0", ls="--", lw=1)
-    ax2.axhline(th[1], color="C1", ls="--", lw=1)
+    ax2.plot(n, np.cumsum(garde) / n * 100, color="C0", label="Garder")
+    ax2.plot(n, np.cumsum(change) / n * 100, color="C1", label="Changer")
+    ax2.axhline(th[0], color="C0", ls="--", lw=1, label=r"Garder : théorie $1/n$")
+    ax2.axhline(th[1], color="C1", ls="--", lw=1, label=r"Changer : théorie $1-1/n$")
     ax2.set_xscale("log")
     ax2.set_ylim(0, 105)
     ax2.set_xlabel("Nombre de parties jouées")
     ax2.set_ylabel("Fréquence cumulée de victoires (%)")
-    ax2.legend(loc="center right")
+    ax2.legend(loc="center right", fontsize=8)
     fig.suptitle(f"{n_games:,} parties avec {n_doors} portes".replace(",", " "))
 
