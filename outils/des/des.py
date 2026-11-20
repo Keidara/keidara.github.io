@@ -37,5 +37,5 @@ def fig_distribution(fig, n_dice, n_rolls):
     ax.set_xlabel("Somme des dés")
     ax.set_ylabel("Fréquence du tirage ou probabilité (%)")
     ax.set_title(f"{n_rolls:,} lancers de {n_dice} dé{'s' if n_dice > 1 else ''}".replace(",", " ")
-                 + f"\nMoyenne observée {sommes.mean():.3f}, théorique {3.5 * n_dice:.1f}" + f"\nÉcart-type {sommes.std():.1f"})
+                 + f"\nMoyenne observée {sommes.mean():.3f}, théorique {3.5 * n_dice:.1f}" + f"\nÉcart-type {sommes.std():.1f}")
     ax.legend()
