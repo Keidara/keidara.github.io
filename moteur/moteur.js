@@ -119,7 +119,9 @@ function boucle(now) {
       const b = res.getBuffer("u8"); s.image.data.set(b.data); b.release(); res.destroy();
       s.ctx.putImageData(s.image, 0, 0);
       s.fini = i.fini;
-      if (s.stats) s.stats.textContent = i.texte + (debug ? `   [calcul : ${Math.round(s.ms)} ms/image]` : "");
+      const dtImg = s.avant ? now - s.avant : 0; s.avant = now;
+      s.moy = s.moy ? 0.9 * s.moy + 0.1 * dtImg : dtImg;   // moyenne lissée
+      if (s.stats) s.stats.textContent = i.texte + (debug ? `   [calcul : ${Math.round(s.ms)} ms, cadence : ${s.moy ? (1000 / s.moy).toFixed(1) : "…"} images/s]` : "");
       if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
       (i.figures || []).forEach(n => demandes.add(n));
     }
