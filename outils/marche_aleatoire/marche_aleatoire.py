@@ -68,7 +68,7 @@ def fig_distribution(fig, dim, n_pas, n_marcheurs):
         ax.set_ylabel("Densité de probabilité")
         ax.set_title(f"{N:,} marcheurs, {n:,} pas : ⟨r²⟩ = {np.mean(r ** 2):.4g} (théorie : {n:,})".replace(",", " "))
     else:
-        k = rng.binomial(n, 0.5, N)                         # nombre de pas vers la droite
+        k = rng.binomial(n, 0.5, N).astype(np.int32)        # nombre de pas vers le haut (int32 : exigé par bincount dans Pyodide)
         xs = 2 * np.arange(n + 1) - n                       # position finale correspondante
         cnt = np.bincount(k, minlength=n + 1)
         s = np.sqrt(n)
