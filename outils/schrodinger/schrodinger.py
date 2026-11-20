@@ -157,8 +157,7 @@ def frame_onde(lecture, vitesse, auto):
     img = _rendu(auto)
     texte = (f"t = {S['t']:.1f} / {S['T']:.1f}   Probabilité dans la boîte : {S['norm']:.2f}   "
              f"Impacts : {len(S['imp'])}   Échelle de couleur : {S['top']:.2g}" + ("   — simulation terminée" if fini else ""))
-    return img, dict(taille=N, fini=bool(fini), texte=texte, figures=["ecran"] if (avance or tire) else [])
-
+    return img, dict(taille=N, fini=bool(fini), texte=texte, figures=["ecran"] if ((avance and fini) or tire) else [])
 
 # --------------------------------------------------------- écran et impacts
 def screen_profile():
