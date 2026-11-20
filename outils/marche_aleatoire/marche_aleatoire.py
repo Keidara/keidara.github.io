@@ -38,8 +38,8 @@ def fig_trajectoires(fig, dim, n_pas, n_traj):
             ax.plot(x[i], y[i], lw=1, color=f"C{i % 6}", alpha=0.9)
             ax.plot([x[i, -1]], [y[i, -1]], "o", color=f"C{i % 6}", ms=6)
         a = np.linspace(0, 2 * np.pi, 400)
-        ax.plot(s * np.cos(a), s * np.sin(a), ":", color="0.5", label=r"cercle de rayon $\sqrt{n}$")
-        ax.plot([0], [0], "s", color="0.4", ms=7, label="départ")
+        ax.plot(s * np.cos(a), s * np.sin(a), ":", color="0.5", label=r"Cercle de rayon $\sqrt{n}$")
+        ax.plot([0], [0], "s", color="0.4", ms=7, label="Départ")
         ax.set_aspect("equal", "datalim")
         ax.set_xlabel("x")
         ax.set_ylabel("y")
@@ -61,9 +61,9 @@ def fig_distribution(fig, dim, n_pas, n_marcheurs):
     if _plan(dim):
         c = rng.multinomial(n, [0.25] * 4, size=N)          # nombre de pas dans chacune des 4 directions
         r = np.hypot(c[:, 0] - c[:, 1], c[:, 2] - c[:, 3])
-        ax.hist(r, bins=50, density=True, alpha=0.75, color="C0", label="distance observée")
+        ax.hist(r, bins=50, density=True, alpha=0.75, color="C0", label="Distance observée")
         rr = np.linspace(0, max(float(r.max()), 3 * np.sqrt(n)) * 1.05, 400)
-        ax.plot(rr, 2 * rr / n * np.exp(-rr ** 2 / n), color="C1", lw=2, label="loi théorique (Rayleigh)")
+        ax.plot(rr, 2 * rr / n * np.exp(-rr ** 2 / n), color="C1", lw=2, label="Loi théorique (Rayleigh)")
         ax.set_xlabel("Distance à l’origine après n pas")
         ax.set_ylabel("Densité de probabilité")
         ax.set_title(f"{N:,} marcheurs, {n:,} pas : ⟨r²⟩ = {np.mean(r ** 2):.4g} (théorie : {n:,})".replace(",", " "))
@@ -73,9 +73,9 @@ def fig_distribution(fig, dim, n_pas, n_marcheurs):
         cnt = np.bincount(k, minlength=n + 1)
         s = np.sqrt(n)
         garde = np.abs(xs) <= 4 * s + 2
-        ax.bar(xs[garde], cnt[garde] / N / 2, width=1.8, alpha=0.75, color="C0", label="fréquence observée")
+        ax.bar(xs[garde], cnt[garde] / N / 2, width=1.8, alpha=0.75, color="C0", label="Fréquence observée")
         g = np.linspace(-4 * s - 2, 4 * s + 2, 600)
-        ax.plot(g, np.exp(-g ** 2 / (2 * n)) / np.sqrt(2 * np.pi * n), color="C1", lw=2, label="loi normale d’écart-type √n")
+        ax.plot(g, np.exp(-g ** 2 / (2 * n)) / np.sqrt(2 * np.pi * n), color="C1", lw=2, label="Loi normale d’écart-type √n")
         ax.set_xlim(-4 * s - 2, 4 * s + 2)
         x = 2 * k - n
         ax.set_xlabel("Position après n pas")
@@ -103,7 +103,7 @@ def fig_msd(fig, dim, n_pas, n_marcheurs):
         else:
             r2.append(np.mean(u ** 2))
     ax.loglog(t, r2, color="C0", lw=2, label=f"moyenne sur {N:,} marcheurs".replace(",", " "))
-    ax.loglog(t, t, "--", color="C1", lw=2, label=r"théorie : $\langle r^2\rangle = n$")
+    ax.loglog(t, t, "--", color="C1", lw=2, label=r"Théorie : $\langle r^2\rangle = n$")
     ax.set_xlabel("Nombre de pas $n$")
     ax.set_ylabel(r"$\langle r^2\rangle$" if plan else r"$\langle x^2\rangle$")
     ax.set_title("Le carré de la distance moyenne croît comme le nombre de pas")
