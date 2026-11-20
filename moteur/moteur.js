@@ -308,6 +308,7 @@ async function demarrer() {
     initialiser(s);
   });
   appliquerActifs();
+  if (window.formules) window.formules();
   $$("[data-action]").forEach(b => b.addEventListener("click", () => {
     kit.action(b.dataset.action, JSON.stringify(valeurs()));
     const cibles = b.dataset.cible ? b.dataset.cible.split(/\s+/) : null;   // figures à redessiner (par défaut toutes)
