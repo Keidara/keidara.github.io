@@ -26,8 +26,8 @@
             // Lance le rendu sur tout le corps du document une fois chargé
             renderMathInElement(document.body, {
                 delimiters: [
-                    {left: 'inline', right: 'inline', display: false},
-                    {left: 'block', right: 'block', display: true}
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
                 ]
             });
         };
