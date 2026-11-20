@@ -135,7 +135,7 @@ function boucle(now) {
 }
 
 // ---- cache d'images pour les curseurs animés, rempli en avance
-const cache = new Map(), CACHE_MAX = 1500, FPS = 20;
+const cache = new Map(), CACHE_MAX = 1500, FPS = 10;
 const cle = (f, v) => f.nom + "|" + (dark() ? 1 : 0) + "|" +
   JSON.stringify(f.uses.map(u => typeof v[u] === "number" ? +v[u].toPrecision(6) : v[u]));
 
