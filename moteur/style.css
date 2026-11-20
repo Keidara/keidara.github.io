@@ -52,3 +52,4 @@ label:has(input:disabled){opacity:.45}
 button.sec{background:var(--bg);color:var(--fg);border-color:var(--line)}
 input[type=file]{font:inherit;max-width:100%}
 canvas[data-simulation].pixel{image-rendering:pixelated}
+.formule .katex-display{margin:.2rem 0;overflow-x:auto;overflow-y:hidden}
