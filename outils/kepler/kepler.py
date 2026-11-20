@@ -14,7 +14,7 @@ PARAMS = [
     Select("preset", "Orbite", ["Personnalisée", "Terre", "Mercure", "Mars", "Comète de Halley"]),
     Slider("a", "Demi-grand axe a", 0.3, 10.0, 1.5, log=True, unit="UA", actif=("preset", ["Personnalisée"])),
     Slider("e", "Excentricité e", 0.0, 0.95, 0.6, step=0.01, actif=("preset", ["Personnalisée"])),
-    Slider("t", "Temps t / T", 0.0, 1.0, 0.0, step=0.005, anim=15),
+    Slider("t", "Temps t / T", 0.0, 1.0, 0.0, step=0.005, anim=10),
 ]
 
 
