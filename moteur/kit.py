@@ -87,13 +87,9 @@ def render(nom, values_json, dark, rapide=False, w=10, h=6):
           "axes.prop_cycle": cycler(color=couleurs)}
     with matplotlib.rc_context(rc):
         fig = Figure(figsize=(w, h), dpi=75 if rapide else 110, constrained_layout=True)
-        t0 = time.perf_counter()
         f(fig, **{k: v[k] for k in _args(f, 1)})
-        t1 = time.perf_counter()
         buf = io.BytesIO()
         fig.savefig(buf, format="png", transparent=True)
-        t2 = time.perf_counter()
-    print(f"{nom} : tracé {1000 * (t1 - t0):.0f} ms, mise en page + rendu + PNG {1000 * (t2 - t1):.0f} ms")
     return base64.b64encode(buf.getvalue()).decode()
 
 
