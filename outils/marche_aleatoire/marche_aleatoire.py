@@ -86,15 +86,25 @@ def fig_distribution(fig, dim, n_pas, n_marcheurs):
 
 def fig_msd(fig, dim, n_pas, n_marcheurs):
     ax = fig.subplots()
-    W = int(max(20, min(n_marcheurs, 2_000_000 // n_pas)))   # on borne la mémoire utilisée
-    x, y = marches(dim, W, n_pas)
-    r2 = x.astype(float) ** 2
-    if y is not None:
-        r2 += y.astype(float) ** 2
-    t = np.arange(n_pas + 1)
-    ax.loglog(t[1:], r2.mean(axis=0)[1:], color="C0", lw=2, label=f"moyenne sur {W:,} marcheurs".replace(",", " "))
-    ax.loglog(t[1:], t[1:], "--", color="C1", lw=2, label="théorie : ⟨r²⟩ = n")
-    ax.set_xlabel("Nombre de pas n")
-    ax.set_ylabel("⟨r²⟩" if y is not None else "⟨x²⟩")
+    N = n_marcheurs
+    # instants d'observation : grille logarithmique (jusqu'à 100 points), le dernier est n_pas
+    t = np.unique(np.logspace(0, np.log10(n_pas), 100).round().astype(int))
+    dt = np.diff(np.r_[0, t])
+    plan = _plan(dim)
+    u = np.zeros(N)
+    v = np.zeros(N)
+    r2 = []
+    for d in dt:
+        # déplacement d'une marche à ±1 pendant d pas : 2·Binomiale(d, 1/2) − d
+        u += 2 * rng.binomial(d, 0.5, N) - d
+        if plan:                                          # en 2D : x+y et x−y sont deux marches 1D indépendantes
+            v += 2 * rng.binomial(d, 0.5, N) - d
+            r2.append(np.mean(u ** 2 + v ** 2) / 2)
+        else:
+            r2.append(np.mean(u ** 2))
+    ax.loglog(t, r2, color="C0", lw=2, label=f"moyenne sur {N:,} marcheurs".replace(",", " "))
+    ax.loglog(t, t, "--", color="C1", lw=2, label=r"théorie : $\langle r^2\rangle = n$")
+    ax.set_xlabel("Nombre de pas $n$")
+    ax.set_ylabel(r"$\langle r^2\rangle$" if plan else r"$\langle x^2\rangle$")
     ax.set_title("Le carré de la distance moyenne croît comme le nombre de pas")
     ax.legend(loc="upper left", fontsize=9)
