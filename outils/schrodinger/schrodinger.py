@@ -7,14 +7,13 @@ import numpy as np
 from kit import *
 
 PARAMS = [
-    Select("mode", "Configuration", ["Propagation libre", "Une fente", "Deux fentes"], "Deux fentes"),
+    Select("mode", "Configuration", ["Propagation libre", "Une fente", "Deux fentes"], "Propagation libre"),
     Slider("a", "Largeur de fente", 0.8, 3.5, 1.5, step=0.1, actif=("mode", ["Une fente", "Deux fentes"])),
     Slider("d", "Écart entre fentes", 4, 12, 6, step=0.5, actif=("mode", ["Deux fentes"])),
     Slider("k0", "Impulsion k₀", 1.5, 4, 3, step=0.1),
     Slider("sy", "Largeur du paquet σy", 2, 8, 6, step=0.5),
     Slider("vitesse", "Vitesse", 1, 20, 4, unit="pas/image"),
-    Check("auto", "Échelle de couleur automatique", True),
-    Slider("n_impacts", "Nombre d’impacts", 10, 5000, 500, step=10),
+    Check("auto", "Échelle de couleur automatique", False),
 ]
 
 # ---------------------------------------------------------------- paramètres
@@ -129,11 +128,6 @@ def _rendu(auto):
     tirets = (np.arange(N) // 3) % 2 == 0           # écran en pointillés
     m = tirets & ~wall[:, IX_S]
     rgba[m, IX_S] = (0, 220, 255, 255)
-    if len(S["imp"]):                               # impacts allumés sur l'écran
-        iy = np.clip(np.rint(S["imp"][:, 0] / dx).astype(int) + N // 2, 0, N - 1)
-        rows = N - 1 - iy
-        rgba[rows, IX_S] = (170, 255, 255, 255)
-        rgba[rows, IX_S + 1] = (170, 255, 255, 255)
     return np.ascontiguousarray(rgba)
 
 
@@ -156,8 +150,9 @@ def frame_onde(lecture, vitesse, auto):
         tire = True
     img = _rendu(auto)
     texte = (f"t = {S['t']:.1f} / {S['T']:.1f}   Probabilité dans la boîte : {S['norm']:.2f}   "
-             f"Impacts : {len(S['imp'])}   Échelle de couleur : {S['top']:.2g}" + ("   — simulation terminée" if fini else ""))
+             f"Impacts : {len(S['imp'])}" + ("   — simulation terminée" if fini else ""))
     return img, dict(taille=N, fini=bool(fini), texte=texte, figures=["ecran"] if ((avance and fini) or tire) else [])
+
 
 # --------------------------------------------------------- écran et impacts
 def screen_profile():
@@ -181,10 +176,18 @@ def fire(n):
     S["imp"] = np.vstack([S["imp"], np.column_stack([y, z])])
 
 
-def tirer(n_impacts):
-    """Bouton « Tirer les impacts » : lance la simulation si besoin, puis tire les impacts par lots."""
-    PEND["n"] += n_impacts
-    PEND["lot"] = max(1, -(-n_impacts // 60))
+def _tirer(n):
+    """Demande n impacts : la simulation avance si besoin, puis les impacts sont tirés par lots."""
+    PEND["n"] += n
+    PEND["lot"] = max(1, -(-n // 60))
+
+
+def tirer_500():
+    _tirer(500)
+
+
+def tirer_5000():
+    _tirer(5000)
 
 
 def effacer():
