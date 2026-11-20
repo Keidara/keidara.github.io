@@ -96,7 +96,10 @@ function dessiner(f) {
     f.img.src = "data:image/png;base64," + kit.render(f.nom, JSON.stringify(valeurs()), dark(), false, f.w, f.h);
     if (debug) etat(`${f.nom} : ${Math.round(performance.now() - t0)} ms`);
   } catch (e) {
-    etat(debug ? `Erreur dans fig_${f.nom} : ` + String(e).split("\n").slice(-2).join(" ") : "Impossible de tracer une figure.");
+    const msg = String(e).split("\n").slice(-2).join(" ");
+    const c = f.img.parentElement.querySelector(".chargement");   // l'erreur reste affichée dans le cadre de la figure
+    if (c) c.textContent = debug ? `Erreur dans fig_${f.nom} : ${msg}` : "Indisponible.";
+    etat(debug ? `Erreur dans fig_${f.nom} : ${msg}` : "Impossible de tracer une figure.");
     console.error(e);
   }
 }
