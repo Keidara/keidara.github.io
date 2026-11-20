@@ -322,3 +322,26 @@ demarrer().catch(err => {
   etat(debug ? "Impossible de charger l'outil : " + detail : "Impossible de charger l'outil. Recharge la page ou réessaie plus tard.");
   console.error(err);
 });
+
+// ---- formules LaTeX (KaTeX) : \( ... \) en ligne, $$ ... $$ en bloc
+function chargerScript(src) {
+  return new Promise((ok, ko) => {
+    const s = document.createElement("script");
+    s.src = src; s.onload = ok; s.onerror = ko;
+    document.head.append(s);
+  });
+}
+(async () => {
+  try {
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
+    document.head.append(css);
+    await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js");
+    await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js");
+    renderMathInElement(document.body, {
+      delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\(", right: "\\)", display: false }],
+      throwOnError: false
+    });
+  } catch (e) { console.error(e); }
+})();
