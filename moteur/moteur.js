@@ -123,7 +123,7 @@ function boucle(now) {
       if (s.bouton) s.bouton.textContent = i.fini ? "Rejouer" : s.lecture ? "Pause" : "Lecture";
       (i.figures || []).forEach(n => demandes.add(n));
     }
-    if (demandes.size && now - derniereFig > 1000) {         // figures liées (ex. écran) : au plus 4 fois par seconde
+    if (demandes.size && now - derniereFig > 250) {         // figures liées (ex. écran) : au plus 4 fois par seconde
       figs.filter(f => demandes.has(f.nom)).forEach(f => dessiner(f));
       demandes.clear(); derniereFig = now;
     }
