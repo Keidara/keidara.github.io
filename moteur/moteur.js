@@ -354,9 +354,10 @@ function chargerScript(src) {
     document.head.append(css);
     await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js");
     await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js");
-    renderMathInElement(document.body, {
+    window.formules = () => renderMathInElement(document.body, {
       delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\(", right: "\\)", display: false }],
       throwOnError: false
     });
+    window.formules();
   } catch (e) { console.error(e); }
 })();
