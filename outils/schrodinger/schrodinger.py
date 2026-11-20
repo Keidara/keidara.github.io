@@ -132,8 +132,8 @@ def _rendu(auto):
 
 
 def frame_onde(lecture, vitesse, auto):
-    """Avance de `vitesse` pas (en lecture, ou pour atteindre l'écran si des impacts sont demandés),
-    tire les impacts demandés une fois l'onde arrivée, et renvoie l'image."""
+    """Propagation (tant qu'elle n'est pas finie), puis tirage des impacts. Une fois la propagation
+    terminée, l'image de la carte est figée : les impacts ne la recalculent jamais."""
     fini = S["t"] >= S["T"]
     avance = (lecture or PEND["n"] > 0) and not fini
     if avance:
@@ -148,10 +148,13 @@ def frame_onde(lecture, vitesse, auto):
         fire(m)
         PEND["n"] -= m
         tire = True
-    img = _rendu(auto)
+    if avance or S.get("img") is None or S.get("auto") != auto:   # carte recalculée seulement si l'onde a bougé
+        S["img"] = _rendu(auto)
+        S["auto"] = auto
     texte = (f"t = {S['t']:.1f} / {S['T']:.1f}   Probabilité dans la boîte : {S['norm']:.2f}   "
              f"Impacts : {len(S['imp'])}" + ("   — simulation terminée" if fini else ""))
-    return img, dict(taille=N, fini=bool(fini), texte=texte, figures=["ecran"] if ((avance and fini) or tire) else [])
+    return S["img"], dict(taille=N, fini=bool(fini), texte=texte,
+                          figures=["ecran"] if ((avance and fini) or tire) else [])
 
 
 # --------------------------------------------------------- écran et impacts
@@ -203,7 +206,7 @@ def fig_ecran(fig):
     imp = S["imp"]
     ax1.set_facecolor("black")
     if len(imp):
-        ax1.scatter(imp[:, 0], imp[:, 1], s=4, color="white", alpha=0.85, linewidths=0)
+        ax1.plot(imp[:, 0], imp[:, 1], ".", color="white", ms=2.5, mew=0, alpha=0.85)
     ax1.set_ylim(0, 1)
     ax1.set_yticks([])
     ax1.set_title(f"Impacts sur l’écran (vue de face) : {len(imp)}")
