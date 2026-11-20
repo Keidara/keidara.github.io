@@ -13,6 +13,17 @@ let derniereAction = 0, veilleTimer;
 const dark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 const etat = t => { const e = document.querySelector("[data-etat]"); if (e) e.textContent = t; };
 if (debug) etat("Chargement de Python et de matplotlib…");
+// ---- mentions « Chargement… » (retirées dès que le contenu est prêt)
+$$("[data-figure]").forEach(d => {
+  const m = document.createElement("div");
+  m.className = "chargement"; m.setAttribute("role", "status"); m.textContent = "Chargement…";
+  d.append(m);
+});
+$$("canvas[data-simulation]").forEach(c => {
+  const m = document.createElement("div");
+  m.className = "chargement court"; m.setAttribute("role", "status"); m.textContent = "Chargement de la simulation…";
+  c.before(m);
+});
 
 // ---- valeurs des paramètres (un paramètre sans contrôle dans la page garde sa valeur par défaut)
 function lire(p) {
@@ -118,6 +129,7 @@ function boucle(now) {
       if (!s.image || s.image.width !== i.taille) { s.c.width = s.c.height = i.taille; s.image = s.ctx.createImageData(i.taille, i.taille); }
       const b = res.getBuffer("u8"); s.image.data.set(b.data); b.release(); res.destroy();
       s.ctx.putImageData(s.image, 0, 0);
+      if (s.c.previousElementSibling?.classList.contains("chargement")) s.c.previousElementSibling.remove();
       s.fini = i.fini;
       const dtImg = s.avant ? now - s.avant : 0; s.avant = now;
       s.moy = s.moy ? 0.9 * s.moy + 0.1 * dtImg : dtImg;   // moyenne lissée
@@ -256,6 +268,8 @@ async function demarrer() {
     const [w, h] = (d.dataset.taille || "10x6").split("x").map(Number);
     const img = new Image();
     img.alt = d.dataset.alt || "";
+    img.style.display = "none";
+    img.addEventListener("load", () => { d.querySelector(".chargement")?.remove(); img.style.display = ""; }, { once: true });
     d.append(img);
     const f = { nom, img, w, h, uses: meta.uses };
     figs.push(f);
@@ -319,6 +333,7 @@ demarrer().catch(err => {
   let detail = err && err.message;
   if (!detail) { try { detail = JSON.stringify(err); } catch (_) { detail = String(err); } }
   detail = String(detail).split("\n").slice(-3).join(" ");
+  $$(".chargement").forEach(e => e.textContent = "Indisponible.");
   etat(debug ? "Impossible de charger l'outil : " + detail : "Impossible de charger l'outil. Recharge la page ou réessaie plus tard.");
   console.error(err);
 });
