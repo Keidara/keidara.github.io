@@ -29,20 +29,20 @@
         <button class="sec" data-reinit="onde">Réinitialiser</button>
       </div>
       <div data-controles="mode a d k0 sy vitesse auto"></div>
-      <div data-controles="n_impacts"></div>
       <div class="btns">
-        <button data-action="tirer">Tirer les impacts</button>
-        <button class="sec" data-action="effacer" data-cible="ecran">Effacer</button>
+        <button data-action="tirer_500">Tirer 500 impacts</button>
+        <button data-action="tirer_5000">Tirer 5000 impacts</button>
       </div>
+      <button class="sec" data-action="effacer" data-cible="ecran">Effacer les impacts</button>
     </div>
   </div>
   <section>
     <h2>Le modèle</h2>
-    <p>On résout l’équation de Schrödinger (unités ħ = m = 1) par la méthode « split-step » (FFT) sur une grille de 192 × 192 :</p>
-    <p class="formule">i ∂ψ/∂t = −½ ∇²ψ + V ψ</p>
+    <p>On résout l’équation de Schrödinger (unités \(\hbar = m = 1\)) par la méthode « split-step » (FFT) sur une grille de \(192 \times 192\) :</p>
+    <p class="formule">$$i\,\frac{\partial \psi}{\partial t} = -\frac{1}{2}\,\nabla^2 \psi + V\,\psi$$</p>
     <p>Le mur est un potentiel très haut, percé d’une ou deux fentes ; les bords du domaine sont absorbants. Modifier un paramètre relance la simulation et efface les impacts.</p>
-    <p>L’écran (pointillés cyan) n’intervient pas dans la dynamique : il enregistre le flux de probabilité qui le traverse, intégré sur toute la durée. Cela donne la loi de probabilité d’impact, tracée en rouge. « Tirer les impacts » lance la simulation si besoin, puis tire des électrons indépendants selon cette loi. Les fentes sont supposées infinies selon z, donc cette coordonnée est tirée uniformément sur la vue de face.</p>
-    <p>La couleur représente √|ψ|² pour garder visibles les zones peu intenses.</p>
+    <p>L’écran (pointillés cyan) n’intervient pas dans la dynamique : il enregistre le flux de probabilité qui le traverse, intégré sur toute la durée. Cela donne la loi de probabilité d’impact, tracée en orange. Les boutons « Tirer » lancent la simulation si besoin, puis tirent des électrons indépendants selon cette loi. Les fentes sont supposées infinies selon \(z\), donc cette coordonnée est tirée uniformément sur la vue de face.</p>
+    <p>La couleur représente \(\sqrt{|\psi|^2}\) pour garder visibles les zones peu intenses. L’échelle de couleur est fixe : en l’activant en mode automatique, la queue très faible du paquet qui sort du domaine serait amplifiée et semblerait rester à l’écran.</p>
   </section>
   <p class="etat" data-etat role="status"></p>
 </main>
