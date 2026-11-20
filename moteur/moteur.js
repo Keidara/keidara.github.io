@@ -115,6 +115,7 @@ function boucle(now) {
       const res = kit.frame(s.nom, JSON.stringify(valeurs()), s.lecture);
       s.ms = performance.now() - t0;
       const i = JSON.parse(kit.infos(s.nom));
+      if (!s.image || s.image.width !== i.taille) { s.c.width = s.c.height = i.taille; s.image = s.ctx.createImageData(i.taille, i.taille); }
       const b = res.getBuffer("u8"); s.image.data.set(b.data); b.release(); res.destroy();
       s.ctx.putImageData(s.image, 0, 0);
       s.fini = i.fini;
