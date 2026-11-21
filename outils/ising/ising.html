@@ -6,6 +6,19 @@
 <title>Modèle d’Ising 2D</title>
 <link rel="stylesheet" href="../../moteur/style.css">
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+  /* Sections repliables (essai) : même esprit que les menus de l’accueil, avec la couleur de la page */
+  details.repli{margin:1rem 0;border:1px solid color-mix(in srgb,var(--c,var(--acc)) 35%,var(--line));border-radius:8px;
+                background:color-mix(in srgb,var(--c,var(--acc)) 7%,transparent)}
+  details.repli summary{display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;cursor:pointer;list-style:none}
+  details.repli summary::-webkit-details-marker{display:none}
+  details.repli summary::before{content:"▸";color:var(--c,var(--acc));transition:transform .15s}
+  details.repli[open] summary::before{transform:rotate(90deg)}
+  details.repli summary h2{margin:0}
+  details.repli .corps{padding:0 1rem 1rem}
+  details.repli .corps>:last-child{margin-bottom:0}
+  @media(prefers-reduced-motion:reduce){details.repli summary::before{transition:none}}
+</style>
 </head>
 <body data-outil="ising">
 <main>
@@ -33,19 +46,23 @@
     </div>
   </div>
 
-  <section>
-    <h2>Le modèle</h2>
-    <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est donnée par la relation : 
+  <details class="repli">
+    <summary><h2>Le modèle</h2></summary>
+    <div class="corps">
+    <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est donnée par la relation :</p>
     <p>$$\boxed{E = -\sum_{\langle i,j\rangle} s_i\,s_j \;-\; h\sum_i s_i}$$</p>
-    Cette énergie est plus basse pour 
+    <p>Cette énergie est plus basse pour :</p>
     <ul>
       <li>chaque paire d’aimants voisins orientés dans le même sens (premier terme de la relation),</li>
       <li>chaque aimant orienté selon le champ extérieur \(h\) (second terme).</li>
+    </ul>
     <p>Le système (aimants + champ extérieur) cherche à minimiser son énergie, donc à avoir tous ses aimants orientés de la même façon, mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition (les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1).</p>
-  </section>
+    </div>
+  </details>
 
-  <section>
-    <h2>Comment la simulation procède</h2>
+  <details class="repli">
+    <summary><h2>Comment la simulation procède</h2></summary>
+    <div class="corps">
     <p>C’est l’algorithme de Metropolis. À chaque étape, on propose de retourner un spin et on calcule la variation d’énergie \(\Delta E\) que cela provoquerait :</p>
     <ul>
       <li>si \(\Delta E \le 0\), le retournement baisse l’énergie : on l’accepte toujours ;</li>
@@ -53,27 +70,32 @@
     </ul>
     <p>$$\boxed{p = e^{-\Delta E / T}}$$</p>
     <p>À basse température, cette probabilité est minuscule : les spins restent alignés. À haute température, elle est proche de 1 : les spins se retournent presque librement. Un balayage consiste à proposer le retournement de chaque case une fois.</p>
-  </section>
+    </div>
+  </details>
 
-  <section>
-    <h2>Ce qu’on observe</h2>
+  <details class="repli">
+    <summary><h2>Ce qu’on observe</h2></summary>
+    <div class="corps">
     <p>On suit l’aimantation \(m\), la moyenne des spins : \(m = +1\) si tous pointent vers le haut, \(m = -1\) si tous pointent vers le bas, \(m = 0\) s’il y en a autant de chaque sorte. Le comportement change à la température critique :</p>
     <p>$$\boxed{T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269}$$</p>
     <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. Le sens est choisi au hasard (les deux sont aussi probables quand \(h = 0\)). <strong>Au-dessus</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) donne l’avantage à un sens : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
     <p>Dans le graphique de droite, la courbe verte est la solution exacte d’Onsager (1944), valable pour une grille infinie et \(h = 0\). Elle a deux branches, \(+m\) et \(-m\), qui se rejoignent en \(T_c\) :</p>
     <p>$$\boxed{m(T) = \pm\left[1 - \sinh^{-4}\!\left(\frac{2}{T}\right)\right]^{1/8} \qquad (T < T_c)}$$</p>
-    <p>Le point orange est l’aimantation de la grille à l’instant présent : avec \(h = 0\), il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus. Il bouge un peu, car l’aimantation fluctue, surtout près de \(T_c\). La grille est finie (96 × 96) et périodique (le bord droit rejoint le bord gauche, le bas rejoint le haut), d’où de petits écarts autour de \(T_c\).</p>
+    <p>Le point orange est l’aimantation de la grille, moyennée sur les cinq derniers balayages : avec \(h = 0\), il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus. Il bouge un peu, car l’aimantation fluctue, surtout près de \(T_c\). La grille est finie (96 × 96) et périodique (le bord droit rejoint le bord gauche, le bas rejoint le haut), d’où de petits écarts autour de \(T_c\).</p>
     <p>Si \(h \neq 0\), le point n’a aucune raison de rester sur la courbe verte, qui ne vaut que pour \(h = 0\) : le champ aimante le système même au-dessus de \(T_c\). Par exemple, à \(T = 3{,}2\) et \(h = -0{,}3\), l’aimantation se stabilise autour de −0,56. C’est normal, et le graphique le rappelle alors par une note.</p>
-  </section>
+    </div>
+  </details>
 
-  <section>
-    <h2>Métastabilité et hystérésis</h2>
+  <details class="repli">
+    <summary><h2>Métastabilité et hystérésis</h2></summary>
+    <div class="corps">
     <p>Pars de « Ordonnée » à très basse température (\(T \approx 0{,}5\)), puis inverse le champ, même à fond (\(h = -1\)) : rien ne bouge, la grille reste aimantée dans le sens opposé au champ. C’est un état <strong>métastable</strong> : il tient tant qu’on ne le perturbe pas assez.</p>
     <p>La raison est le coût du retournement d’un spin \(s_i\) :</p>
     <p>$$\boxed{\Delta E = 2\,s_i\Big(\sum_{j\ \text{voisins}} s_j + h\Big)}$$</p>
     <p>Pour un spin entouré de quatre voisins alignés avec lui, on trouve \(\Delta E = 8 - 2|h| \ge 6\) : le champ, limité à \(|h| \le 1\), ne compense jamais la perte des liaisons. La probabilité d’accepter le retournement est alors au plus \(e^{-6/T} \approx 6 \times 10^{-6}\) à \(T = 0{,}5\).</p>
     <p>Pour que l’aimantation bascule, il faut qu’une zone retournée assez grande apparaisse par hasard (c’est la nucléation) : elle grossit ensuite d’elle-même, car au-delà d’une certaine taille le gain dû au champ l’emporte sur le coût de sa frontière. Chauffer rend ces fluctuations plus fréquentes : monte \(T\) peu à peu et le système finit par suivre le champ. Plus le champ est faible, plus il faut chauffer. Ce retard à suivre le champ s’appelle l’hystérésis.</p>
-  </section>
+    </div>
+  </details>
 
   <p class="etat" data-etat role="status"></p>
 </main>
