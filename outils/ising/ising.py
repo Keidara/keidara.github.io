@@ -23,7 +23,7 @@ PALETTE = np.array([[16, 25, 70, 255], [245, 165, 36, 255]], np.uint8)   # spin 
 
 # La figure « historique » coûte plus cher à tracer qu'une image de la grille : on la rafraîchit au plus
 # toutes les DELAI_FIG secondes, et une dernière fois à la mise en pause pour qu'elle soit à jour.
-DELAI_FIG = 0.25
+DELAI_FIG = 0.5
 _fig = {"t": 0.0, "sale": False}
 # La vitesse est en balayages par seconde (et non par image) : on cumule le temps écoulé entre deux images
 # et on fait autant de balayages entiers que ce temps en permet. DT_MAX évite une rafale de balayages après
