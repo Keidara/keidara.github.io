@@ -8,7 +8,7 @@ PARAMS = [
     Select("depart", "Configuration de départ", ["Aléatoire", "Ordonnée"]),
     Slider("T", "Température T", 0.5, 5.0, 2.0, step=0.05),
     Slider("H", "Champ extérieur h", -1.0, 1.0, 0.0, step=0.05),
-    Slider("vitesse", "Vitesse", 1, 10, 2, unit="balayages/image"),
+    Slider("vitesse", "Vitesse", 5, 100, 25, step=5, unit="balayages/s"),
 ]
 
 N = 96
@@ -21,11 +21,15 @@ HIST = deque(maxlen=400)                           # (balayages, aimantation, é
 bal = 0
 PALETTE = np.array([[16, 25, 70, 255], [245, 165, 36, 255]], np.uint8)   # spin bas, spin haut
 
-# La figure « historique » coûte plus cher à tracer qu'une image de la grille : la redessiner à chaque
-# image fait saccader l'animation. On la rafraîchit au plus toutes les DELAI_FIG secondes, et une dernière
-# fois à la mise en pause pour qu'elle soit à jour.
-DELAI_FIG = 1.5
+# La figure « historique » coûte plus cher à tracer qu'une image de la grille : on la rafraîchit au plus
+# toutes les DELAI_FIG secondes, et une dernière fois à la mise en pause pour qu'elle soit à jour.
+DELAI_FIG = 0.25
 _fig = {"t": 0.0, "sale": False}
+# La vitesse est en balayages par seconde (et non par image) : on cumule le temps écoulé entre deux images
+# et on fait autant de balayages entiers que ce temps en permet. DT_MAX évite une rafale de balayages après
+# une pause ou un onglet en arrière-plan.
+DT_MAX = 0.1
+_horloge = {"dernier": None, "credit": 0.0}
 
 
 def init_ising(depart):
@@ -34,6 +38,7 @@ def init_ising(depart):
     bal = 0
     HIST.clear()
     _fig.update(t=time.time(), sale=False)
+    _horloge.update(dernier=None, credit=0.0)
     return ["historique"]
 
 
@@ -53,15 +58,23 @@ def _mesures(H):
 
 def frame_ising(lecture, T, H, vitesse):
     global bal
+    maintenant = time.time()
+    dt = 0.0 if _horloge["dernier"] is None else min(maintenant - _horloge["dernier"], DT_MAX)
+    _horloge["dernier"] = maintenant
+    n = 0
     if lecture:
-        for _ in range(int(vitesse)):
-            _balayage(T, H)
-            bal += 1
+        _horloge["credit"] += dt * vitesse
+        n = int(_horloge["credit"])
+        _horloge["credit"] -= n
+    else:
+        _horloge["credit"] = 0.0
+    for _ in range(n):
+        _balayage(T, H)
+        bal += 1
     m, e = _mesures(H)
-    if lecture:
+    if n:                                           # une mesure seulement si la grille a changé
         HIST.append((bal, m, e, T))
         _fig["sale"] = True
-    maintenant = time.time()
     figures = []
     if _fig["sale"] and (not lecture or maintenant - _fig["t"] > DELAI_FIG):
         figures = ["historique"]
