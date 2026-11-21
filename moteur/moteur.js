@@ -286,10 +286,10 @@ async function demarrer() {
   const py = await loadPyodide();
   await py.loadPackage(["numpy", "matplotlib"]);
   py.FS.mkdir("/kitlib");           // (pas "/lib" : ce dossier existe déjà dans Pyodide)
-  py.FS.writeFile("/kitlib/kit.py", await (await fetch(new URL("kit.py", MOTEUR))).text());
+  py.FS.writeFile("/kitlib/kit.py", await (await fetch(new URL("kit.py", MOTEUR), { cache: "no-cache" })).text());
   py.runPython("import sys; sys.path.insert(0, '/kitlib')");
   kit = py.pyimport("kit");
-  const rep = await fetch(`./${outil}.py`);
+  const rep = await fetch(`./${outil}.py`, { cache: "no-cache" });
   if (!rep.ok) throw new Error(`${outil}.py introuvable`);
   kit.load(await rep.text());
   const info = JSON.parse(kit.describe());
@@ -401,7 +401,7 @@ function chargerScript(src) {
 // ---- couleur de la page : celle de la section de l'index où figure l'outil
 (async () => {
   try {
-    const rep = await fetch(new URL("../index.html", MOTEUR));
+    const rep = await fetch(new URL("../index.html", MOTEUR), { cache: "no-cache" });
     const index = new DOMParser().parseFromString(await rep.text(), "text/html");
     const lien = index.querySelector(`a.tool[href$="/${outil}/${outil}.html"]`);
     const c = lien?.closest("details")?.style.getPropertyValue("--c");
