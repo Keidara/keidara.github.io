@@ -18,6 +18,18 @@
   details.repli .corps{padding:0 1rem 1rem}
   details.repli .corps>:last-child{margin-bottom:0}
   @media(prefers-reduced-motion:reduce){details.repli summary::before{transition:none}}
+
+  /* Champ extérieur h : piste colorée selon le signe (bleu entre 0 et le curseur si h > 0, rouge si h < 0).
+     Les variables --z, --lo, --hi et --col sont mises à jour par le script en bas de page. */
+  #p_H{--z:50%;--lo:50%;--hi:50%;--col:var(--acc);-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;cursor:pointer;
+       background:linear-gradient(var(--mut),var(--mut)) calc(var(--z) - 1px) 0/2px 100% no-repeat,
+                  linear-gradient(to right,var(--line) var(--lo),var(--col) var(--lo),var(--col) var(--hi),var(--line) var(--hi))}
+  #p_H::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;box-sizing:border-box;width:18px;height:18px;border-radius:50%;
+       background:var(--col);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--mut)}
+  #p_H::-moz-range-thumb{box-sizing:border-box;width:18px;height:18px;border-radius:50%;background:var(--col);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--mut)}
+  #p_H::-moz-range-track{background:transparent}
+  .pas-h{margin-top:-.5rem}
+  .pas-h button.pm{flex:0 0 3rem}
 </style>
 </head>
 <body data-outil="ising">
@@ -99,6 +111,47 @@
 
   <p class="etat" data-etat role="status"></p>
 </main>
+<script>
+// Champ extérieur h : boutons − / h = 0 / +, et piste colorée selon le signe.
+// Le curseur est créé par le moteur après le chargement : on attend qu'il apparaisse dans la page.
+(function () {
+  function ameliorer(el) {
+    const maj = () => {                              // position du curseur et du zéro (le curseur fait 18 px de large)
+      const min = +el.min, max = +el.max, v = +el.value;
+      const pos = x => `calc(9px + (100% - 18px) * ${(x - min) / (max - min)})`;
+      const z = pos(0), x = pos(v);
+      el.style.setProperty("--z", z);
+      el.style.setProperty("--lo", v >= 0 ? z : x);
+      el.style.setProperty("--hi", v >= 0 ? x : z);
+      el.style.setProperty("--col", v >= 0 ? "var(--acc)" : "#e5484d");
+    };
+    el.addEventListener("input", maj);
+    maj();
+    const barre = document.createElement("div");
+    barre.className = "btns pas-h";
+    [["−", "pm", "Diminuer h d’un pas", () => el.stepDown()],
+     ["h = 0", "", "Mettre le champ extérieur à zéro", () => { el.value = 0; }],
+     ["+", "pm", "Augmenter h d’un pas", () => el.stepUp()]].forEach(([texte, classe, titre, agir]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "sec " + classe; b.textContent = texte;
+      b.title = titre; b.setAttribute("aria-label", titre);
+      b.addEventListener("click", () => {
+        agir();
+        el.dispatchEvent(new Event("input", { bubbles: true }));   // le moteur met alors à jour l’affichage et les figures
+      });
+      barre.append(b);
+    });
+    el.closest("label").after(barre);
+  }
+  const deja = document.getElementById("p_H");
+  if (deja) return ameliorer(deja);
+  const obs = new MutationObserver(() => {
+    const el = document.getElementById("p_H");
+    if (el) { obs.disconnect(); ameliorer(el); }
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
 <script src="../../moteur/moteur.js"></script>
 </body>
 </html>

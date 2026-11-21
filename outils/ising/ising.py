@@ -6,7 +6,7 @@ from kit import *
 
 PARAMS = [
     Select("depart", "Configuration de départ", ["Aléatoire", "Ordonnée"]),
-    Slider("T", "Température T", 0.5, 4.0, 2.0, step=0.05),
+    Slider("T", "Température T", 0.0, 4.0, 2.0, step=0.05),
     Slider("H", "Champ extérieur h", -1.0, 1.0, 0.0, step=0.05),
 ]
 
@@ -52,7 +52,9 @@ def _balayage(T, H):
     for mk in MASQUES:
         voisins = np.roll(S, 1, 0) + np.roll(S, -1, 0) + np.roll(S, 1, 1) + np.roll(S, -1, 1)
         dE = 2.0 * S * (voisins + H)                # variation d'énergie si on retourne le spin (J = 1)
-        accepte = (dE <= 0) | (rng.random((N, N)) < np.exp(-np.clip(dE, 0, None) / T))
+        accepte = dE <= 0                           # un retournement qui n'augmente pas l'énergie est toujours accepté
+        if T > 0:                                   # sinon, avec la probabilité exp(−ΔE/T) ; à T = 0, jamais
+            accepte |= rng.random((N, N)) < np.exp(-np.clip(dE, 0, None) / T)
         S[mk & accepte] *= -1
 
 
@@ -119,7 +121,7 @@ def fig_historique(fig, T, H):
     ax_e.set_xlabel("Balayages")
 
     # Courbe d'Onsager : deux branches +m et −m (le sens pris par la grille est tiré au hasard)
-    t = np.linspace(0.3, 4.1, 600)
+    t = np.linspace(0.0, 4.1, 600)                  # t = 0 inclus : 2/t vaut alors l'infini, et m = 1
     with np.errstate(all="ignore"):
         onsager = np.where(t < TC, (1 - np.sinh(2 / t) ** -4.0) ** 0.125, 0.0)
     ax_o.axhline(0, color="0.7", lw=0.8)
@@ -137,6 +139,6 @@ def fig_historique(fig, T, H):
     ax_o.set_xlabel("Température T")
     ax_o.set_ylabel("Aimantation")
     ax_o.set_title(f"T_c ≈ {TC:.3f}")
-    ax_o.set_xlim(0.3, 4.1)
+    ax_o.set_xlim(-0.1, 4.1)
     ax_o.set_ylim(-1.5, 1.5)
     ax_o.legend(loc="upper right", fontsize=9)
