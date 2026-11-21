@@ -397,3 +397,14 @@ function chargerScript(src) {
     });
   } catch (e) { console.error(e); }
 })();
+
+// ---- couleur de la page : celle de la section de l'index où figure l'outil
+(async () => {
+  try {
+    const rep = await fetch(new URL("../index.html", MOTEUR));
+    const index = new DOMParser().parseFromString(await rep.text(), "text/html");
+    const lien = index.querySelector(`a.tool[href$="/${outil}/${outil}.html"]`);
+    const c = lien?.closest("details")?.style.getPropertyValue("--c");
+    if (c) document.documentElement.style.setProperty("--c", c);
+  } catch (e) { console.error(e); }
+})();
