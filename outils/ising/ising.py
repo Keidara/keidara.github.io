@@ -7,8 +7,7 @@ from kit import *
 PARAMS = [
     Select("depart", "Configuration de départ", ["Aléatoire", "Ordonnée"]),
     Slider("T", "Température T", 0.5, 5.0, 2.0, step=0.05),
-    Slider("H", "Champ extérieur h", -1.0, 1.0, 0.0, step=0.05),
-    Slider("vitesse", "Vitesse", 5, 100, 25, step=5, unit="balayages/s"),
+    Slider("H", "Champ extérieur h", -1.0, 1.0, 0.0, step=0.05)
 ]
 
 N = 96
