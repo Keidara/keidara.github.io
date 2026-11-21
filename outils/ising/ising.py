@@ -8,7 +8,6 @@ PARAMS = [
     Select("depart", "Configuration de départ", ["Aléatoire", "Ordonnée"]),
     Slider("T", "Température T", 0.5, 5.0, 2.0, step=0.05),
     Slider("H", "Champ extérieur h", -1.0, 1.0, 0.0, step=0.05),
-    Slider("vitesse", "Vitesse", 5, 100, 25, step=5, unit="balayages/s"),
 ]
 
 N = 96
@@ -23,7 +22,7 @@ PALETTE = np.array([[16, 25, 70, 255], [245, 165, 36, 255]], np.uint8)   # spin 
 
 # La figure « historique » coûte plus cher à tracer qu'une image de la grille : on la rafraîchit au plus
 # toutes les DELAI_FIG secondes, et une dernière fois à la mise en pause pour qu'elle soit à jour.
-DELAI_FIG = 0.5
+DELAI_FIG = 0.25
 _fig = {"t": 0.0, "sale": False}
 # La vitesse est en balayages par seconde (et non par image) : on cumule le temps écoulé entre deux images
 # et on fait autant de balayages entiers que ce temps en permet. DT_MAX évite une rafale de balayages après
