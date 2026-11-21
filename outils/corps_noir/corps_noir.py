@@ -89,14 +89,14 @@ def fig_spectre(fig, T, log_x, ref):
         lam = np.linspace(50, xmax, 2500)
     courbes = [(T, f"T = {T:,.0f} K".replace(",", " "), "C0", 2.5)]
     if ref:
-        courbes += [(2700, "ampoule (2 700 K)", "C3", 1.2), (5772, "Soleil (5 772 K)", "C2", 1.2)]
+        courbes += [(2700, "Ampoule (2 700 K)", "C3", 1.2), (5772, "Soleil (5 772 K)", "C2", 1.2)]
     ymax = max(planck(lam, t).max() for t, *_ in courbes)
     bords = np.linspace(380, 780, 81)                               # bande du visible, en 80 tranches
     for a, b in zip(bords[:-1], bords[1:]):
         ax.axvspan(a, b, color=lambda_vers_rgb((a + b) / 2), alpha=0.45, lw=0, zorder=0)
     for t, lab, col, lw in courbes:
         ax.plot(lam, planck(lam, t), color=col, lw=lw, label=lab)
-    ax.axvline(lam_max, ls=":", color="C1", lw=1.2, label=f"pic (loi de Wien) : {lam_max:,.0f} nm".replace(",", " "))
+    ax.axvline(lam_max, ls=":", color="C1", lw=1.2, label=f"Pic (loi de Wien) : {lam_max:,.0f} nm".replace(",", " "))
     ax.text(580, ymax * 1.08, "visible", ha="center", va="top", fontsize=9)
     if log_x:
         ax.set_xscale("log")
