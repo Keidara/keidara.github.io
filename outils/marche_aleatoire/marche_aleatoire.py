@@ -102,7 +102,7 @@ def fig_msd(fig, dim, n_pas, n_marcheurs):
             r2.append(np.mean(u ** 2 + v ** 2) / 2)
         else:
             r2.append(np.mean(u ** 2))
-    ax.loglog(t, r2, color="C0", lw=2, label=f"moyenne sur {N:,} marcheurs".replace(",", " "))
+    ax.loglog(t, r2, color="C0", lw=2, label=f"Moyenne sur {N:,} marcheurs".replace(",", " "))
     ax.loglog(t, t, "--", color="C1", lw=2, label=r"Théorie : $\langle r^2\rangle = n$")
     ax.set_xlabel("Nombre de pas $n$")
     ax.set_ylabel(r"$\langle r^2\rangle$" if plan else r"$\langle x^2\rangle$")
