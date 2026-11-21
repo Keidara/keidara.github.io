@@ -12,14 +12,15 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Modèle d’Ising 2D</h1>
 
-  <p>Chaque case est un petit aimant qui pointe vers le haut ou vers le bas. Deux voisins préfèrent s’aligner, mais l’agitation thermique tend à les désordonner. Selon la température, le système s’ordonne ou non : c’est une transition de phase.</p>
+  <p>Chaque case est un minuscule aimant, un « spin », qui pointe soit vers le haut (orange), soit vers le bas (bleu foncé). Deux voisins préfèrent pointer dans le même sens, mais l’agitation thermique les retourne au hasard. Selon la température, c’est l’un ou l’autre qui l’emporte : c’est une transition de phase.</p>
   <div class="duo">
     <div>
       <canvas class="pixel" data-simulation="ising" width="96" height="96" aria-label="Grille de spins : orange vers le haut, bleu foncé vers le bas"></canvas>
       <div class="stats" data-stats="ising" role="status"></div>
       <section>
         <h2>Aimantation et énergie</h2>
-        <div data-figure="historique" data-taille="10x5" data-alt="Évolution de l’aimantation et de l’énergie, et courbe théorique d’Onsager"></div>
+        <div data-figure="historique" data-taille="10x5" data-alt="Évolution de l’aimantation et de l’énergie, et courbe théorique d’Onsager à deux branches"></div>
+        <p>À gauche : l’évolution de l’aimantation et de l’énergie au cours de la simulation. À droite : l’aimantation en fonction de la température, avec la théorie (courbe verte) et la valeur mesurée (point orange).</p>
       </section>
     </div>
     <div class="panneau">
@@ -30,14 +31,38 @@
       <div data-controles="*"></div>
     </div>
   </div>
+
   <section>
     <h2>Le modèle</h2>
-    <p>L’énergie d’une configuration est la somme, sur les paires de voisins, de −s·s′ (où chaque spin vaut +1 ou −1), à laquelle s’ajoute un terme de champ −h·s :</p>
-    <p class="formule">E = − Σ sᵢ sⱼ − h Σ sᵢ</p>
-    <p>On l’explore avec l’algorithme de Metropolis : on tire une case, on calcule la variation d’énergie ΔE si on la retourne, puis on la retourne si ΔE ≤ 0, ou avec la probabilité exp(−ΔE/T) sinon. Un balayage met à jour toutes les cases une fois.</p>
+    <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est plus basse quand les voisins sont alignés, et le champ extérieur \(h\) favorise l’un des deux sens :</p>
+    <p>$$\boxed{E = -\sum_{\langle i,j\rangle} s_i\,s_j \;-\; h\sum_i s_i}$$</p>
+    <p>La première somme porte sur toutes les paires de cases voisines (haut, bas, gauche, droite) : une paire alignée compte −1, une paire opposée +1. Le système « voudrait » donc tout aligner, mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition (les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1).</p>
+  </section>
+
+  <section>
+    <h2>Comment la simulation procède</h2>
+    <p>C’est l’algorithme de Metropolis. À chaque étape, on propose de retourner un spin et on calcule la variation d’énergie \(\Delta E\) que cela provoquerait :</p>
+    <ul>
+      <li>si \(\Delta E \le 0\), le retournement baisse l’énergie : on l’accepte toujours ;</li>
+      <li>sinon, on l’accepte quand même, mais seulement avec la probabilité :</li>
+    </ul>
+    <p>$$\boxed{p = e^{-\Delta E / T}}$$</p>
+    <p>À basse température, cette probabilité est minuscule : les spins restent alignés. À haute température, elle est proche de 1 : les spins se retournent presque librement. Un balayage consiste à proposer le retournement de chaque case une fois.</p>
+  </section>
+
+  <section>
     <h2>Ce qu’on observe</h2>
-    <p>En dessous de la température critique T<sub>c</sub> ≈ 2,269, le système s’aimante spontanément : des domaines de même orientation grossissent jusqu’à envahir la grille. Au-dessus, l’aimantation reste nulle en moyenne. Près de T<sub>c</sub>, les fluctuations sont à toutes les échelles et le système évolue très lentement. Le champ h brise la symétrie et favorise un sens.</p>
-    <p>La courbe verte, due à Onsager (1944), donne l’aimantation exacte pour un réseau infini et h = 0. Le point orange est la valeur mesurée sur la grille, moyennée sur les dernières images. La grille est périodique et finie (96 × 96), d’où de petits écarts autour de T<sub>c</sub>.</p>
+    <p>On suit l’aimantation \(m\), la moyenne des spins : \(m = +1\) si tous pointent vers le haut, \(m = -1\) si tous pointent vers le bas, \(m = 0\) s’il y en a autant de chaque sorte. Le comportement change à la température critique :</p>
+    <p>$$\boxed{T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269}$$</p>
+    <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. Le sens est choisi au hasard (les deux sont aussi probables quand \(h = 0\)). <strong>Au-dessus</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) donne l’avantage à un sens : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
+    <p>Dans le graphique de droite, la courbe verte est la solution exacte d’Onsager (1944), valable pour une grille infinie et \(h = 0\). Elle a deux branches, \(+m\) et \(-m\), qui se rejoignent en \(T_c\) :</p>
+    <p>$$\boxed{m(T) = \pm\left[1 - \sinh^{-4}\!\left(\frac{2}{T}\right)\right]^{1/8} \qquad (T < T_c)}$$</p>
+    <p>Le point orange est la valeur mesurée sur la grille, moyennée sur les dernières images prises à la température choisie : il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus. La grille est finie (96 × 96) et périodique (le bord droit rejoint le bord gauche, le bas rejoint le haut), d’où de petits écarts autour de \(T_c\).</p>
+  </section>
+
+  <section>
+    <h2>À essayer</h2>
+    <p>Pars de « Ordonnée » avec \(T = 1\) : rien ne bouge. Monte à \(T = 3\) : la grille se désordonne en quelques images. Puis réinitialise depuis « Aléatoire » avec \(T = 1{,}5\) : des domaines se forment et se disputent le terrain, parfois longtemps. Enfin, règle \(T\) près de 2,3 et observe les grandes fluctuations.</p>
   </section>
   <p class="etat" data-etat role="status"></p>
 </main>
