@@ -16,7 +16,7 @@ rng = np.random.default_rng()
 I, J = np.indices((N, N))
 MASQUES = [((I + J) % 2) == c for c in (0, 1)]     # damier : deux sous-réseaux indépendants
 S = np.ones((N, N), np.int8)
-HIST = deque(maxlen=400)                           # (balayages, aimantation, énergie par spin, température)
+HIST = deque(maxlen=400)                           # (balayages, aimantation, énergie par spin)
 bal = 0
 PALETTE = np.array([[16, 25, 70, 255], [245, 165, 36, 255]], np.uint8)   # spin bas, spin haut
 
@@ -24,9 +24,10 @@ PALETTE = np.array([[16, 25, 70, 255], [245, 165, 36, 255]], np.uint8)   # spin 
 # toutes les DELAI_FIG secondes, et une dernière fois à la mise en pause pour qu'elle soit à jour.
 DELAI_FIG = 0.25
 _fig = {"t": 0.0, "sale": False}
-# La vitesse est en balayages par seconde (et non par image) : on cumule le temps écoulé entre deux images
-# et on fait autant de balayages entiers que ce temps en permet. DT_MAX évite une rafale de balayages après
-# une pause ou un onglet en arrière-plan.
+# Cadence fixe, en balayages par seconde (et non par image) : on cumule le temps écoulé entre deux images
+# et on fait autant de balayages entiers que ce temps en permet. Entre 10 et 50, l'animation est fluide.
+# DT_MAX évite une rafale de balayages après une pause ou un onglet en arrière-plan.
+BALAYAGES_PAR_S = 20
 DT_MAX = 0.1
 _horloge = {"dernier": None, "credit": 0.0}
 
@@ -55,14 +56,14 @@ def _mesures(H):
     return m, e
 
 
-def frame_ising(lecture, T, H, vitesse):
+def frame_ising(lecture, T, H):
     global bal
     maintenant = time.time()
     dt = 0.0 if _horloge["dernier"] is None else min(maintenant - _horloge["dernier"], DT_MAX)
     _horloge["dernier"] = maintenant
     n = 0
     if lecture:
-        _horloge["credit"] += dt * vitesse
+        _horloge["credit"] += dt * BALAYAGES_PAR_S
         n = int(_horloge["credit"])
         _horloge["credit"] -= n
     else:
@@ -72,7 +73,7 @@ def frame_ising(lecture, T, H, vitesse):
         bal += 1
     m, e = _mesures(H)
     if n:                                           # une mesure seulement si la grille a changé
-        HIST.append((bal, m, e, T))
+        HIST.append((bal, m, e))
         _fig["sale"] = True
     figures = []
     if _fig["sale"] and (not lecture or maintenant - _fig["t"] > DELAI_FIG):
@@ -83,7 +84,7 @@ def frame_ising(lecture, T, H, vitesse):
     return np.ascontiguousarray(img), dict(taille=N, fini=False, texte=texte, figures=figures)
 
 
-def fig_historique(fig, T):
+def fig_historique(fig, T, H):
     gs = fig.add_gridspec(2, 2, width_ratios=[1.5, 1])
     ax_m = fig.add_subplot(gs[0, 0])
     ax_e = fig.add_subplot(gs[1, 0], sharex=ax_m)
@@ -104,12 +105,15 @@ def fig_historique(fig, T):
     with np.errstate(all="ignore"):
         onsager = np.where(t < TC, (1 - np.sinh(2 / t) ** -4.0) ** 0.125, 0.0)
     ax_o.axhline(0, color="0.7", lw=0.8)
-    ax_o.plot(t, onsager, color="C2", lw=2, label="théorie (h = 0)")
-    ax_o.plot(t, -onsager, color="C2", lw=2)
-    # Mesure : aimantation signée, moyennée sur les dernières images prises à la température actuelle
-    recents = [v[1] for v in list(HIST)[-60:] if abs(v[3] - T) < 1e-9]
-    if len(recents) > 5:
-        ax_o.plot([T], [np.mean(recents)], "o", color="C3", ms=9, label="simulation")
+    alpha = 1.0 if H == 0 else 0.4                  # la théorie ne vaut que pour h = 0
+    ax_o.plot(t, onsager, color="C2", lw=2, alpha=alpha, label="théorie (h = 0)")
+    ax_o.plot(t, -onsager, color="C2", lw=2, alpha=alpha)
+    # Mesure : aimantation instantanée de la grille (pas de moyenne, donc pas de retard)
+    nom = "simulation" if H == 0 else f"simulation (h = {H:g})"
+    ax_o.plot([T], [float(S.mean())], "o", color="C3", ms=9, label=nom)
+    if H != 0:
+        ax_o.text(0.97, 0.04, "h ≠ 0 : la courbe verte\nne s’applique plus", transform=ax_o.transAxes,
+                  ha="right", va="bottom", fontsize=8)
     ax_o.axvline(TC, ls=":", color="0.5")
     ax_o.set_xlabel("température T")
     ax_o.set_ylabel("aimantation")
