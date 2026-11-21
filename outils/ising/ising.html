@@ -12,7 +12,7 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Modèle d’Ising 2D</h1>
 
-  <p>Chaque case est un minuscule aimant, un « spin », qui pointe soit vers le haut (orange), soit vers le bas (bleu foncé). Deux voisins préfèrent pointer dans le même sens, mais l’agitation thermique les retourne au hasard. Selon la température, c’est l’un ou l’autre qui l’emporte : c’est une transition de phase.</p>
+  <p>Chaque case est un minuscule aimant, un « spin », qui pointe soit vers le haut (orange), soit vers le bas (bleu foncé). Deux aimants voisins préfèrent pointer dans le même sens, mais l’agitation thermique les retourne au hasard. Passé un certain seuil de température, c’est le couplage entre aimants ou l’agitation thermique qui l’emporte. Ce changement drastique de comportement est une transition de phase.</p>
   <div class="duo">
     <div>
       <canvas class="pixel" data-simulation="ising" width="96" height="96" aria-label="Grille de spins : orange vers le haut, bleu foncé vers le bas"></canvas>
@@ -20,7 +20,8 @@
       <section>
         <h2>Aimantation et énergie</h2>
         <div data-figure="historique" data-taille="10x5" data-alt="Évolution de l’aimantation et de l’énergie, et courbe théorique d’Onsager à deux branches"></div>
-        <p>À gauche : l’évolution de l’aimantation et de l’énergie au cours de la simulation. À droite : l’aimantation en fonction de la température, avec la théorie (courbe verte) et la valeur mesurée (point orange).</p>
+        <p>À gauche : l’évolution de l’aimantation et de l’énergie au cours de la simulation.<br>
+          À droite : l’aimantation en fonction de la température, avec la théorie <strong> en champ extérieur nul</strong> (courbe verte) et la valeur mesurée (point orange).</p>
       </section>
     </div>
     <div class="panneau">
@@ -34,9 +35,13 @@
 
   <section>
     <h2>Le modèle</h2>
-    <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est plus basse quand les voisins sont alignés, et le champ extérieur \(h\) favorise l’un des deux sens :</p>
+    <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est donnée par la relation : 
     <p>$$\boxed{E = -\sum_{\langle i,j\rangle} s_i\,s_j \;-\; h\sum_i s_i}$$</p>
-    <p>La première somme porte sur toutes les paires de cases voisines (haut, bas, gauche, droite) : une paire alignée compte −1, une paire opposée +1. Le système « voudrait » donc tout aligner, mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition (les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1).</p>
+    Cette énergie est plus basse pour 
+    <ul>
+      <li>chaque paire d’aimants voisins orientés dans le même sens (premier terme de la relation),</li>
+      <li>chaque aimant orienté selon le champ extérieur \(h\) (second terme).</li>
+    <p>Le système (aimants + champ extérieur) cherche à minimiser son énergie, donc à avoir tous ses aimants orientés de la même façon, mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition (les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1).</p>
   </section>
 
   <section>
@@ -70,10 +75,6 @@
     <p>Pour que l’aimantation bascule, il faut qu’une zone retournée assez grande apparaisse par hasard (c’est la nucléation) : elle grossit ensuite d’elle-même, car au-delà d’une certaine taille le gain dû au champ l’emporte sur le coût de sa frontière. Chauffer rend ces fluctuations plus fréquentes : monte \(T\) peu à peu et le système finit par suivre le champ. Plus le champ est faible, plus il faut chauffer. Ce retard à suivre le champ s’appelle l’hystérésis.</p>
   </section>
 
-  <section>
-    <h2>À essayer</h2>
-    <p>Pars de « Ordonnée » avec \(T = 1\) : rien ne bouge. Monte à \(T = 3\) : la grille se désordonne en quelques images. Puis réinitialise depuis « Aléatoire » avec \(T = 1{,}5\) : des domaines se forment et se disputent le terrain, parfois longtemps. Enfin, règle \(T\) près de 2,3 et observe les grandes fluctuations.</p>
-  </section>
   <p class="etat" data-etat role="status"></p>
 </main>
 <script src="../../moteur/moteur.js"></script>
