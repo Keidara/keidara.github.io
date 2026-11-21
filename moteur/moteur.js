@@ -3,40 +3,6 @@
 // emplacements marqués dans la page HTML : data-controles="a b" (contrôles), data-figure="xxx" (figure),
 // data-simulation="xxx" (canvas animé) avec data-lecture / data-reinit / data-barre / data-stats,
 // data-action="nom" (bouton), data-fichier="nom" (choix d'un fichier), data-etat (zone de message).
-
-(function() {
-    const loadKaTeX = () => {
-        // Injecte le CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
-        document.head.appendChild(link);
-
-        // Injecte le script principal
-        const script1 = document.createElement('script');
-        script1.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';
-        script1.defer = true;
-        document.head.appendChild(script1);
-
-        // Injecte le script auto-render
-        const script2 = document.createElement('script');
-        script2.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js';
-        script2.defer = true;
-        script2.onload = () => {
-            // Lance le rendu sur tout le corps du document une fois chargé
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '\(', right: '\)', display: false},
-                    {left: '\[', right: '\]', display: true}
-                ]
-            });
-        };
-        document.head.appendChild(script2);
-    };
-
-    loadKaTeX();
-})();
-
 const MOTEUR = document.currentScript.src;
 const $$ = s => [...document.querySelectorAll(s)];
 const outil = document.body.dataset.outil || "";
