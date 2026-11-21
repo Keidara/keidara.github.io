@@ -7,6 +7,7 @@ B_WIEN, SIGMA = 2.897771955e-3, 5.670374419e-8         # loi de Wien (m·K), Ste
 
 PARAMS = [
     Slider("T", "Température", 300, 20000, 5000, log=True, unit="K"),
+    Check("log_x", "Échelle logarithmique en abscisse", False),
     Check("ref", "Comparer avec une ampoule (2 700 K) et le Soleil (5 772 K)", False),
 ]
 
@@ -58,26 +59,33 @@ def lambda_vers_rgb(nm):
     return np.array([r, g, b]) * att
 
 
-def fig_spectre(fig, T, ref):
+def fig_spectre(fig, T, log_x, ref):
     ax = fig.subplots()
     lam_max = B_WIEN / T * 1e9                                      # loi de Wien, en nm
     xmax = float(np.clip(5 * lam_max, 1500, 30000))
-    lam = np.linspace(50, xmax, 2500)
+    if log_x:
+        xmin = 20.0
+        lam = np.logspace(np.log10(xmin), np.log10(xmax), 2500)
+    else:
+        xmin = 0.0
+        lam = np.linspace(50, xmax, 2500)
     courbes = [(T, f"T = {T:,.0f} K".replace(",", " "), "C0", 2.5)]
     if ref:
         courbes += [(2700, "ampoule (2 700 K)", "C3", 1.2), (5772, "Soleil (5 772 K)", "C2", 1.2)]
     ymax = max(planck(lam, t).max() for t, *_ in courbes)
-    bande = np.array([[lambda_vers_rgb(n) for n in np.linspace(380, 780, 200)]])
-    ax.imshow(bande, extent=[380, 780, 0, ymax * 1.12], aspect="auto", alpha=0.45, zorder=0)
+    bords = np.linspace(380, 780, 81)                               # bande du visible, en 80 tranches
+    for a, b in zip(bords[:-1], bords[1:]):
+        ax.axvspan(a, b, color=lambda_vers_rgb((a + b) / 2), alpha=0.45, lw=0, zorder=0)
     for t, lab, col, lw in courbes:
         ax.plot(lam, planck(lam, t), color=col, lw=lw, label=lab)
     ax.axvline(lam_max, ls=":", color="C1", lw=1.2, label=f"pic (loi de Wien) : {lam_max:,.0f} nm".replace(",", " "))
     ax.text(580, ymax * 1.08, "visible", ha="center", va="top", fontsize=9)
-    ax.set_xlim(0, xmax)
+    if log_x:
+        ax.set_xscale("log")
+    ax.set_xlim(xmin, xmax)
     ax.set_ylim(0, ymax * 1.12)
     ax.set_xlabel("Longueur d’onde (nm)")
     ax.set_ylabel("Luminance spectrale (kW · m⁻² · sr⁻¹ · nm⁻¹)")
-    ax.set_xscale("log")
     ax.set_title(f"{T:,.0f} K ({T - 273.15:,.0f} °C) : puissance rayonnée {SIGMA * T ** 4:.3g} W/m²".replace(",", " "))
     ax.legend(loc="upper right")
 
