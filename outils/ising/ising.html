@@ -37,7 +37,7 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Modèle d’Ising 2D</h1>
 
-  <p>Chaque case est un minuscule aimant, un « spin », qui pointe soit vers le haut (orange), soit vers le bas (bleu foncé). Deux aimants voisins préfèrent pointer dans le même sens, mais l’agitation thermique les retourne au hasard. Passé un certain seuil de température, c’est le couplage entre aimants ou l’agitation thermique qui l’emporte. Ce changement drastique de comportement est une transition de phase.</p>
+  <p>Chaque case est un minuscule aimant, un « spin », qui pointe soit vers le haut (orange), soit vers le bas (bleu foncé). Deux aimants voisins préfèrent pointer dans le même sens, mais l’agitation thermique les retourne au hasard. Passé un certain seuil de température, c’est le couplage entre aimants ou l’agitation thermique qui l’emporte. Ce changement drastique de comportement est une <strong> transition de phase </strong>.</p>
   <div class="duo">
     <div>
       <canvas class="pixel" data-simulation="ising" width="96" height="96" aria-label="Grille de spins : orange vers le haut, bleu foncé vers le bas"></canvas>
@@ -68,20 +68,21 @@
       <li>chaque paire d’aimants voisins orientés dans le même sens (premier terme de la relation),</li>
       <li>chaque aimant orienté selon le champ extérieur \(h\) (second terme).</li>
     </ul>
-    <p>Le système (aimants + champ extérieur) cherche à minimiser son énergie, donc à avoir tous ses aimants orientés de la même façon, mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition (les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1).</p>
+    <p>Le système (aimants + champ extérieur) cherche à minimiser son énergie, donc à avoir tous ses aimants orientés de la même façon (entre eux et avec le champ extérieur, s’il y en a un), mais la température \(T\) s’y oppose en agitant les spins. Ce qu’on observe est le résultat de cette compétition. <br>
+      Note : les unités sont choisies pour que la force du couplage et la constante de Boltzmann valent 1.</p>
     </div>
   </details>
 
   <details class="repli">
-    <summary><h2>Comment la simulation procède</h2></summary>
+    <summary><h2>Comment la simulation procède ?</h2></summary>
     <div class="corps">
-    <p>C’est l’algorithme de Metropolis. À chaque étape, on propose de retourner un spin et on calcule la variation d’énergie \(\Delta E\) que cela provoquerait :</p>
+    <p>Via l’algorithme de Metropolis. À chaque étape, on propose de retourner un spin et on calcule la variation d’énergie \(\Delta E\) que cela provoquerait :</p>
     <ul>
-      <li>si \(\Delta E \le 0\), le retournement baisse l’énergie : on l’accepte toujours ;</li>
-      <li>sinon, on l’accepte quand même, mais seulement avec la probabilité :</li>
+      <li>si \(\Delta E \le 0\), le retournement abaisse l’énergie du système : on l’accepte toujours,</li>
+      <li>sinon, on l’accepte quand même, mais seulement avec la probabilité donnée par le facteur de Boltzmann :</li>
     </ul>
     <p>$$\boxed{p = e^{-\Delta E / T}}$$</p>
-    <p>À basse température, cette probabilité est minuscule : les spins restent alignés. À haute température, elle est proche de 1 : les spins se retournent presque librement. Un balayage consiste à proposer le retournement de chaque case une fois.</p>
+    <p>À basse température, cette probabilité est minuscule, donc les spins restent alignés. À haute température, elle est proche de 1 : les spins se retournent presque librement.</p>
     </div>
   </details>
 
@@ -90,11 +91,12 @@
     <div class="corps">
     <p>On suit l’aimantation \(m\), la moyenne des spins : \(m = +1\) si tous pointent vers le haut, \(m = -1\) si tous pointent vers le bas, \(m = 0\) s’il y en a autant de chaque sorte. Le comportement change à la température critique :</p>
     <p>$$\boxed{T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269}$$</p>
-    <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. Le sens est choisi au hasard (les deux sont aussi probables quand \(h = 0\)). <strong>Au-dessus</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) donne l’avantage à un sens : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
+    <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. Le sens est choisi au hasard (les deux sont aussi probables quand \(h = 0\)). <br> <strong>Au-dessus</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. <br> <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) favorise une orientation : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
     <p>Dans le graphique de droite, la courbe verte est la solution exacte d’Onsager (1944), valable pour une grille infinie et \(h = 0\). Elle a deux branches, \(+m\) et \(-m\), qui se rejoignent en \(T_c\) :</p>
-    <p>$$\boxed{m(T) = \pm\left[1 - \sinh^{-4}\!\left(\frac{2}{T}\right)\right]^{1/8} \qquad (T < T_c)}$$</p>
-    <p>Le point orange est l’aimantation de la grille, moyennée sur les cinq derniers balayages : avec \(h = 0\), il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus. Il bouge un peu, car l’aimantation fluctue, surtout près de \(T_c\). La grille est finie (96 × 96) et périodique (le bord droit rejoint le bord gauche, le bas rejoint le haut), d’où de petits écarts autour de \(T_c\).</p>
-    <p>Si \(h \neq 0\), le point n’a aucune raison de rester sur la courbe verte, qui ne vaut que pour \(h = 0\) : le champ aimante le système même au-dessus de \(T_c\). Par exemple, à \(T = 3{,}2\) et \(h = -0{,}3\), l’aimantation se stabilise autour de −0,56. C’est normal, et le graphique le rappelle alors par une note.</p>
+    <p>$$\boxed{m(T) & = \pm\left[1 - \sinh^{-4}\!\left(\frac{2}{T}\right)\right]^{1/8} \qquad & (T < T_c)}\\
+                                                                                                  m(T) & = 0 & (T < T_c)$$</p>
+    <p>Le point orange correspond à l’aimantation du système, moyennée sur les cinq derniers balayages : sans champ extérieur (\(h = 0\)), il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus.</p>
+    <p>S’il y a un champ extérieur (\(h \neq 0\)), l’aimantation n’a aucune raison de rester sur la courbe verte, qui ne vaut que pour \(h = 0\) : le champ aimante le système même au-dessus de \(T_c\).</p>
     </div>
   </details>
 
