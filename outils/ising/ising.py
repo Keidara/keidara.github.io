@@ -94,11 +94,11 @@ def fig_historique(fig, T, H):
         ax_m.plot(h[:, 0], h[:, 1], color="C0")
         ax_e.plot(h[:, 0], h[:, 2], color="C1")
     ax_m.set_ylim(-1.05, 1.05)
-    ax_m.set_ylabel("aimantation")
+    ax_m.set_ylabel("Aimantation")
     ax_m.set_title("Évolution de l’aimantation et de l’énergie")
     ax_m.tick_params(labelbottom=False)
-    ax_e.set_ylabel("énergie par spin")
-    ax_e.set_xlabel("balayages")
+    ax_e.set_ylabel("Énergie par spin")
+    ax_e.set_xlabel("Balayages")
 
     # Courbe d'Onsager : deux branches +m et −m (le sens pris par la grille est tiré au hasard)
     t = np.linspace(0.3, 5, 600)
@@ -106,7 +106,7 @@ def fig_historique(fig, T, H):
         onsager = np.where(t < TC, (1 - np.sinh(2 / t) ** -4.0) ** 0.125, 0.0)
     ax_o.axhline(0, color="0.7", lw=0.8)
     alpha = 1.0 if H == 0 else 0.4                  # la théorie ne vaut que pour h = 0
-    ax_o.plot(t, onsager, color="C2", lw=2, alpha=alpha, label="théorie (h = 0)")
+    ax_o.plot(t, onsager, color="C2", lw=2, alpha=alpha, label="Théorie (h = 0)")
     ax_o.plot(t, -onsager, color="C2", lw=2, alpha=alpha)
     # Mesure : aimantation instantanée de la grille (pas de moyenne, donc pas de retard)
     nom = "simulation" if H == 0 else f"simulation (h = {H:g})"
@@ -115,8 +115,8 @@ def fig_historique(fig, T, H):
         ax_o.text(0.97, 0.04, "h ≠ 0 : la courbe verte\nne s’applique plus", transform=ax_o.transAxes,
                   ha="right", va="bottom", fontsize=8)
     ax_o.axvline(TC, ls=":", color="0.5")
-    ax_o.set_xlabel("température T")
-    ax_o.set_ylabel("aimantation")
+    ax_o.set_xlabel("Température T")
+    ax_o.set_ylabel("Aimantation")
     ax_o.set_title(f"T_c ≈ {TC:.3f}")
     ax_o.set_ylim(-1.05, 1.05)
     ax_o.legend(loc="upper right", fontsize=9)
