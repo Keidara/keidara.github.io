@@ -36,15 +36,34 @@ def cmf(lam):
 M_SRGB = np.array([[3.2406, -1.5372, -0.4986], [-0.9689, 1.8758, 0.0415], [0.0557, -0.2040, 1.0570]])
 
 
-def couleur(T):
-    """Couleur sRGB d'un corps noir (luminosité normalisée : on garde la teinte, pas l'éclat)."""
-    lam = np.arange(380.0, 781.0)
-    B = planck(lam, T)
-    xyz = np.array([np.sum(B * c) for c in cmf(lam)])
+_LAM = np.arange(380.0, 781.0)
+DECADES = 10          # nombre de décades d'éclat visible représentées sous la référence (3 000 K)
+
+
+def _teinte_et_eclat(T):
+    """Teinte sRGB (normalisée) et luminance visible Y d'un corps noir."""
+    B = planck(_LAM, T)
+    xyz = np.array([np.sum(B * c) for c in cmf(_LAM)])
     rgb = np.clip(M_SRGB @ xyz, 0, None)
-    rgb = rgb / rgb.max()
+    rgb = rgb / max(rgb.max(), 1e-300)
     rgb = np.where(rgb <= 0.0031308, 12.92 * rgb, 1.055 * rgb ** (1 / 2.4) - 0.055)
-    return np.clip(rgb, 0, 1)
+    return np.clip(rgb, 0, 1), max(float(xyz[1]), 1e-300)
+
+
+Y_REF = _teinte_et_eclat(3000.0)[1]
+_cache_couleur = {}
+
+
+def couleur(T):
+    """Couleur perçue d'un corps noir, éclat compris : la teinte est assombrie quand la lumière visible
+    devient faible. L'éclat est tracé en échelle logarithmique (l'œil s'y adapte) et saturé au-dessus de 3 000 K,
+    où la luminosité n'apporte plus d'information utile."""
+    k = round(float(T), 1)
+    if k not in _cache_couleur:
+        rgb, Y = _teinte_et_eclat(T)
+        niveau = np.clip(1 + np.log10(Y / Y_REF) / DECADES, 0, 1)
+        _cache_couleur[k] = rgb * niveau
+    return _cache_couleur[k]
 
 
 def lambda_vers_rgb(nm):
@@ -62,12 +81,11 @@ def lambda_vers_rgb(nm):
 def fig_spectre(fig, T, log_x, ref):
     ax = fig.subplots()
     lam_max = B_WIEN / T * 1e9                                      # loi de Wien, en nm
-    xmax = float(np.clip(5 * lam_max, 1500, 30000))
     if log_x:
-        xmin = 20.0
+        xmin, xmax = 50.0, 50000.0                                  # plage fixe : le pic reste dans la fenêtre de 300 K à 20 000 K
         lam = np.logspace(np.log10(xmin), np.log10(xmax), 2500)
     else:
-        xmin = 0.0
+        xmin, xmax = 0.0, float(np.clip(5 * lam_max, 1500, 30000))
         lam = np.linspace(50, xmax, 2500)
     courbes = [(T, f"T = {T:,.0f} K".replace(",", " "), "C0", 2.5)]
     if ref:
@@ -96,14 +114,13 @@ def fig_couleur(fig, T):
     ax1.imshow(rgb[None, None, :], aspect="auto")
     ax1.axis("off")
     clair = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] > 0.5
-    hexa = "#%02x%02x%02x" % tuple(int(round(v * 255)) for v in rgb)
-    ax1.text(0, 0, f"Couleur d’un corps noir à {T:,.0f} K  ({hexa})".replace(",", " "), ha="center", va="center",
+    ax1.text(0, 0, f"Couleur perçue d’un corps noir à {T:,.0f} K".replace(",", " "), ha="center", va="center",
              fontsize=14, color="black" if clair else "white")
-    Ts = np.logspace(np.log10(1000), np.log10(20000), 200)
-    ax2.imshow(np.array([couleur(t) for t in Ts])[None], extent=[np.log10(1000), np.log10(20000), 0, 1], aspect="auto")
-    ax2.plot([np.log10(np.clip(T, 1000, 20000))], [1.25], "v", color="C1", ms=10, clip_on=False)
+    Ts = np.logspace(np.log10(300), np.log10(20000), 200)
+    ax2.imshow(np.array([couleur(t) for t in Ts])[None], extent=[np.log10(300), np.log10(20000), 0, 1], aspect="auto")
+    ax2.plot([np.log10(T)], [1.25], "v", color="C1", ms=10, clip_on=False)
     ax2.set_yticks([])
-    ticks = [1000, 2000, 3000, 5000, 10000, 20000]
+    ticks = [300, 500, 1000, 2000, 3000, 5000, 10000, 20000]
     ax2.set_xticks(np.log10(ticks))
     ax2.set_xticklabels([f"{t:,}".replace(",", " ") for t in ticks])
     ax2.set_xlabel("Température (K)")
