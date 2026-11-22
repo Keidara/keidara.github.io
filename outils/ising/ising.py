@@ -130,7 +130,7 @@ def fig_historique(fig, T, H):
     ax_o.plot(t, -onsager, color="C2", lw=2, alpha=alpha)
     # Mesure : aimantation moyennée sur les 5 derniers balayages (un minimum de lissage)
     m_moy = float(np.mean(DERN)) if DERN else float(S.mean())
-    nom = "simulation" if H == 0 else f"simulation (h = {H:g})"
+    nom = "Simulation" if H == 0 else f"Simulation (h = {H:g})"
     ax_o.plot([T], [m_moy], "o", color="C3", ms=9, label=nom)
     if H != 0:
         ax_o.text(0.97, 0.04, "h ≠ 0 : la courbe verte\nne s’applique plus", transform=ax_o.transAxes,
