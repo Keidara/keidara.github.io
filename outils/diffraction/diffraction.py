@@ -6,8 +6,7 @@ PARAMS = [
     Select("mode", "Configuration", ["Fente unique", "Deux fentes"], "Fente unique"),
     Slider("lam", r"Longueur d’onde \(\lambda\)", 400, 800, 550, unit="nm"),
     Slider("a", r"Largeur de fente \(a\)", 10, 300, 50, step=5, unit="µm"),
-    Slider("d", r"Écart entre fentes \(d\)", 20, 1000, 250, step=10, unit="µm"),
-    Slider("D", r"Distance à l’écran \(D\)", 0.5, 5.0, 2.0, step=0.1, unit="m"),
+    Slider("d", r"Écart entre fentes \(d\)", 20, 1000, 250, step=10, unit="µm", actif=("mode", ["Deux fentes"])),    Slider("D", r"Distance à l’écran \(D\)", 0.5, 5.0, 2.0, step=0.1, unit="m"),
     Slider("largeur", r"Largeur de l’écran \(L\)", 1, 20, 6, unit="cm"),
     Check("env", "Afficher l’enveloppe de diffraction", True, actif=("mode", ["Deux fentes"]), cache=True),
 ]
