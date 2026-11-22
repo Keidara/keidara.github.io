@@ -65,9 +65,9 @@ def fig_intensite(fig, mode, lam, a, d, D, demi, env):
     I = diffr * np.cos(np.pi * d_m * sin_t / lam_m) ** 2 if mode == "Deux fentes" else diffr
 
     ax, ax_f = fig.subplots(2, 1, gridspec_kw={"height_ratios": [3, 1]})
-    ax.plot(x * 100, I, color="C0", label="intensité")
+    ax.plot(x * 100, I, color="C0", label="Intensité")
     if env and mode == "Deux fentes":
-        ax.plot(x * 100, diffr, "--", color="C1", label="enveloppe de diffraction")
+        ax.plot(x * 100, diffr, "--", color="C1", label="Enveloppe de diffraction")
     ax.set_ylim(-0.03, 1.08)
     ax.set_ylabel("Intensité relative")
     ax.legend(loc="upper right")
