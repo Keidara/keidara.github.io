@@ -24,41 +24,52 @@
         <h2>L’enveloppe des battements</h2>
         <div data-figure="battements" data-taille="10x4.5" data-alt="Somme des deux ondes sur plusieurs secondes et son enveloppe"></div>
         <p>Sur une durée plus longue, l’amplitude de la somme oscille lentement entre un maximum et un minimum. Avec deux ondes de même amplitude, on a exactement :</p>
-        <p class="formule">cos(2πf₁t) + cos(2πf₂t) = 2 cos(π(f₂ − f₁)t) · cos(π(f₁ + f₂)t)</p>
-        <p>Le deuxième facteur est une oscillation rapide à la fréquence moyenne (f₁ + f₂)/2, c’est la note entendue. Le premier est l’enveloppe lente. Le volume passe par un maximum chaque fois que l’enveloppe atteint ±1, donc deux fois par période de cette enveloppe : la fréquence de battement est |f₂ − f₁|.</p>
-        <p>Si les amplitudes sont différentes, les battements sont moins marqués : l’amplitude oscille entre la différence et la somme des deux amplitudes, et ne s’annule plus.</p>
+        <p>$$\boxed{\cos(2\pi f_1 t) + \cos(2\pi f_2 t) = 2\cos\!\big(\pi (f_2 - f_1)\,t\big)\cdot\cos\!\big(\pi (f_1 + f_2)\,t\big)}$$</p>
+        <p>Le deuxième facteur est une oscillation rapide à la fréquence moyenne \((f_1 + f_2)/2\) : c’est la note entendue. Le premier est l’enveloppe lente. Le volume passe par un maximum chaque fois que l’enveloppe atteint \(\pm 1\), donc deux fois par période de cette enveloppe : la fréquence de battement est</p>
+        <p>$$\boxed{f_\text{bat} = |f_2 - f_1|}$$</p>
+        <p>Si les amplitudes \(A_1\) et \(A_2\) sont différentes, les battements sont moins marqués : l’amplitude oscille entre \(|A_1 - A_2|\) et \(A_1 + A_2\), et ne s’annule plus.</p>
       </section>
     </div>
     <div class="panneau">
       <div data-controles="*"></div>
-      <button id="ecouter" class="sec">Écouter (4 s)</button>
+      <button id="ecouter" type="button" aria-pressed="false">▶ Écouter</button>
+      <label>
+        <span class="row"><span>Volume</span> <output id="o_volume">50 %</output></span>
+        <input id="volume" type="range" min="0" max="100" step="1" value="50">
+      </label>
     </div>
   </div>
+  <section>
+    <h2>Pour aller plus loin</h2>
+    <p>Les battements sont le cas le plus simple de superposition de deux ondes de fréquences voisines. Avec davantage d’ondes, on obtient un paquet localisé : voir le mode « Paquet d’ondes » de l’outil <a href="../ondes/ondes.html">Ondes progressive et stationnaire</a>, où le même phénomène d’interférence est étudié en fonction de la position.</p>
+    <p>Une somme de sinusoïdes, c’est aussi ce que décrivent les <a href="../fourier/fourier.html">séries de Fourier</a> : le signal des battements a un spectre à deux raies seulement, en \(f_1\) et \(f_2\).</p>
+    <p>Enfin, l’<a href="../doppler/doppler.html">effet Doppler</a> décale la fréquence d’une source en mouvement : en combinant l’onde émise et l’onde réfléchie par un objet mobile, on obtient des battements dont la fréquence donne sa vitesse (principe des radars routiers).</p>
+  </section>
   <p class="etat" data-etat role="status"></p>
 </main>
 <script>
-// Bouton « Écouter » : joue les deux fréquences réglées par les curseurs.
-document.getElementById("ecouter").addEventListener("click", () => {
-  try {
-    const f1 = +document.getElementById("p_f1").value, df = +document.getElementById("p_df").value,
-          a2 = +document.getElementById("p_a2").value;
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const maitre = ctx.createGain();
-    maitre.gain.value = 0.15;
-    maitre.connect(ctx.destination);
-    [[f1, 1], [f1 + df, a2]].forEach(([f, a]) => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.frequency.value = f;
-      g.gain.value = a / 2;
-      o.connect(g);
-      g.connect(maitre);
-      o.start();
-      o.stop(ctx.currentTime + 4);
+// Écoute : lecture continue jusqu'à « Stop ». Les curseurs f₁, écart et amplitude agissent en direct.
+(function () {
+  const bouton = document.getElementById("ecouter");
+  const vol = document.getElementById("volume");
+  const sortie = document.getElementById("o_volume");
+  let ctx = null, maitre = null, osc = [], gains = [];
+
+  const val = id => { const e = document.getElementById(id); return e ? +e.value : NaN; };
+  const niveau = () => 0.3 * Math.pow(vol.value / 100, 2);      // volume perçu : courbe quadratique
+
+  function reglages() {                                          // fréquences et amplitudes courantes
+    const f1 = val("p_f1"), df = val("p_df"), a2 = val("p_a2");
+    return [[f1, 0.5], [f1 + df, a2 / 2]];
+  }
+  function appliquer() {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    reglages().forEach(([f, a], i) => {
+      if (isNaN(f)) return;
+      osc[i].frequency.setTargetAtTime(f, t, 0.02);
+      gains[i].gain.setTargetAtTime(a, t, 0.02);
     });
-    setTimeout(() => ctx.close(), 4500);
-  } catch (e) { /* son indisponible : on ne fait rien */ }
-});
-</script>
-<script src="../../moteur/moteur.js"></script>
-</body>
-</html>
+  }
+  function demarrer() {
+    ctx = new (window.AudioContext ||
