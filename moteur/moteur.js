@@ -50,7 +50,10 @@ function montrer(p) {                                       // texte à côté d
 function appliquerActifs() {
   for (const p of Object.values(params)) {
     const el = p.actif && document.getElementById("p_" + p.name);
-    if (el) el.disabled = !p.actif[1].includes(lire(params[p.actif[0]]));
+    if (!el) continue;
+    const ok = p.actif[1].includes(lire(params[p.actif[0]]));
+    el.disabled = !ok;
+    if (p.cache) el.closest("label").hidden = !ok;      // masqué plutôt que grisé
   }
 }
 
@@ -67,15 +70,14 @@ function creer(p, boite) {
     if (p.kind === "slider") {
       const min = p.log ? 0 : p.lo, max = p.log ? 1000 : p.hi, step = p.log ? 1 : p.anim > 0 ? "any" : p.step;
       const v0 = p.log ? 1000 * Math.log(p.val / p.lo) / Math.log(p.hi / p.lo) : p.val;
-      l.innerHTML = `<span class="row">${p.label} <output id="o_${p.name}"></output></span>
-        <input id="p_${p.name}" type="range" min="${min}" max="${max}" step="${step}" value="${v0}">`;
+    l.innerHTML = `<span class="row"><span>${p.label}</span> <output id="o_${p.name}"></output></span>
+      <input id="p_${p.name}" type="range" min="${min}" max="${max}" step="${step}" value="${v0}">`;
     } else if (p.kind === "select") {
-      l.innerHTML = `${p.label}<select id="p_${p.name}">` +
-        p.options.map(o => `<option${o === p.val ? " selected" : ""}>${o}</option>`).join("") + "</select>";
+    l.innerHTML = `<span>${p.label}</span><select id="p_${p.name}">` +
+      p.options.map(o => `<option${o === p.val ? " selected" : ""}>${o}</option>`).join("") + "</select>";
     } else {
       l.className = "check";
-      l.innerHTML = `<input id="p_${p.name}" type="checkbox"${p.val ? " checked" : ""}> ${p.label}`;
-    }
+      l.innerHTML = `<input id="p_${p.name}" type="checkbox"${p.val ? " checked" : ""}> <span>${p.label}</span>`;    }
   }
   boite.append(l);
   l.addEventListener("input", () => { montrer(p); appliquerActifs(); planifier(p.name); });
@@ -265,6 +267,7 @@ async function demarrer() {
     const noms = boite.dataset.controles.trim() === "*" ? Object.keys(params) : boite.dataset.controles.trim().split(/\s+/);
     noms.forEach(n => { if (!params[n]) throw new Error(`paramètre inconnu : ${n}`); creer(params[n], boite); });
   });
+  $$("[data-controles]").forEach(formules);       // si KaTeX est déjà prêt (sinon, il s'en chargera à son arrivée)
   $$("[data-figure]").forEach(d => {
     const nom = d.dataset.figure, meta = info.figures[nom];
     if (!meta) throw new Error(`fig_${nom}() introuvable dans ${outil}.py`);
@@ -342,6 +345,12 @@ demarrer().catch(err => {
 });
 
 // ---- formules LaTeX (KaTeX) : \( ... \) en ligne, $$ ... $$ en bloc
+let katexPret = false;
+const OPTIONS_MATH = {
+  delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\(", right: "\\)", display: false }],
+  throwOnError: false
+};
+const formules = el => { if (katexPret) { try { renderMathInElement(el, OPTIONS_MATH); } catch (e) { console.error(e); } } };
 function chargerScript(src) {
   return new Promise((ok, ko) => {
     const s = document.createElement("script");
@@ -357,10 +366,8 @@ function chargerScript(src) {
     document.head.append(css);
     await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js");
     await chargerScript("https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js");
-    renderMathInElement(document.body, {
-      delimiters: [{ left: "$$", right: "$$", display: true }, { left: "\\(", right: "\\)", display: false }],
-      throwOnError: false
-    });
+    katexPret = true;
+    formules(document.body);
   } catch (e) { console.error(e); }
 })();
 
