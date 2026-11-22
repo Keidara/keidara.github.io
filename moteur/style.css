@@ -56,3 +56,4 @@ canvas[data-simulation].pixel{image-rendering:pixelated}
 .chargement.court{min-height:0;padding:.6rem;margin-bottom:.4rem}
 @keyframes pulse{50%{opacity:.45}}
 @media(prefers-reduced-motion:reduce){.chargement{animation:none}}
+[hidden]{display:none!important}
