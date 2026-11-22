@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ondes progressive et stationnaire (version 2)</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+  /* Sections repliables, comme dans l’outil sur le modèle d’Ising */
+  details.repli{margin:1rem 0;border:1px solid color-mix(in srgb,var(--c,var(--acc)) 35%,var(--line));border-radius:8px;
+                background:color-mix(in srgb,var(--c,var(--acc)) 7%,transparent)}
+  details.repli summary{display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;cursor:pointer;list-style:none}
+  details.repli summary::-webkit-details-marker{display:none}
+  details.repli summary::before{content:"▸";color:var(--c,var(--acc));transition:transform .15s}
+  details.repli[open] summary::before{transform:rotate(90deg)}
+  details.repli summary h2{margin:0}
+  details.repli .corps{padding:0 1rem 1rem}
+  details.repli .corps>:last-child{margin-bottom:0}
+  @media(prefers-reduced-motion:reduce){details.repli summary::before{transition:none}}
+  /* Boutons − / N = 1 / + sous le curseur du nombre d’ondes */
+  .pas-n{margin-top:-.5rem}
+  .pas-n button.pm{flex:0 0 3rem}
+</style>
+</head>
+<body data-outil="ondes2">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Ondes progressive et stationnaire</h1>
+
+  <p>Une onde progressive se déplace sans se déformer, avec la vitesse \(v = \lambda / T\). Deux ondes progressives qui vont en sens opposés s’additionnent en une onde stationnaire : la forme ne se déplace plus, elle oscille sur place. Quatre modes permettent d’explorer ces situations, de la réflexion sur un bord jusqu’à la somme d’un grand nombre d’ondes.</p>
+  <div class="duo">
+    <section style="margin:0">
+      <h2>L’onde</h2>
+      <div data-figure="onde" data-taille="10x6" data-alt="Onde progressive, stationnaire, réfléchie ou somme d’ondes selon le mode choisi"></div>
+      <p>Choisis le mode, puis déplace le curseur de temps ou lance la lecture. Le temps est exprimé en périodes \(T\).</p>
+    </section>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+
+  <details class="repli">
+    <summary><h2>Onde progressive</h2></summary>
+    <div class="corps">
+    <p>La courbe pleine est l’onde à l’instant \(t\), les pointillés sa position à \(t = 0\) : tout le profil glisse vers la droite. Il avance d’une longueur d’onde pendant une période. En un point fixé, le milieu monte et descend avec la période \(T\) : c’est la forme qui se déplace, pas la matière. L’amplitude de l’onde vaut 1.</p>
+    <p>$$\boxed{y(x,t) = \sin(kx - \omega t) \qquad k = \frac{2\pi}{\lambda}, \quad \omega = \frac{2\pi}{T}, \quad v = \frac{\omega}{k} = \frac{\lambda}{T}}$$</p>
+    </div>
+  </details>
+
+  <details class="repli">
+    <summary><h2>Onde stationnaire</h2></summary>
+    <div class="corps">
+    <p>Elle résulte de la somme de deux ondes de même amplitude qui se propagent en sens opposés. Coche la case pour les voir séparément.</p>
+    <p>$$\boxed{\sin(kx - \omega t) + \sin(kx + \omega t) = 2\sin(kx)\cos(\omega t)}$$</p>
+    <p>Les nœuds (points qui ne bougent jamais) sont espacés de \(\lambda / 2\), et les ventres (amplitude maximale) tombent au milieu. Entre deux nœuds consécutifs, tous les points oscillent en phase ; de part et d’autre d’un nœud, ils oscillent en opposition.</p>
+    </div>
+  </details>
+
+  <details class="repli">
+    <summary><h2>Réflexion sur un bord</h2></summary>
+    <div class="corps">
+    <p>Une onde arrive de la gauche sur un bord (zone hachurée) et repart en sens inverse. Sur un <strong>bord fixe</strong>, l’onde réfléchie est inversée : le bord est un nœud. Sur un <strong>bord libre</strong>, elle n’est pas inversée : le bord est un ventre. Le coefficient \(r\) compare l’amplitude de l’onde réfléchie à celle de l’onde incidente : \(r = 1\) pour une réflexion totale, \(r = 0\) si le bord absorbe tout.</p>
+    <p>Pour une réflexion partielle, la somme est une onde <strong>semi-stationnaire</strong> : une onde progressive d’amplitude \(1 - r\) superposée à une onde stationnaire d’amplitude \(2r\) (écrit ici pour un bord fixe).</p>
+    <p>$$\boxed{\underbrace{\sin(kx - \omega t)}_{\text{incidente}} + r\,\underbrace{\sin(kx + \omega t)}_{\text{réfléchie}} = (1 - r)\sin(kx - \omega t) + 2r\,\sin(kx)\cos(\omega t)}$$</p>
+    <p>Les nœuds ne s’annulent plus complètement : l’amplitude varie entre un minimum \(1 - r\) et un maximum \(1 + r\). Leur rapport est le taux d’ondes stationnaires, qui vaut 1 pour une onde progressive et diverge pour une onde stationnaire.</p>
+    <p>$$\boxed{\mathrm{TOS} = \frac{A_{\max}}{A_{\min}} = \frac{1 + r}{1 - r}}$$</p>
+    </div>
+  </details>
+
+  <details class="repli">
+    <summary><h2>Somme d’ondes et localisation</h2></summary>
+    <div class="corps">
+    <p>Une onde sinusoïdale pure occupe tout l’espace. Pour obtenir quelque chose de localisé, il suffit d’additionner des ondes bien choisies. Ici, on prend \(N\) ondes de <strong>même amplitude</strong> \(1/N\). On prend pour unités la période spatiale \(\Lambda\) et la période \(T\) de l’onde de rang 1 : l’onde de rang \(n\) a la longueur d’onde \(\Lambda / n\), et toutes vont à la même vitesse \(v = \Lambda / T\). Les ondes ont les rangs \(n_0, n_0 + 1, \dots, n_0 + N - 1\).</p>
+    <p>$$\boxed{y(x,t) = \frac{1}{N}\sum_{j=0}^{N-1} \cos\!\Big(2\pi\,(n_0 + j)\,\frac{x - vt}{\Lambda}\Big)}$$</p>
+    <p>Aux endroits marqués en pointillés, toutes les ondes sont en phase : leurs contributions s’additionnent et la somme vaut 1. Partout ailleurs, elles sont déphasées et se compensent presque. Le graphique du bas montre chaque onde (dessinées à la même hauteur) : on voit leurs crêtes s’aligner aux pointillés, puis se décaler progressivement.</p>
+    <p>Plus on ajoute d’ondes, plus le pic est étroit. L’enveloppe de la somme se calcule exactement, avec \(\xi = x - vt\) :</p>
+    <p>$$\boxed{\text{enveloppe}(\xi) = \left|\frac{\sin(N\pi\xi/\Lambda)}{N\,\sin(\pi\xi/\Lambda)}\right| \qquad \text{largeur du pic} \sim \frac{\Lambda}{N}}$$</p>
+    <p>Le rang \(n_0\) ne change pas la largeur du pic, mais la rapidité des oscillations à l’intérieur. Le pic se répète tous les \(\Lambda\), parce que toutes les ondes sont des multiples entiers de l’onde de rang 1 : c’est une série de Fourier (voir l’outil correspondant). Pour n’obtenir qu’un seul paquet, il faudrait des ondes dont les longueurs d’onde sont aussi rapprochées qu’on veut.</p>
+    <p>Avec \(N = 1\), on retrouve une onde unique ; avec \(N = 2\), les battements.</p>
+    </div>
+  </details>
+
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script>
+// Nombre d’ondes N : boutons − / N = 1 / +, masqués avec le curseur quand le mode n’est pas la somme d’ondes.
+// Le curseur est créé par le moteur après le chargement : on attend qu'il apparaisse dans la page.
+(function () {
+  function ameliorer(el) {
+    const label = el.closest("label");
+    const barre = document.createElement("div");
+    barre.className = "btns pas-n";
+    [["−", "pm", "Retirer une onde", () => el.stepDown()],
+     ["N = 1", "", "Revenir à une seule onde", () => { el.value = 1; }],
+     ["+", "pm", "Ajouter une onde", () => el.stepUp()]].forEach(([texte, classe, titre, agir]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "sec " + classe; b.textContent = texte;
+      b.title = titre; b.setAttribute("aria-label", titre);
+      b.addEventListener("click", () => {
+        agir();
+        el.dispatchEvent(new Event("input", { bubbles: true }));   // le moteur met alors à jour l’affichage et la figure
+      });
+      barre.append(b);
+    });
+    label.after(barre);
+    const maj = () => { barre.hidden = label.hidden; };
+    new MutationObserver(maj).observe(label, { attributes: true, attributeFilter: ["hidden"] });
+    maj();
+  }
+  const deja = document.getElementById("p_N");
+  if (deja) return ameliorer(deja);
+  const obs = new MutationObserver(() => {
+    const el = document.getElementById("p_N");
+    if (el) { obs.disconnect(); ameliorer(el); }
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
