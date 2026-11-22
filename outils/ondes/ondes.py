@@ -1,4 +1,4 @@
-"""Ondes : progressive, stationnaire, réflexion sur un bord, paquet d'ondes."""
+"""Ondes : progressive, stationnaire, réflexion sur un bord, somme d'ondes de même amplitude."""
 import numpy as np
 from kit import *
 
@@ -6,14 +6,17 @@ PROG, STAT, REFL, PAQ = "Progressive", "Stationnaire", "Réflexion", "Paquet d�
 
 PARAMS = [
     Select("mode", "Mode", [PROG, STAT, REFL, PAQ]),
-    Slider("lam", r"Longueur d’onde \(\lambda\)", 0.5, 3.0, 1.0, step=0.1),
+    Slider("lam", r"Longueur d’onde \(\lambda\)", 0.5, 3.0, 1.0, step=0.1,
+           actif=("mode", [PROG, STAT, REFL]), cache=True),
     Slider("r", r"Coefficient de réflexion \(r\) (amplitude réfléchie / incidente)", 0.0, 1.0, 0.7, step=0.05,
            actif=("mode", [REFL]), cache=True),
     Check("libre", "Bord libre (sinon bord fixe)", False, actif=("mode", [REFL]), cache=True),
-    Slider("N", r"Nombre d’ondes sommées \(N\)", 1, 60, 5, actif=("mode", [PAQ]), cache=True),
-    Slider("larg", r"Largeur du spectre \(\sigma / k_0\)", 5, 30, 12, unit="%", actif=("mode", [PAQ]), cache=True),
+    Slider("N", r"Nombre d’ondes sommées \(N\)", 1, 30, 5, actif=("mode", [PAQ]), cache=True),
+    Slider("n0", r"Rang de la première onde \(n_0\)", 1, 30, 10, actif=("mode", [PAQ]), cache=True),
+    Check("comps", "Montrer chaque onde, décalée verticalement", True, actif=("mode", [PAQ]), cache=True),
     Slider("t", r"Temps \(t / T\)", 0.0, 2.0, 0.0, step=0.02, anim=8),
     Check("compo", "Montrer les deux ondes qui s’additionnent", False, actif=("mode", [STAT, REFL]), cache=True),
+    Check("montrer_env", "Afficher l’enveloppe", True, actif=("mode", [STAT, REFL, PAQ]), cache=True),
 ]
 
 
@@ -33,7 +36,7 @@ def _progressive(ax, lam, t):
     _axes(ax, 1.15)
 
 
-def _stationnaire(ax, lam, t, compo):
+def _stationnaire(ax, lam, t, compo, montrer_env):
     x = np.linspace(0, 4, 800)
     k, w = 2 * np.pi / lam, 2 * np.pi
     aller = 0.5 * np.sin(k * x - w * t)
@@ -41,8 +44,9 @@ def _stationnaire(ax, lam, t, compo):
     if compo:
         ax.plot(x, aller, "--", color="C2", lw=1, label="onde vers la droite")
         ax.plot(x, retour, "--", color="C3", lw=1, label="onde vers la gauche")
-    ax.plot(x, np.abs(np.sin(k * x)), ":", color="C1", lw=1)
-    ax.plot(x, -np.abs(np.sin(k * x)), ":", color="C1", lw=1, label="enveloppe")
+    if montrer_env:
+        ax.plot(x, np.abs(np.sin(k * x)), ":", color="C1", lw=1)
+        ax.plot(x, -np.abs(np.sin(k * x)), ":", color="C1", lw=1, label="enveloppe")
     ax.plot(x, aller + retour, color="C0", lw=2, label="somme (stationnaire)")
     noeuds = np.arange(0, 4 + 1e-9, lam / 2)
     ax.plot(noeuds, np.zeros_like(noeuds), "o", color="C1", ms=6, label="nœuds")
@@ -51,7 +55,7 @@ def _stationnaire(ax, lam, t, compo):
     _axes(ax, 1.15)
 
 
-def _reflexion(ax, lam, t, compo, r, libre):
+def _reflexion(ax, lam, t, compo, r, libre, montrer_env):
     """Onde incidente vers la droite, bord en x = 0. Bord fixe : onde réfléchie inversée (nœud au bord) ;
     bord libre : onde réfléchie non inversée (ventre au bord)."""
     x = np.linspace(-4, 0, 1200)
@@ -64,8 +68,9 @@ def _reflexion(ax, lam, t, compo, r, libre):
         ax.plot(x, inc, "--", color="C2", lw=1, label="onde incidente")
         if r > 0:
             ax.plot(x, ref, "--", color="C3", lw=1, label="onde réfléchie")
-    ax.plot(x, env, ":", color="C1", lw=1, label="enveloppe")
-    ax.plot(x, -env, ":", color="C1", lw=1)
+    if montrer_env:
+        ax.plot(x, env, ":", color="C1", lw=1, label="enveloppe")
+        ax.plot(x, -env, ":", color="C1", lw=1)
     ax.plot(x, inc + ref, color="C0", lw=2, label="somme")
     if r > 0.05:                                          # emplacements où l'amplitude est minimale
         xm = -np.arange(0, int(4 / (lam / 2)) + 2) * lam / 2 - (lam / 4 if libre else 0.0)
@@ -86,48 +91,61 @@ def _reflexion(ax, lam, t, compo, r, libre):
     _axes(ax, 2.6)
 
 
-def _paquet(fig, lam, t, N, larg):
-    """Somme de N ondes de nombres d'onde régulièrement espacés dans k0 ± 2σ, avec des poids gaussiens.
-    Toutes vont à la même vitesse v = λ/T (milieu non dispersif) : le paquet avance sans se déformer."""
-    k0, v = 2 * np.pi / lam, lam
-    sigma = larg / 100 * k0
-    ecart = np.linspace(-2 * sigma, 2 * sigma, N) if N > 1 else np.zeros(1)
-    poids = np.exp(-ecart ** 2 / (2 * sigma ** 2))
-    x = np.linspace(-10, 10, 3000)
-    xi = (x - (-6.0) - v * t)[None, :]                    # le paquet part de x = −6
-    y = (poids[:, None] * np.cos((k0 + ecart)[:, None] * xi)).sum(0) / poids.sum()
-    env = np.abs((poids[:, None] * np.exp(1j * ecart[:, None] * xi)).sum(0)) / poids.sum()
-    ax, ax2 = fig.subplots(2, 1, gridspec_kw={"height_ratios": [3, 1]})
-    ax.plot(x, env, "--", color="C1", lw=1.2, label="enveloppe du paquet")
-    ax.plot(x, -env, "--", color="C1", lw=1.2)
-    ax.plot(x, y, color="C0", lw=1.6, label="somme des ondes")
-    if N == 1:
-        titre = "Une seule onde : elle remplit tout l’espace, rien n’est localisé"
+def _paquet(fig, t, N, n0, comps, montrer_env):
+    """Somme de N ondes de même amplitude 1/N et de rangs n0, n0+1, ... (la période spatiale Λ de la fondamentale
+    et sa période T sont les unités : l'onde de rang n a la longueur d'onde Λ/n, et toutes vont à la vitesse Λ/T)."""
+    x = np.linspace(-1, 1, 4000)
+    xi = x - t                                            # x − vt, avec v = 1
+    rangs = np.arange(n0, n0 + N)
+    ondes = np.cos(2 * np.pi * rangs[:, None] * xi[None, :])
+    y = ondes.sum(axis=0) / N
+    s = np.sin(np.pi * xi)
+    with np.errstate(all="ignore"):
+        env = np.where(np.abs(s) < 1e-9, 1.0, np.abs(np.sin(N * np.pi * xi) / (N * s)))
+    centres = [c for c in np.arange(-3, 4) + t if -1 <= c <= 1]     # là où toutes les ondes sont en phase
+    if comps:
+        ax, ax2 = fig.subplots(2, 1, sharex=True, gridspec_kw={"height_ratios": [1, 1.6]})
     else:
-        P = 2 * np.pi * (N - 1) / (4 * sigma)             # distance entre deux paquets : 2π / Δk
-        if P >= 20:
-            titre = f"{N} ondes sommées : un seul paquet dans la fenêtre"
-        else:
-            titre = f"{N} ondes sommées : le paquet se répète tous les {P:.1f}"
-    ax.set_title(titre)
+        ax, ax2 = fig.subplots(), None
+    if montrer_env:
+        ax.plot(x, env, "--", color="C1", lw=1.2, label="enveloppe")
+        ax.plot(x, -env, "--", color="C1", lw=1.2)
+    ax.plot(x, y, color="C0", lw=1.4, label="somme des ondes")
+    for c in centres:
+        ax.axvline(c, ls=":", color="0.5", lw=1)
+    if N == 1:
+        ax.set_title("Une seule onde : elle remplit tout l’espace, rien n’est localisé")
+    else:
+        ax.set_title(f"{N} ondes de même amplitude : pics espacés de Λ, de largeur de l’ordre de Λ/{N}")
     ax.legend(loc="lower right", fontsize=8)
-    _axes(ax, 1.15)
-    ax2.vlines(k0 + ecart, 0, poids, color="C0", lw=2)
-    ax2.plot(k0 + ecart, poids, "o", color="C0", ms=4)
-    ax2.set_xlim(0.25 * k0, 1.75 * k0)
-    ax2.set_ylim(0, 1.15)
-    ax2.set_xlabel("Nombre d’onde k de chaque onde (rad par unité de longueur)")
-    ax2.set_ylabel("Poids")
+    ax.set_ylim(-1.15, 1.15)
+    ax.set_xlim(-1, 1)
+    ax.set_ylabel("Amplitude de la somme")
+    if ax2 is None:
+        ax.set_xlabel("Position x (en périodes spatiales Λ)")
+        return
+    ax.tick_params(labelbottom=False)
+    for i in range(N):
+        ax2.plot(x, i + 0.4 * ondes[i], color="C0", lw=1.0 if N <= 12 else 0.7)
+    for c in centres:
+        ax2.axvline(c, ls=":", color="0.5", lw=1)
+    pas = int(np.ceil(N / 8))
+    ax2.set_yticks(range(0, N, pas))
+    ax2.set_yticklabels([str(n) for n in rangs[::pas]])
+    ax2.set_ylim(-0.6, N - 0.4)
+    ax2.set_ylabel("Rang n de chaque onde")
+    ax2.set_xlabel("Position x (en périodes spatiales Λ)")
+    ax2.set_title("Chaque onde, décalée verticalement : toutes sont en phase aux pointillés", fontsize=11)
 
 
-def fig_onde(fig, mode, lam, t, compo, r, libre, N, larg):
+def fig_onde(fig, mode, lam, t, compo, r, libre, N, n0, comps, montrer_env):
     if mode == PAQ:
-        _paquet(fig, lam, t, N, larg)
+        _paquet(fig, t, N, n0, comps, montrer_env)
         return
     ax = fig.subplots()
     if mode == PROG:
         _progressive(ax, lam, t)
     elif mode == STAT:
-        _stationnaire(ax, lam, t, compo)
+        _stationnaire(ax, lam, t, compo, montrer_env)
     else:
-        _reflexion(ax, lam, t, compo, r, libre)
+        _reflexion(ax, lam, t, compo, r, libre, montrer_env)
