@@ -62,7 +62,7 @@
     <summary><h2>Le modèle</h2></summary>
     <div class="corps">
     <p>Chaque spin \(s_i\) vaut +1 (haut) ou −1 (bas). L’énergie du système est donnée par la relation :</p>
-    <p>$$\boxed{E = -\sum_{\langle i,j\rangle} s_i\,s_j \;-\; h\sum_i s_i}$$</p>
+    <p>$$E = -\sum_{\langle i,j\rangle} s_i\,s_j \;-\; h\sum_i s_i$$</p>
     <p>Cette énergie est plus basse pour :</p>
     <ul>
       <li>chaque paire d’aimants voisins orientés dans le même sens (premier terme de la relation),</li>
@@ -81,7 +81,7 @@
       <li>si \(\Delta E \le 0\), le retournement abaisse l’énergie du système : on l’accepte toujours,</li>
       <li>sinon, on l’accepte quand même, mais seulement avec la probabilité donnée par le facteur de Boltzmann :</li>
     </ul>
-    <p>$$\boxed{p = e^{-\Delta E / T}}$$</p>
+    <p>$$p = e^{-\Delta E / T}$$</p>
     <p>À basse température, cette probabilité est minuscule, donc les spins restent alignés.<br>
       À haute température, elle est proche de 1 : les spins se retournent presque librement.</p>
     </div>
@@ -91,15 +91,15 @@
     <summary><h2>Ce qu’on observe</h2></summary>
     <div class="corps">
     <p>On suit l’aimantation \(m\), la moyenne des spins : \(m = +1\) si tous pointent vers le haut, \(m = -1\) si tous pointent vers le bas, \(m = 0\) s’il y en a autant de chaque sorte. Le comportement change à la température critique :</p>
-    <p>$$\boxed{T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269}$$</p>
+    <p>$$T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269$$</p>
     <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. C’est la <strong>phase ferromagnétique</strong>, où le système se comporte comme un aimant permanent même sans champ extérieur.<br>
       <strong>Au-dessus de \(T_c\)</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. C’est la phase <strong>paramagnétique</strong>, où le système perd son aimantation en l’absence de champ extérieur. <br>
       <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) favorise une orientation : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
     <p>Dans le graphique de droite, la courbe verte est la solution exacte d’Onsager (1944), valable pour une grille infinie et \(h = 0\). Elle a deux branches, \(+m\) et \(-m\), qui se rejoignent en \(T_c\) :</p>
-    <p>$$\boxed{m(T) = \begin{cases}
+    <p>$$m(T) = \begin{cases}
       \pm\left[1 - \sinh^{-4}\!\left(\dfrac{2}{T}\right)\right]^{1/8} & \text{si } T \lt T_c \\ \,
       0 & \text{si } T \gt T_c
-    \end{cases}}$$</p>
+    \end{cases}$$</p>
     <p>Le point orange correspond à l’aimantation du système, moyennée sur les cinq derniers balayages.<br>
     À une température supérieure à \(T_c\), et en présence d’un champ extérieur (\(h \neq 0\)), l’aimantation quitte la courbe verte, qui ne vaut que pour \(h = 0\) : le système s’aimante du fait du champ extérieur, c’est une autre caractéristique du <strong>paramagnétisme</strong>.</p>
     </div>
