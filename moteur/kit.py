@@ -26,12 +26,13 @@ __all__ = ["Slider", "Select", "Check"]
 _tool = {}
 
 
-def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0, actif=None):
+def Slider(name, label, lo, hi, val, step=1, log=False, unit="", anim=0, actif=None, cache=False):
     """anim : durée (en secondes) d'un balayage complet si le curseur doit pouvoir s'animer.
-    actif : (nom_d_un_autre_parametre, [valeurs]) : le curseur n'est actif que pour ces valeurs."""
+    actif : (nom_d_un_autre_parametre, [valeurs]) : le curseur n'est actif que pour ces valeurs.
+    cache : si True, le curseur est masqué (et non seulement grisé) quand il n'est pas actif."""
     est_entier = all(isinstance(x, int) for x in (lo, hi, step))
     return dict(kind="slider", name=name, label=label, lo=lo, hi=hi, val=val,
-                step=step, log=log, unit=unit, anim=anim, actif=actif, int=est_entier)
+                step=step, log=log, unit=unit, anim=anim, actif=actif, cache=cache, int=est_entier)
 
 
 def Select(name, label, options, val=None):
@@ -39,9 +40,8 @@ def Select(name, label, options, val=None):
                 val=val if val is not None else options[0])
 
 
-def Check(name, label, val=False):
-    return dict(kind="check", name=name, label=label, val=val)
-
+def Check(name, label, val=False, actif=None, cache=False):
+    return dict(kind="check", name=name, label=label, val=val, actif=actif, cache=cache)
 
 def load(code):
     """Exécute le fichier de l'outil."""
