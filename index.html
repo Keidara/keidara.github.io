@@ -64,6 +64,8 @@
       <span class="d">Snell-Descartes, réflexion totale, construction par ondelettes et coefficients de Fresnel.</span></a>
     <a class="tool" href="./outils/diffusion_lumiere/diffusion_lumiere.html"><strong>Diffusion de la lumière</strong>
       <span class="d">Pourquoi le ciel est bleu, le soleil couchant rouge et les nuages blancs.</span></a>
+    <a class="tool" data-cache hidden href="./outils/polarisation/polarisation.html"><strong>Polarisation et formules de Fresnel <em class="badge">en préparation</em></strong>
+    <span class="d">Réflexion selon la polarisation, angle de Brewster, lunettes polarisantes.</span></a>
   </div></details>
 
   <details open style="--c:#0f9fb0"><summary>Ondes et signal <small>4 outils</small></summary><div class="grid">
@@ -118,5 +120,16 @@
 
   <!-- Pour ajouter un outil : copie un bloc <a class="tool"> dans la bonne section. Lien : ./outils/NOM/NOM.html -->
 </main>
+<script>
+(function(){
+  var debug = new URLSearchParams(location.search).has("debug");
+  try { debug = debug || localStorage.getItem("debug") === "1"; } catch (e) {}
+  document.querySelectorAll("a.tool[data-cache]").forEach(function(a){ a.hidden = !debug; });
+  document.querySelectorAll("details").forEach(function(d){
+    var n = d.querySelectorAll("a.tool:not([hidden])").length;
+    d.querySelector("summary small").textContent = n + (n > 1 ? " outils" : " outil");
+  });
+})();
+</script>
 </body>
 </html>
