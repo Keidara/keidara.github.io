@@ -47,10 +47,10 @@ def reconstruction(nom, N, t):
 def fig_serie(fig, signal, n_harm):
     ax = fig.subplots()
     t = np.linspace(0, 2, 1600)
-    ax.plot(t, forme(signal, t), color="0.55", lw=1.5, label="signal")
-    ax.plot(t, reconstruction(signal, n_harm, t), color="C0", lw=2, label=f"somme de {n_harm} harmonique{'s' if n_harm > 1 else ''}")
+    ax.plot(t, forme(signal, t), color="0.55", lw=1.5, label="Signal")
+    ax.plot(t, reconstruction(signal, n_harm, t), color="C0", lw=2, label=f"Somme de {n_harm} harmonique{'s' if n_harm > 1 else ''}")
     ax.set_ylim(-1.5, 1.5) if signal != "Impulsions" else ax.set_ylim(-0.5, 1.5)
-    ax.set_xlabel("t / T")
+    ax.set_xlabel(r"$t\,/\,T$")
     ax.legend(loc="lower right", fontsize=9)
     ax.set_title("Reconstruction du signal")
 
@@ -59,11 +59,11 @@ def fig_harmoniques(fig, signal, n_harm):
     ax = fig.subplots()
     a0, a, b = coefficients(signal)
     A, n = np.hypot(a, b), np.arange(1, 51)
-    ax.bar(0, abs(a0), color="C2", label="composante continue")
-    ax.bar(n[:n_harm], A[:n_harm], color="C0", label="harmoniques utilisées")
-    ax.bar(n[n_harm:], A[n_harm:], color="0.6", label="harmoniques ignorées")
-    ax.set_xlabel("rang de l’harmonique n")
-    ax.set_ylabel("amplitude")
+    ax.bar(0, abs(a0), color="C2", label="Composante continue")
+    ax.bar(n[:n_harm], A[:n_harm], color="C0", label="Harmoniques utilisées")
+    ax.bar(n[n_harm:], A[n_harm:], color="0.6", label="Harmoniques ignorées")
+    ax.set_xlabel(r"Rang $n$ de l’harmonique")
+    ax.set_ylabel("Amplitude")
     ax.set_title("Spectre du signal")
     ax.legend(fontsize=9)
 
@@ -107,7 +107,7 @@ def fig_image(fig, filtre, rayon, largeur, doux):
               "Passe-bande": coupe(np.abs(r - rc) - lg)}[filtre]
     Ff = F * masque
     rec = np.clip(np.fft.ifft2(np.fft.ifftshift(Ff)).real, 0, 1)
-    ax1, ax2, ax3 = fig.subplots(1, 3)
+    ax1, ax2, ax3 = fig.subplots(3, 1)
     ax1.imshow(a, cmap="gray", vmin=0, vmax=1)
     ax1.set_title("Image")
     ax2.imshow(np.log1p(np.abs(Ff)), cmap="magma", vmin=0, vmax=np.log1p(np.abs(F)).max())
