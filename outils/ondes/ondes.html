@@ -13,14 +13,25 @@
   <h1>Ondes progressive et stationnaire</h1>
 
   <p>Une onde progressive se déplace sans se déformer, avec la vitesse v = λ/T. Deux ondes progressives identiques qui vont en sens opposés s’additionnent en une onde stationnaire : la forme ne se déplace plus, elle oscille sur place.</p>
-  <div class="panneau" style="position:static" data-controles="*"></div>
-  <div class="cote">
-    <section><h2>Onde progressive</h2><p class="formule">y = sin(kx − ωt)</p>
-      <div data-figure="progressive" data-taille="7x5" data-alt="Onde progressive"></div></section>
-    <section><h2>Onde stationnaire</h2><p class="formule">y = sin(kx) cos(ωt)</p>
-      <div data-figure="stationnaire" data-taille="7x5" data-alt="Onde stationnaire"></div></section>
+  <div class="duo">
+    <section style="margin:0">
+      <h2>L’onde</h2>
+      <div data-figure="onde" data-taille="10x5.5" data-alt="Onde progressive ou stationnaire selon le mode choisi"></div>
+      <p>Choisis le mode, puis déplace le curseur de temps ou lance la lecture. Le temps est exprimé en périodes T.</p>
+    </section>
+    <div class="panneau"><div data-controles="*"></div></div>
   </div>
-  <p>Dans l’onde stationnaire, les nœuds (points qui ne bougent jamais) sont espacés de λ/2, et les ventres (amplitude maximale) tombent au milieu. Le temps est exprimé en périodes T.</p>
+  <section>
+    <h2>Onde progressive</h2>
+    <p>La courbe pleine est l’onde à l’instant t, les pointillés sa position à t = 0 : tout le profil glisse vers la droite sans changer de forme.</p>
+    <p class="formule">y = sin(kx − ωt) &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; k = 2π/λ, &nbsp; ω = 2π/T</p>
+  </section>
+  <section>
+    <h2>Onde stationnaire</h2>
+    <p>Elle résulte de la somme de deux ondes de même amplitude qui se propagent en sens opposés. Coche la case pour les voir séparément.</p>
+    <p class="formule">sin(kx − ωt) + sin(kx + ωt) = 2 sin(kx) cos(ωt)</p>
+    <p>Les nœuds (points qui ne bougent jamais) sont espacés de λ/2, et les ventres (amplitude maximale) tombent au milieu. Entre deux nœuds consécutifs, tous les points oscillent en phase ; de part et d’autre d’un nœud, ils oscillent en opposition.</p>
+  </section>
   <p class="etat" data-etat role="status"></p>
 </main>
 <script src="../../moteur/moteur.js"></script>
