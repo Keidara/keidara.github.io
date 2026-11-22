@@ -12,25 +12,40 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Ondes progressive et stationnaire</h1>
 
-  <p>Une onde progressive se déplace sans se déformer, avec la vitesse v = λ/T. Deux ondes progressives identiques qui vont en sens opposés s’additionnent en une onde stationnaire : la forme ne se déplace plus, elle oscille sur place.</p>
+  <p>Une onde progressive se déplace sans se déformer, avec la vitesse \(v = \lambda / T\). Deux ondes progressives qui vont en sens opposés s’additionnent en une onde stationnaire : la forme ne se déplace plus, elle oscille sur place. Quatre modes permettent d’explorer ces situations, de la réflexion sur un bord jusqu’au paquet d’ondes.</p>
   <div class="duo">
     <section style="margin:0">
       <h2>L’onde</h2>
-      <div data-figure="onde" data-taille="10x5.5" data-alt="Onde progressive ou stationnaire selon le mode choisi"></div>
-      <p>Choisis le mode, puis déplace le curseur de temps ou lance la lecture. Le temps est exprimé en périodes T.</p>
+      <div data-figure="onde" data-taille="10x5.5" data-alt="Onde progressive, stationnaire, réfléchie ou paquet d’ondes selon le mode choisi"></div>
+      <p>Choisis le mode, puis déplace le curseur de temps ou lance la lecture. Le temps est exprimé en périodes \(T\), et l’amplitude de l’onde incidente vaut 1.</p>
     </section>
     <div class="panneau"><div data-controles="*"></div></div>
   </div>
   <section>
     <h2>Onde progressive</h2>
-    <p>La courbe pleine est l’onde à l’instant t, les pointillés sa position à t = 0 : tout le profil glisse vers la droite sans changer de forme.</p>
-    <p class="formule">y = sin(kx − ωt) &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; k = 2π/λ, &nbsp; ω = 2π/T</p>
+    <p>La courbe pleine est l’onde à l’instant \(t\), les pointillés sa position à \(t = 0\) : tout le profil glisse vers la droite. Il avance d’une longueur d’onde pendant une période. En un point fixé, le milieu monte et descend avec la période \(T\) : c’est la forme qui se déplace, pas la matière.</p>
+    <p>$$\boxed{y(x,t) = \sin(kx - \omega t) \qquad k = \frac{2\pi}{\lambda}, \quad \omega = \frac{2\pi}{T}, \quad v = \frac{\omega}{k} = \frac{\lambda}{T}}$$</p>
   </section>
   <section>
     <h2>Onde stationnaire</h2>
     <p>Elle résulte de la somme de deux ondes de même amplitude qui se propagent en sens opposés. Coche la case pour les voir séparément.</p>
-    <p class="formule">sin(kx − ωt) + sin(kx + ωt) = 2 sin(kx) cos(ωt)</p>
-    <p>Les nœuds (points qui ne bougent jamais) sont espacés de λ/2, et les ventres (amplitude maximale) tombent au milieu. Entre deux nœuds consécutifs, tous les points oscillent en phase ; de part et d’autre d’un nœud, ils oscillent en opposition.</p>
+    <p>$$\boxed{\sin(kx - \omega t) + \sin(kx + \omega t) = 2\sin(kx)\cos(\omega t)}$$</p>
+    <p>Les nœuds (points qui ne bougent jamais) sont espacés de \(\lambda / 2\), et les ventres (amplitude maximale) tombent au milieu. Entre deux nœuds consécutifs, tous les points oscillent en phase ; de part et d’autre d’un nœud, ils oscillent en opposition.</p>
+  </section>
+  <section>
+    <h2>Réflexion sur un bord</h2>
+    <p>Une onde arrive de la gauche sur un bord (zone hachurée) et repart en sens inverse. Sur un <strong>bord fixe</strong>, l’onde réfléchie est inversée : le bord est un nœud. Sur un <strong>bord libre</strong>, elle n’est pas inversée : le bord est un ventre. Le coefficient \(r\) compare l’amplitude de l’onde réfléchie à celle de l’onde incidente : \(r = 1\) pour une réflexion totale, \(r = 0\) si le bord absorbe tout.</p>
+    <p>Pour une réflexion partielle, la somme est une onde <strong>semi-stationnaire</strong> : une onde progressive d’amplitude \(1 - r\) superposée à une onde stationnaire d’amplitude \(2r\) (écrit ici pour un bord fixe).</p>
+    <p>$$\boxed{\underbrace{\sin(kx - \omega t)}_{\text{incidente}} + r\,\underbrace{\sin(kx + \omega t)}_{\text{réfléchie}} = (1 - r)\sin(kx - \omega t) + 2r\,\sin(kx)\cos(\omega t)}$$</p>
+    <p>Les nœuds ne s’annulent plus complètement : l’amplitude varie entre un minimum \(1 - r\) et un maximum \(1 + r\). Leur rapport est le taux d’ondes stationnaires, qui vaut 1 pour une onde progressive et diverge pour une onde stationnaire.</p>
+    <p>$$\boxed{\mathrm{TOS} = \frac{A_{\max}}{A_{\min}} = \frac{1 + r}{1 - r}}$$</p>
+  </section>
+  <section>
+    <h2>Paquet d’ondes</h2>
+    <p>Une onde sinusoïdale pure occupe tout l’espace. Pour la localiser, on additionne des ondes de nombres d’onde voisins : elles sont en phase à un endroit, où elles se renforcent, et se détruisent presque partout ailleurs. Avec deux ondes, on retrouve les battements ; avec quelques ondes, des paquets qui se répètent.</p>
+    <p>Ici, les \(N\) ondes se partagent une même bande de nombres d’onde centrée sur \(k_0\), avec des poids gaussiens d’écart-type \(\sigma\) (graphique du bas). Plus \(N\) augmente, plus l’écart entre deux ondes voisines diminue, et plus la distance entre deux paquets augmente, jusqu’à ce qu’il n’en reste qu’un seul :</p>
+    <p>$$\boxed{y(x,t) = \sum_{j=1}^{N} a_j \cos\big(k_j\,(x - vt)\big) \qquad \Delta k = \frac{4\sigma}{N - 1} \qquad \Lambda = \frac{2\pi}{\Delta k}}$$</p>
+    <p>La largeur d’un paquet ne dépend que de la largeur du spectre : plus il est large, plus le paquet est étroit, selon \(\Delta x \cdot \Delta k \sim 1\). Ici, toutes les ondes vont à la même vitesse \(v\) : le paquet avance sans se déformer.</p>
   </section>
   <p class="etat" data-etat role="status"></p>
 </main>
