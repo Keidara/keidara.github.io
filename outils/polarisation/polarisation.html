@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polarisation de la lumière et formules de Fresnel</title>
+<link rel="stylesheet" href="../../moteur/style.css">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+</head>
+<body data-outil="polarisation">
+<main>
+  <a href="../../index.html">← Tous les outils</a>
+  <h1>Polarisation de la lumière et formules de Fresnel</h1>
+
+  <p>La lumière est une onde transversale : son champ électrique oscille dans un plan perpendiculaire à la direction de propagation. Celle du Soleil ou d’une ampoule est non polarisée : toutes les orientations sont présentes. Mais une réflexion sur une surface transparente ne renvoie pas de la même façon chaque orientation, et polarise donc partiellement la lumière.</p>
+  <p>Pour décrire cela, on distingue deux polarisations par rapport au plan d’incidence (celui qui contient le rayon incident et la normale) : la polarisation <strong>s</strong>, perpendiculaire à ce plan, et la polarisation <strong>p</strong>, située dans ce plan. Une lumière non polarisée se partage à parts égales entre les deux.</p>
+  <div class="duo">
+    <div>
+      <section>
+        <h2>Quelle part de lumière est réfléchie ?</h2>
+        <div data-figure="fresnel" data-taille="10x4.5" data-alt="Réflexion de la lumière selon l’angle d’incidence et la polarisation"></div>
+        <p>Les formules de Fresnel donnent la part réfléchie de chaque polarisation, avec \(\theta_2\) l’angle de réfraction (loi de Snell-Descartes) :</p>
+        <p class="formule">\(\displaystyle R_s = \left(\frac{n_1\cos\theta_1 - n_2\cos\theta_2}{n_1\cos\theta_1 + n_2\cos\theta_2}\right)^2 \qquad R_p = \left(\frac{n_2\cos\theta_1 - n_1\cos\theta_2}{n_2\cos\theta_1 + n_1\cos\theta_2}\right)^2\)</p>
+        <p>À incidence normale, les deux sont égales à \(\left(\dfrac{n_2 - n_1}{n_2 + n_1}\right)^2\) : environ 4 % pour de l’air et du verre. La part réfléchie augmente vers 100 % à incidence rasante.</p>
+        <p>À l’angle de Brewster, la lumière polarisée dans le plan d’incidence n’est plus du tout réfléchie :</p>
+        <p class="formule">\(\displaystyle \tan\theta_B = \frac{n_2}{n_1}\)</p>
+        <p>À cet angle, le rayon réfléchi et le rayon réfracté sont perpendiculaires. La lumière réfléchie est alors entièrement polarisée perpendiculairement au plan d’incidence (polarisation s).</p>
+      </section>
+      <section>
+        <h2>Voir à travers un polariseur</h2>
+        <div data-figure="polariseur" data-taille="10x4.5" data-alt="Lumière réfléchie après un polariseur en fonction de son orientation"></div>
+        <p>Un polariseur ne laisse passer qu’une orientation du champ électrique. Pour une lumière déjà polarisée, l’intensité transmise suit la loi de Malus :</p>
+        <p class="formule">\(\displaystyle I = I_0 \cos^2\alpha\)</p>
+        <p>Appliquée aux deux composantes de la lumière réfléchie, elle donne la courbe ci-dessus. Avec \(\alpha = 0\), le polariseur laisse passer la polarisation s ; avec \(\alpha = 90^\circ\), la polarisation p. Près de l’angle de Brewster, la lumière réfléchie est presque entièrement s : un polariseur d’orientation 90° la bloque presque complètement. C’est le principe des lunettes polarisantes, dont l’axe est vertical pour supprimer les reflets sur l’eau ou sur une route mouillée.</p>
+      </section>
+    </div>
+    <div class="panneau"><div data-controles="*"></div></div>
+  </div>
+  <p class="etat" data-etat role="status"></p>
+</main>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
