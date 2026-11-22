@@ -22,15 +22,14 @@
       </div>
       <div class="panneau"><div data-controles="signal n_harm"></div></div>
     </div>
-    <p>Un signal de période T s’écrit comme une somme de sinusoïdes de fréquences multiples de 1/T :</p>
-    <p class="formule">f(t) = a₀ + Σ [ aₙ cos(2π n t/T) + bₙ sin(2π n t/T) ]</p>
-    <p>Lance la lecture pour voir la somme se rapprocher du signal. Le triangle, continu, converge très vite : ses harmoniques décroissent comme 1/n². Le carré et la dent de scie ont des sauts : leurs harmoniques décroissent en 1/n seulement, et la somme déborde toujours d’environ 9 % de part et d’autre du saut, quel que soit le nombre d’harmoniques (phénomène de Gibbs). Les impulsions ont une valeur moyenne non nulle, la composante continue a₀.</p>
+    <p>Un signal de période \(T\) s’écrit comme une somme de sinusoïdes de fréquences multiples de \(1/T\) :</p>
+    <p>$$\boxed{f(t) = a_0 + \sum_{n=1}^{\infty}\left[a_n \cos\!\left(\frac{2\pi n t}{T}\right) + b_n \sin\!\left(\frac{2\pi n t}{T}\right)\right]}$$</p>
+    <p>Lance la lecture pour voir la somme se rapprocher du signal. Le triangle, continu, converge très vite : ses harmoniques décroissent comme \(1/n^2\). Le carré et la dent de scie ont des sauts : leurs harmoniques décroissent en \(1/n\) seulement, et la somme déborde toujours d’environ 9 % de part et d’autre du saut, quel que soit le nombre d’harmoniques (phénomène de Gibbs). Les impulsions ont une valeur moyenne non nulle, la composante continue \(a_0\).</p>
   </section>
   <section>
     <h2>Analyse et filtrage d’une image</h2>
     <div class="duo">
-      <div data-figure="image" data-taille="10x3.8" data-alt="Image, spectre de Fourier filtré et image reconstruite"></div>
-      <div class="panneau">
+      <div data-figure="image" data-taille="6x14" style="max-width:30rem;margin:0 auto" data-alt="Image, spectre de Fourier filtré et image reconstruite, empilés verticalement"></div>      <div class="panneau">
         <label>Choisir une image (facultatif)
           <input type="file" data-fichier="image" accept="image/*"></label>
         <button class="sec" data-action="image_defaut" data-cible="image">Image d’essai</button>
