@@ -3,7 +3,7 @@ import numpy as np
 from kit import *
 
 PARAMS = [
-    Select("mode", "Configuration", ["Fente unique", "Deux fentes"], "Deux fentes"),
+    Select("mode", "Configuration", ["Fente unique", "Deux fentes"], "Fente unique"),
     Slider("lam", r"Longueur d’onde \(\lambda\)", 400, 800, 550, unit="nm"),
     Slider("a", r"Largeur de fente \(a\)", 10, 300, 50, step=5, unit="µm"),
     Slider("d", r"Écart entre fentes \(d\)", 20, 1000, 250, step=10, unit="µm"),
