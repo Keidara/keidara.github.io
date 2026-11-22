@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lois de la réfraction et principe de Huygens-Fresnel</title>
+<title>Lois de la réflexion et de la réfraction, principe de Huygens-Fresnel</title>
 <link rel="stylesheet" href="../../moteur/style.css">
 <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
 </head>
@@ -12,34 +12,30 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Lois de la réfraction et principe de Huygens-Fresnel</h1>
 
-  <p>Quand la lumière passe d’un milieu transparent à un autre, par exemple de l’air à l’eau, elle change de direction : c’est la réfraction. Ses lois, établies expérimentalement, s’expliquent par un fait simple : la lumière va moins vite dans un milieu d’indice plus élevé.</p>
+  <p>Quand la lumière arrive sur la surface qui sépare deux milieux transparents, par exemple de l’air et de l’eau, une partie est réfléchie et l’autre change de direction en entrant dans le second milieu : c’est la réfraction. Ces lois, établies expérimentalement, s’expliquent par un fait simple : la lumière va moins vite dans un milieu d’indice plus élevé, l’indice \(n = c/v\) comparant la vitesse \(v\) de la lumière dans le milieu à sa vitesse \(c\) dans le vide.</p>
   <div class="duo">
     <div>
       <section>
         <h2>Les rayons</h2>
         <div data-figure="rayons" data-taille="10x4.5" data-alt="Rayons incident, réfléchi et réfracté, et angle réfracté en fonction de l’angle d’incidence"></div>
-        <p>Les angles sont mesurés par rapport à la normale à la surface. L’angle de réflexion est égal à l’angle d’incidence. L’angle de réfraction vérifie la loi de Snell-Descartes :</p>
-        <p class="formule">n₁ sin θ₁ = n₂ sin θ₂ &nbsp;&nbsp;&nbsp; avec &nbsp;&nbsp;&nbsp; n = c / v</p>
-        <p>Un rayon qui entre dans un milieu plus réfringent (n₂ &gt; n₁) se rapproche de la normale ; dans l’autre sens, il s’en écarte. À partir de l’angle limite θc = arcsin(n₂/n₁), possible seulement si n₁ &gt; n₂, il n’y a plus de rayon réfracté : c’est la réflexion totale, utilisée par les fibres optiques. L’épaisseur des flèches réfléchie et réfractée indique la part de lumière qui suit chaque chemin.</p>
+        <p>Les angles sont mesurés par rapport à la normale à la surface. La loi de la réflexion dit que le rayon réfléchi reste dans le plan d’incidence, de l’autre côté de la normale, avec un angle égal à celui du rayon incident :</p>
+        <p class="formule">\(\displaystyle \theta_r = \theta_1\)</p>
+        <p>L’angle de réfraction vérifie la loi de Snell-Descartes :</p>
+        <p class="formule">\(\displaystyle n_1 \sin\theta_1 = n_2 \sin\theta_2\)</p>
+        <p>Les indices usuels sont environ 1,00 pour l’air, 1,33 pour l’eau, 1,5 pour le verre ordinaire et 2,42 pour le diamant. Un rayon qui entre dans un milieu plus réfringent (\(n_2 &gt; n_1\)) se rapproche de la normale ; dans l’autre sens, il s’en écarte. À partir de l’angle limite \(\theta_c = \arcsin(n_2/n_1)\), possible seulement si \(n_1 &gt; n_2\), il n’y a plus de rayon réfracté : c’est la réflexion totale, utilisée par les fibres optiques. Pour s’en convaincre, essaie \(n_1 = 1{,}5\) et \(n_2 = 1{,}0\) (de l’intérieur du verre vers l’air) avec un angle d’incidence supérieur à 42°.</p>
+        <p>L’épaisseur des flèches réfléchie et réfractée indique la part de lumière qui suit chaque chemin (calculée avec les formules de Fresnel, pour une lumière non polarisée).</p>
       </section>
       <section>
         <h2>Pourquoi la lumière dévie : le principe de Huygens-Fresnel</h2>
         <div data-figure="huygens" data-taille="10x6.5" data-alt="Construction de Huygens : fronts d’onde, ondelettes et enveloppe à la traversée d’une interface"></div>
-        <p>Chaque point atteint par un front d’onde se comporte comme une source qui émet une petite onde circulaire, une ondelette. Le nouveau front d’onde est l’enveloppe de toutes ces ondelettes. Ici, les lignes bleues sont les fronts de l’onde incidente, le plus épais servant de départ. Dès que ce front touche un point de la surface, celui-ci émet une ondelette orange dans le milieu 2, où l’onde va à la vitesse c/n₂, plus petite que dans le milieu 1 si n₂ est plus grand. Le front s’incline parce que le côté du front qui est déjà entré dans le milieu 2 avance moins vite que celui qui est encore dans le milieu 1.</p>
-        <p>Cette construction redonne exactement la loi de Snell-Descartes : pendant que le front avance sur la surface d’une longueur L, il parcourt L sin θ₁ dans le milieu 1 et L sin θ₂ dans le milieu 2, à des vitesses dans le rapport n₁/n₂. Avec la case cochée, on voit aussi les ondelettes violettes émises vers le milieu 1, dont l’enveloppe donne la réflexion à l’angle θ₁. Quand n₁ sin θ₁ &gt; n₂, les ondelettes du milieu 2 ne possèdent plus d’enveloppe commune : il n’y a pas de front réfracté.</p>
-      </section>
-      <section>
-        <h2>Quelle part de lumière est réfléchie ?</h2>
-        <div data-figure="fresnel" data-taille="10x4.5" data-alt="Réflexion de la lumière selon l’angle d’incidence et la polarisation"></div>
-        <p>La part de lumière réfléchie est donnée par les formules de Fresnel. Elle dépend de la polarisation. À incidence normale, elle vaut ((n₂ − n₁)/(n₂ + n₁))² : environ 4 % pour de l’air et du verre. Elle augmente vers 100 % à incidence rasante. À l’angle de Brewster, tan θB = n₂/n₁, la lumière polarisée dans le plan d’incidence n’est plus du tout réfléchie : c’est le principe des lunettes polarisantes qui suppriment les reflets.</p>
+        <p>Chaque point atteint par un front d’onde se comporte comme une source qui émet une petite onde circulaire, une ondelette. Le nouveau front d’onde est l’enveloppe de toutes ces ondelettes. Ici, les lignes bleues sont les fronts de l’onde incidente, le plus épais servant de départ. Dès que ce front touche un point de la surface, celui-ci émet une ondelette orange dans le milieu 2, où l’onde va à la vitesse \(c/n_2\), plus petite que dans le milieu 1 si \(n_2\) est plus grand. Le front s’incline parce que le côté du front qui est déjà entré dans le milieu 2 avance moins vite que celui qui est encore dans le milieu 1.</p>
+        <p>Cette construction redonne exactement la loi de Snell-Descartes : pendant que le front avance sur la surface d’une longueur \(L\), il parcourt \(L\sin\theta_1\) dans le milieu 1 et \(L\sin\theta_2\) dans le milieu 2, à des vitesses \(v_1 = c/n_1\) et \(v_2 = c/n_2\). La durée est la même des deux côtés :</p>
+        <p class="formule">\(\displaystyle \frac{L\sin\theta_1}{v_1} = \frac{L\sin\theta_2}{v_2} \quad\Longleftrightarrow\quad n_1\sin\theta_1 = n_2\sin\theta_2\)</p>
+        <p>Avec la case cochée, on voit aussi les ondelettes violettes émises vers le milieu 1, dont l’enveloppe donne la réflexion à l’angle \(\theta_r = \theta_1\). Quand \(n_1 \sin\theta_1 &gt; n_2\), les ondelettes du milieu 2 ne possèdent plus d’enveloppe commune : il n’y a pas de front réfracté.</p>
       </section>
     </div>
     <div class="panneau"><div data-controles="*"></div></div>
   </div>
-  <section>
-    <h2>Indices de réfraction usuels</h2>
-    <p>Air : 1,00. Eau : 1,33. Verre ordinaire : environ 1,5. Diamant : 2,42. Essaie n₁ = 1,5 et n₂ = 1,0 (de l’intérieur du verre vers l’air) avec un angle d’incidence supérieur à 42° pour obtenir la réflexion totale.</p>
-  </section>
   <p class="etat" data-etat role="status"></p>
 </main>
 <script src="../../moteur/moteur.js"></script>
