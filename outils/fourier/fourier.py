@@ -8,7 +8,7 @@ SIGNAUX = ["Carré", "Triangle", "Dent de scie", "Impulsions"]
 PARAMS = [
     Select("signal", "Signal", SIGNAUX),
     Slider("n_harm", "Nombre d’harmoniques", 1, 50, 5, anim=12),
-    Select("filtre", "Filtre", ["Aucun", "Passe-bas", "Passe-haut", "Passe-bande"], "Passe-bas"),
+    Select("filtre", "Filtre", ["Aucun", "Passe-bas", "Passe-haut", "Passe-bande"], "Aucun"),
     Slider("rayon", "Fréquence de coupure", 1, 100, 20, unit="%",
            actif=("filtre", ["Passe-bas", "Passe-haut", "Passe-bande"])),
     Slider("largeur", "Largeur de la bande", 1, 50, 8, unit="%", actif=("filtre", ["Passe-bande"])),
