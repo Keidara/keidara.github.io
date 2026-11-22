@@ -58,8 +58,8 @@ def fig_huygens(fig, n1, n2, theta, refl, t):
     segs = np.stack([s[:, None] * s1 + u[None, :] * c1, -s[:, None] * c1 + u[None, :] * s1], axis=-1)
     couleurs = [to_rgba("C0", 1.0 if k == 0 else 0.5) for k in m]
     fronts = LineCollection(segs, colors=couleurs, linewidths=np.where(m == 0, 3, 1))
+    ax.add_collection(fronts)                               # d'abord : add_collection impose sinon le clip des axes entiers
     fronts.set_clip_path(Rectangle((-9.5, 0), 19, 6, transform=ax.transData))
-    ax.add_collection(fronts)
 
     # sources secondaires : chacune émet une ondelette dès que le front l'atteint
     xs = np.arange(X0, X1 + 0.01, 0.6)
