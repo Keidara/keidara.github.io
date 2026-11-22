@@ -12,20 +12,19 @@
   <a href="../../index.html">← Tous les outils</a>
   <h1>Diffraction et fentes d’Young</h1>
 
-  <p>Une onde plane de longueur d’onde \(\lambda\) traverse une fente de largeur \(a\) (ou deux fentes séparées de \(d\)) et forme sur un écran, à la distance \(D\), une figure d’intensité. C’est la version optique de l’expérience de l’outil « Équation de Schrödinger 2D », où des électrons forment le même type de figure.</p>
+  <p>Une onde plane de longueur d’onde \(\lambda\) traverse une fente de largeur \(a\) (ou deux fentes séparées de \(d\)) et forme sur un écran, à la distance \(D\), une figure de diffraction/interférences. C’est la version optique de l’expérience de l’outil « Équation de Schrödinger 2D », où des électrons forment le même type de figure.</p>
   <div class="duo">
     <div>
       <section>
         <h2>Le montage</h2>
         <div data-figure="schema" data-taille="10x3" data-alt="Schéma du montage : onde, fentes, écran"></div>
-        <p>Les largeurs de fentes sont à l’échelle entre elles. L’espacement des fronts d’onde est proportionnel à \(\lambda\), et la distance fentes-écran à \(D\), mais cette distance n’est pas à l’échelle des fentes (en réalité, elle est des milliers de fois plus grande).</p>
       </section>
       <section>
         <h2>La figure obtenue</h2>
         <div data-figure="intensite" data-alt="Intensité lumineuse sur l’écran"></div>
         <p>L’écran, de largeur \(L\), est centré sur l’axe : l’abscisse \(x\) va de \(-L/2\) à \(+L/2\). Pour une direction \(\theta\) telle que \(\sin\theta = x / \sqrt{x^2 + D^2}\), avec \(\operatorname{sinc} u = \sin(\pi u)/(\pi u)\) :</p>
-        <p class="formule">une fente : \(I \propto \operatorname{sinc}^2\!\left(\dfrac{a \sin\theta}{\lambda}\right)\)</p>
-        <p class="formule">deux fentes : \(I \propto \operatorname{sinc}^2\!\left(\dfrac{a \sin\theta}{\lambda}\right)\cos^2\!\left(\dfrac{\pi d \sin\theta}{\lambda}\right)\)</p>
+        <p>une fente : $$I \propto \operatorname{sinc}^2\!\left(\dfrac{a \sin\theta}{\lambda}\right)$$</p>
+        <p>deux fentes : $$I \propto \operatorname{sinc}^2\!\left(\dfrac{a \sin\theta}{\lambda}\right)\cos^2\!\left(\dfrac{\pi d \sin\theta}{\lambda}\right)$$</p>
         <p>Les franges d’interférence sont modulées par l’enveloppe de diffraction de chaque fente.</p>
       </section>
     </div>
