@@ -82,7 +82,8 @@
       <li>sinon, on l’accepte quand même, mais seulement avec la probabilité donnée par le facteur de Boltzmann :</li>
     </ul>
     <p>$$\boxed{p = e^{-\Delta E / T}}$$</p>
-    <p>À basse température, cette probabilité est minuscule, donc les spins restent alignés. À haute température, elle est proche de 1 : les spins se retournent presque librement.</p>
+    <p>À basse température, cette probabilité est minuscule, donc les spins restent alignés.<br>
+      À haute température, elle est proche de 1 : les spins se retournent presque librement.</p>
     </div>
   </details>
 
@@ -91,25 +92,27 @@
     <div class="corps">
     <p>On suit l’aimantation \(m\), la moyenne des spins : \(m = +1\) si tous pointent vers le haut, \(m = -1\) si tous pointent vers le bas, \(m = 0\) s’il y en a autant de chaque sorte. Le comportement change à la température critique :</p>
     <p>$$\boxed{T_c = \frac{2}{\ln\!\left(1+\sqrt{2}\right)} \approx 2{,}269}$$</p>
-    <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. Le sens est choisi au hasard (les deux sont aussi probables quand \(h = 0\)). <br> <strong>Au-dessus</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. <br> <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) favorise une orientation : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
+    <p><strong>En dessous de \(T_c\)</strong>, l’ordre l’emporte : des domaines de même orientation se forment et grossissent jusqu’à envahir la grille, et \(m\) s’approche de +1 ou de −1. C’est la <strong>phase ferromagnétique</strong>, où le système se comporte comme un aimant permanent même sans champ extérieur.<br>
+      <strong>Au-dessus de \(T_c\)</strong>, le désordre l’emporte et \(m\) fluctue autour de 0. C’est la phase <strong>paramagnétique</strong>, où le système perd son aimantation en l’absence de champ extérieur. <br>
+      <strong>Près de \(T_c\)</strong>, on voit des domaines de toutes tailles et le système évolue très lentement. Le champ \(h\) favorise une orientation : avec \(h \neq 0\), l’aimantation ne s’annule plus, même à haute température.</p>
     <p>Dans le graphique de droite, la courbe verte est la solution exacte d’Onsager (1944), valable pour une grille infinie et \(h = 0\). Elle a deux branches, \(+m\) et \(-m\), qui se rejoignent en \(T_c\) :</p>
     <p>$$\boxed{m(T) = \begin{cases}
-      \pm\left[1 - \sinh^{-4}\!\left(\dfrac{2}{T}\right)\right]^{1/8} & \text{si } T \lt T_c \\
+      \pm\left[1 - \sinh^{-4}\!\left(\dfrac{2}{T}\right)\right]^{1/8} & \text{si } T \lt T_c \\ \,
       0 & \text{si } T \gt T_c
     \end{cases}}$$</p>
-    <p>Le point orange correspond à l’aimantation du système, moyennée sur les cinq derniers balayages : sans champ extérieur (\(h = 0\)), il se place sur l’une des deux branches sous \(T_c\), et près de 0 au-dessus.</p>
-    <p>S’il y a un champ extérieur (\(h \neq 0\)), l’aimantation n’a aucune raison de rester sur la courbe verte, qui ne vaut que pour \(h = 0\) : le champ aimante le système même au-dessus de \(T_c\).</p>
+    <p>Le point orange correspond à l’aimantation du système, moyennée sur les cinq derniers balayages.<br>
+    À une température supérieure à \(T_c\), et en présence d’un champ extérieur (\(h \neq 0\)), l’aimantation quitte la courbe verte, qui ne vaut que pour \(h = 0\) : le système s’aimante du fait du champ extérieur, c’est une autre caractéristique du <strong>paramagnétisme</strong>.</p>
     </div>
   </details>
 
   <details class="repli">
-    <summary><h2>Métastabilité et hystérésis</h2></summary>
+    <summary><h2>État métastable</h2></summary>
     <div class="corps">
-    <p>Pars de « Ordonnée » à très basse température (\(T \approx 0{,}5\)), puis inverse le champ, même à fond (\(h = -1\)) : rien ne bouge, la grille reste aimantée dans le sens opposé au champ. C’est un état <strong>métastable</strong> : il tient tant qu’on ne le perturbe pas assez.</p>
+    <p>À très basse température, tous les spins s’orientent de la même façon. Basculer le champ extérieur dans le sens opposé aux aimants ne suffit pourtant pas à les retourner. C’est un état <strong>métastable</strong> : l’état se maintient alors qu’il est coûteux en énergie parce qu’aucune perturbation ne lui a permis de basculer dans l’état le plus favorable.</p>
     <p>La raison est le coût du retournement d’un spin \(s_i\) :</p>
-    <p>$$\boxed{\Delta E = 2\,s_i\Big(\sum_{j\ \text{voisins}} s_j + h\Big)}$$</p>
-    <p>Pour un spin entouré de quatre voisins alignés avec lui, on trouve \(\Delta E = 8 - 2|h| \ge 6\) : le champ, limité à \(|h| \le 1\), ne compense jamais la perte des liaisons. La probabilité d’accepter le retournement est alors au plus \(e^{-6/T} \approx 6 \times 10^{-6}\) à \(T = 0{,}5\).</p>
-    <p>Pour que l’aimantation bascule, il faut qu’une zone retournée assez grande apparaisse par hasard (c’est la nucléation) : elle grossit ensuite d’elle-même, car au-delà d’une certaine taille le gain dû au champ l’emporte sur le coût de sa frontière. Chauffer rend ces fluctuations plus fréquentes : monte \(T\) peu à peu et le système finit par suivre le champ. Plus le champ est faible, plus il faut chauffer. Ce retard à suivre le champ s’appelle l’hystérésis.</p>
+    <p>$$\Delta E = 2\,s_i\Big(\sum_{j\ \text{voisins}} s_j + h\Big)$$</p>
+    <p>Dans cette configuration, basculer un aimant dans le sens du champ extérieur, c’est le forcer à s’opposer à ses quatre voisins. Or, dans cette simulation, l’énergie gagnée par ce basculement ne compense l’énergie perdue qu’avec un seul voisin.</p>
+    <p>Pour que l’aimantation bascule, il faut donc que la température soit suffisamment élevée pour qu’une zone retournée assez grande apparaisse par hasard (c’est la nucléation) : la zone se propage alors à tout le système. On dit que le système « relaxe » dans son état de plus basse énergie.</p>
     </div>
   </details>
 
