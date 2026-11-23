@@ -72,4 +72,46 @@
     });
   }
   function demarrer() {
-    ctx = new (window.AudioContext ||
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    maitre = ctx.createGain();
+    maitre.gain.setValueAtTime(0, ctx.currentTime);
+    maitre.gain.linearRampToValueAtTime(niveau(), ctx.currentTime + 0.05);
+    maitre.connect(ctx.destination);
+    osc = []; gains = [];
+    reglages().forEach(([f, a]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = f;
+      g.gain.value = a;
+      o.connect(g); g.connect(maitre); o.start();
+      osc.push(o); gains.push(g);
+    });
+    bouton.textContent = "■ Stop";
+    bouton.setAttribute("aria-pressed", "true");
+  }
+  function arreter() {
+    if (!ctx) return;
+    const c = ctx, m = maitre, o = osc;
+    m.gain.cancelScheduledValues(c.currentTime);
+    m.gain.setValueAtTime(m.gain.value, c.currentTime);
+    m.gain.linearRampToValueAtTime(0, c.currentTime + 0.05);    // évite le « clac » à l'arrêt
+    setTimeout(() => { o.forEach(x => x.stop()); c.close(); }, 100);
+    ctx = maitre = null; osc = []; gains = [];
+    bouton.textContent = "▶ Écouter";
+    bouton.setAttribute("aria-pressed", "false");
+  }
+
+  bouton.addEventListener("click", () => {
+    try { ctx ? arreter() : demarrer(); } catch (e) { /* son indisponible : on ne fait rien */ }
+  });
+  vol.addEventListener("input", () => {
+    sortie.textContent = vol.value + " %";
+    if (maitre) maitre.gain.setTargetAtTime(niveau(), ctx.currentTime, 0.02);
+  });
+  // Les curseurs de l'outil sont créés par le moteur : on écoute leurs changements au niveau du document.
+  document.addEventListener("input", e => { if (e.target.id && e.target.id.startsWith("p_")) appliquer(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) arreter(); });
+})();
+</script>
+<script src="../../moteur/moteur.js"></script>
+</body>
+</html>
