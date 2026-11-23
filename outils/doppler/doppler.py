@@ -58,4 +58,4 @@ def fig_frequence(fig, M):
     ax.set_xlabel("Position de la source à l’instant d’émission")
     ax.set_ylabel("Fréquence reçue / f₀")
     ax.set_title("Fréquence reçue par chaque observateur")
-    ax.legend(loc="upper right", fontsize=9)
+    ax.legend(loc="upper right", bbox_to_anchor=(1, 0.91), fontsize=9)
