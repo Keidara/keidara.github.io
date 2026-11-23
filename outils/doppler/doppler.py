@@ -51,9 +51,9 @@ def fig_frequence(fig, M):
         ax.axis("off")
         return
     x = np.linspace(-12, 12, 500)
-    ax.plot(x, 1 / (1 + M * x / np.hypot(x, D_LAT)), color="C0", lw=2, label="observateur C (la source passe devant lui)")
-    ax.axhline(1 / (1 - M), ls="--", color="C1", label=f"observateur A (devant) : {1 / (1 - M):.2f} f₀")
-    ax.axhline(1 / (1 + M), ls="--", color="C3", label=f"observateur B (derrière) : {1 / (1 + M):.2f} f₀")
+    ax.plot(x, 1 / (1 + M * x / np.hypot(x, D_LAT)), color="C0", lw=2, label="Observateur C (la source passe devant lui)")
+    ax.axhline(1 / (1 - M), ls="--", color="C1", label=f"Observateur A (devant) : {1 / (1 - M):.2f} f₀")
+    ax.axhline(1 / (1 + M), ls="--", color="C3", label=f"Observateur B (derrière) : {1 / (1 + M):.2f} f₀")
     ax.axhline(1, ls=":", color="0.5")
     ax.set_xlabel("Position de la source à l’instant d’émission")
     ax.set_ylabel("Fréquence reçue / f₀")
