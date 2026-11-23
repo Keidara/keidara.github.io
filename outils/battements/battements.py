@@ -12,11 +12,11 @@ PARAMS = [
 def fig_zoom(fig, f1, df, a2):
     """Quelques millisecondes : les deux ondes, puis leur somme."""
     f2 = f1 + df
-    t = np.linspace(0, 0.02, 2000)
+    t = np.linspace(0, 0.02, 10000)
     y1, y2 = np.cos(2 * np.pi * f1 * t), a2 * np.cos(2 * np.pi * f2 * t)
     ax1, ax2 = fig.subplots(2, 1, sharex=True)
-    ax1.plot(t * 1e3, y1, color="C0", lw=1.6, label=f"onde 1 : {f1} Hz")
-    ax1.plot(t * 1e3, y2, color="C1", lw=1.6, label=f"onde 2 : {f2:g} Hz")
+    ax1.plot(t * 1e3, y1, color="C0", lw=1.6, label=f"Onde 1 : {f1} Hz")
+    ax1.plot(t * 1e3, y2, color="C1", lw=1.6, label=f"Onde 2 : {f2:g} Hz")
     ax1.set_ylim(-1.5, 1.5)
     ax1.set_ylabel("Amplitude")
     ax1.set_title("Les deux ondes, sur 20 ms")
@@ -37,8 +37,8 @@ def fig_battements(fig, f1, df, a2):
     y = np.cos(2 * np.pi * f1 * t) + a2 * np.cos(2 * np.pi * f2 * t)
     env = np.sqrt(1 + a2 ** 2 + 2 * a2 * np.cos(2 * np.pi * df * t))
     ax = fig.subplots()
-    ax.plot(t, y, color="C0", lw=0.5, alpha=0.8, label="somme des deux ondes")
-    ax.plot(t, env, color="C1", lw=2, label="enveloppe")
+    ax.plot(t, y, color="C0", lw=0.5, alpha=0.8, label="Somme des deux ondes")
+    ax.plot(t, env, color="C1", lw=2, label="Enveloppe")
     ax.plot(t, -env, color="C1", lw=2)
     ax.set_xlim(0, duree)
     ax.set_ylim(-2.1, 2.1)
