@@ -12,14 +12,14 @@ PARAMS = [
 def fig_zoom(fig, f1, df, a2):
     """Quelques millisecondes : les deux ondes, puis leur somme."""
     f2 = f1 + df
-    t = np.linspace(0, 0.02, 10000)
+    t = np.linspace(0, 0.1, 5000)
     y1, y2 = np.cos(2 * np.pi * f1 * t), a2 * np.cos(2 * np.pi * f2 * t)
     ax1, ax2 = fig.subplots(2, 1, sharex=True)
     ax1.plot(t * 1e3, y1, color="C0", lw=1.6, label=f"Onde 1 : {f1} Hz")
     ax1.plot(t * 1e3, y2, color="C1", lw=1.6, label=f"Onde 2 : {f2:g} Hz")
     ax1.set_ylim(-1.5, 1.5)
     ax1.set_ylabel("Amplitude")
-    ax1.set_title("Les deux ondes, sur 20 ms")
+    ax1.set_title("Les deux ondes, sur 100 ms")
     ax1.legend(loc="upper right", fontsize=9, ncol=2)
     ax1.tick_params(labelbottom=False)
     ax2.plot(t * 1e3, y1 + y2, color="C2", lw=1.6)
